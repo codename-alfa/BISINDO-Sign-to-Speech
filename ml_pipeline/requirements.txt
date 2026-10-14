@@ -1,0 +1,10 @@
+# Pinned verified ML dependencies for Python 3.12 (Windows)
+# Generated via setup_check.py validation on 2026-10-15
+mediapipe==1.1.1
+tensorflow==2.21.0
+scikit-learn==1.9.1
+opencv-python==5.0.0.93
+numpy==2.5.4
+pandas==3.0.6
+matplotlib==3.11.2
+seaborn==0.13.2
