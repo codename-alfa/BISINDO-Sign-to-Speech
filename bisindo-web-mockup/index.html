@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#06182c" />
+    <meta name="description" content="Sign-to-Speech Real-Time BISINDO Sign Language Translator" />
+    <title>Sign-to-Speech | BISINDO</title>
+    
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Modern Sans Typography: Plus Jakarta Sans / Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Google MediaPipe Hands & Camera Utils for Real-Time Hand Tracking -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+    
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <!-- Phone Mockup Frame Container -->
+    <div class="phone-frame">
+      <!-- Camera Punch Hole / Sensor Notch with Active Green Indicator -->
+      <div class="phone-notch">
+        <div class="camera-lens">
+          <div class="lens-dot"></div>
+        </div>
+      </div>
+
+      <!-- Quick Action Controls (Discreetly placed at top) -->
+      <div class="top-bar-controls">
+        <button id="btn-cam-toggle" class="discreet-btn" title="Nyalakan / Ganti Kamera">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M23 7l-7 5 7 5V7z" />
+            <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+          </svg>
+        </button>
+        <button id="btn-demo-panel-toggle" class="discreet-btn" title="Presenter Hotkeys / Demo Drawer (D)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3" />
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- MAIN CONTENT VIEWPORTS -->
+      <main class="viewport-container">
+        <!-- ==================== MODE 1: SIGN -> SPEECH ==================== -->
+        <section id="view-mode1" class="mode-view active">
+          <!-- Camera / Visual Preview Container (Live Camera Access) -->
+          <div class="camera-viewport-card" id="camera-card">
+            <!-- Live Web Video Stream -->
+            <video id="camera-feed" autoplay playsinline muted></video>
+            
+            <!-- Camera Permission / Activation Prompt (Shown when camera is waiting for access) -->
+            <div class="camera-permission-prompt" id="camera-prompt">
+              <div class="prompt-icon">📷</div>
+              <p>Akses Kamera Diperlukan untuk Deteksi Isyarat</p>
+              <button id="btn-request-cam" class="btn-activate-cam">Aktifkan Kamera</button>
+            </div>
+
+            <!-- Minimal Green Bounding Box Overlay for Hand Tracking -->
+            <div class="bounding-box-overlay" id="hand-bounding-box"></div>
+          </div>
+
+          <!-- Translation Output Card (HASIL TRANSLASI - Initially Empty) -->
+          <div class="translation-card" id="translation-card">
+            <div class="card-header-row">
+              <span class="card-meta-title" id="card-meta-title">HASIL TRANSLASI</span>
+              <span class="confidence-pill hidden" id="confidence-pill"></span>
+            </div>
+            
+            <div class="card-body-row">
+              <h1 class="translated-word empty" id="translated-word"></h1>
+              
+              <!-- Subtle Soundwave when TTS is active -->
+              <div class="audio-wave-bars hidden" id="audio-wave-bars">
+                <span></span><span></span><span></span><span></span><span></span>
+              </div>
+            </div>
+
+            <!-- Fallback Quick Suggestions (Shown only when confidence < 70%) -->
+            <div class="fallback-suggestions hidden" id="fallback-suggestions">
+              <span class="fallback-label">Pilihan Alternatif (&lt;70%):</span>
+              <div class="fallback-chips" id="fallback-chips"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== MODE 2: SPEECH -> SIGN ==================== -->
+        <section id="view-mode2" class="mode-view">
+          <!-- Voice Listening Card -->
+          <div class="speech-viewport-card" id="speech-card">
+            <div class="speech-mic-area">
+              <div class="mic-wave-pulse" id="mic-pulse-wave"></div>
+              <button class="speech-mic-circle" id="btn-toggle-mic" aria-label="Mulai Merekam Suara">
+                <svg id="mic-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+                  <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                  <line x1="12" y1="19" x2="12" y2="23" />
+                  <line x1="8" y1="23" x2="16" y2="23" />
+                </svg>
+              </button>
+            </div>
+            <p class="speech-hint-text" id="speech-hint-text">Tekan tombol mikrofon untuk berbicara...</p>
+
+            <!-- Quick Example Speech Pills -->
+            <div class="quick-speech-presets">
+              <button class="speech-sample-chip" data-sample="Silakan bayar obat di kasir depan">💊 Bayar Obat</button>
+              <button class="speech-sample-chip" data-sample="Dokter tolong periksa kondisi darurat sakit">🩺 Dokter & Sakit</button>
+              <button class="speech-sample-chip" data-sample="Terima kasih banyak atas bantuannya">🙏 Terima Kasih</button>
+            </div>
+          </div>
+
+          <!-- Translation Output Card for Speech -->
+          <div class="translation-card">
+            <div class="card-header-row">
+              <span class="card-meta-title">SUARA TERDETEKSI</span>
+              <span class="confidence-pill" id="speech-status-pill">100%</span>
+            </div>
+            <div class="card-body-row">
+              <h2 class="speech-transcript-text" id="speech-transcript-text">"SILAKAN BICARA..."</h2>
+            </div>
+            <!-- Dynamic Visual Cards Grid -->
+            <div class="speech-visual-tags" id="speech-visual-tags">
+              <div class="visual-pill-item">
+                <span class="pill-emoji">💊</span>
+                <span class="pill-label">OBAT (FARMASI)</span>
+              </div>
+              <div class="visual-pill-item">
+                <span class="pill-emoji">💳</span>
+                <span class="pill-label">KASIR (PEMBAYARAN)</span>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <!-- BOTTOM NAVIGATION: SEGMENTED SWITCHER -->
+      <nav class="segmented-nav" aria-label="Navigasi Arah Terjemahan">
+        <button id="btn-mode-sign" class="segment-btn active" data-mode="mode1">
+          SIGN &rarr; SPEECH
+        </button>
+        <button id="btn-mode-speech" class="segment-btn" data-mode="mode2">
+          SPEECH &rarr; SIGN
+        </button>
+      </nav>
+
+      <!-- FOOTER -->
+      <footer class="phone-footer">
+        SIGN-TO-SPEECH &copy; 2026
+      </footer>
+
+      <!-- PRESENTATION CONTROL DRAWER (Fail-Safe Presenter Mode) -->
+      <aside id="demo-drawer" class="demo-drawer hidden">
+        <div class="drawer-header">
+          <div class="drawer-title">
+            <span class="drawer-badge">PRESENTER CONSOLE</span>
+            <h3>Demonstrasi Cepat (Hotkeys)</h3>
+          </div>
+          <button id="btn-close-drawer" class="drawer-close-btn">&times;</button>
+        </div>
+
+        <div class="drawer-content">
+          <div class="drawer-section">
+            <span class="section-label">Simulasi Gestur BISINDO (Arah 1):</span>
+            <div class="demo-buttons-row">
+              <button class="demo-btn" data-action="sim-word" data-word="Terima kasih" data-conf="96%"><kbd>1</kbd> Terima Kasih (96%)</button>
+              <button class="demo-btn" data-action="sim-word" data-word="Halo" data-conf="94%"><kbd>2</kbd> Halo (94%)</button>
+              <button class="demo-btn" data-action="sim-word" data-word="Tolong" data-conf="91%"><kbd>3</kbd> Tolong (91%)</button>
+              <button class="demo-btn" data-action="sim-word" data-word="Ya" data-conf="95%"><kbd>4</kbd> Ya (95%)</button>
+              <button class="demo-btn" data-action="sim-word" data-word="Tidak" data-conf="92%"><kbd>5</kbd> Tidak (92%)</button>
+              <button class="demo-btn warn-btn" data-action="sim-uncertain"><kbd>0</kbd> Ragu (&lt;70%)</button>
+            </div>
+          </div>
+
+          <div class="drawer-section">
+            <span class="section-label">Pintasan Keyboard:</span>
+            <div class="hotkeys-summary">
+              <span><kbd>1-5</kbd> Gestur</span>
+              <span><kbd>0</kbd> Fallback</span>
+              <span><kbd>M</kbd> Ganti Mode</span>
+              <span><kbd>D</kbd> Toggle Panel</span>
+              <span><kbd>Space</kbd> Ucapkan Suara</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

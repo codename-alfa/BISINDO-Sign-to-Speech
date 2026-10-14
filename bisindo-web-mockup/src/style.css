@@ -1,0 +1,741 @@
+/* ==========================================================================
+   BISINDO Sign-to-Speech - Simplified Mobile UI
+   Match 100% with the Minimalist Android Mockup Reference
+   Palette: Dark Navy (#06182c), Charcoal Slate (#283543), Lime Green (#76ff03)
+   ========================================================================== */
+
+:root {
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  
+  /* Color Palette - Precise match with user screenshot */
+  --bg-app: #06182c;
+  --bg-card: #283543;
+  --bg-card-hover: #314050;
+  
+  --lime-green: #76ff03;
+  --lime-green-glow: rgba(118, 255, 3, 0.4);
+  --box-green: #00ff44;
+
+  --segment-active-bg: #454e57;
+  --segment-active-text: #ffffff;
+  --segment-inactive-bg: #939ba5;
+  --segment-inactive-text: #384048;
+
+  --text-primary: #ffffff;
+  --text-muted: #94a3b8;
+  --text-footer: #223c57;
+
+  --radius-phone: 36px;
+  --radius-card: 20px;
+  --radius-inner: 16px;
+}
+
+/* Base Reset */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: #020b14;
+  color: var(--text-primary);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
+  overflow-x: hidden;
+}
+
+/* ==========================================================================
+   PHONE MOCKUP FRAME
+   ========================================================================== */
+.phone-frame {
+  width: 100%;
+  max-width: 380px;
+  height: 780px;
+  background-color: var(--bg-app);
+  border-radius: var(--radius-phone);
+  display: flex;
+  flex-direction: column;
+  padding: 14px 18px 16px 18px;
+  position: relative;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 0 2px #0c253d;
+  overflow: hidden;
+}
+
+@media (max-width: 420px) {
+  body {
+    padding: 0;
+    align-items: stretch;
+  }
+  .phone-frame {
+    max-width: 100%;
+    height: 100vh;
+    border-radius: 0;
+    box-shadow: none;
+    border: none;
+  }
+}
+
+/* Camera Punch Hole / Top Sensor */
+.phone-notch {
+  width: 100%;
+  height: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.camera-lens {
+  width: 13px;
+  height: 13px;
+  background: #000000;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lens-dot {
+  width: 5px;
+  height: 5px;
+  background: var(--lime-green);
+  border-radius: 50%;
+  box-shadow: 0 0 6px var(--lime-green);
+}
+
+/* Discreet Controls at Top Right */
+.top-bar-controls {
+  position: absolute;
+  top: 14px;
+  right: 18px;
+  display: flex;
+  gap: 8px;
+  z-index: 30;
+}
+
+.discreet-btn {
+  background: transparent;
+  border: none;
+  color: #2b4561;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.discreet-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.discreet-btn:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* ==========================================================================
+   VIEWPORT SECTIONS
+   ========================================================================== */
+.viewport-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.mode-view {
+  display: none;
+  flex-direction: column;
+  height: 100%;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.mode-view.active {
+  display: flex;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   MODE 1: CAMERA & SIGN PREVIEW
+   ========================================================================== */
+.camera-viewport-card {
+  width: 100%;
+  height: 480px;
+  background: #000000;
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+#camera-feed {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+  display: block;
+  background: #000000;
+}
+
+#camera-feed.unmirrored {
+  transform: scaleX(1);
+}
+
+/* Permission / Activation Overlay when Camera is Off or Pending */
+.camera-permission-prompt {
+  position: absolute;
+  inset: 0;
+  background: rgba(6, 24, 44, 0.94);
+  backdrop-filter: blur(8px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 24px;
+  text-align: center;
+  z-index: 10;
+  transition: opacity 0.2s ease;
+}
+
+.camera-permission-prompt.hidden {
+  display: none !important;
+}
+
+.prompt-icon {
+  font-size: 3rem;
+  background: rgba(255, 255, 255, 0.06);
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.camera-permission-prompt p {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  max-width: 230px;
+  line-height: 1.4;
+}
+
+.btn-activate-cam {
+  background: var(--lime-green);
+  color: #000000;
+  border: none;
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  font-weight: 800;
+  padding: 12px 24px;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px var(--lime-green-glow);
+  transition: all 0.2s ease;
+}
+
+.btn-activate-cam:hover {
+  transform: scale(1.05);
+}
+
+/* Green Bounding Box for Hand Landmark (Dynamic Real-Time Tracking) */
+.bounding-box-overlay {
+  position: absolute;
+  top: 36%;
+  left: 22%;
+  width: 44%;
+  height: 40%;
+  border: 2px solid var(--box-green);
+  border-radius: 4px;
+  box-shadow: 0 0 16px rgba(0, 255, 68, 0.45);
+  pointer-events: none;
+  z-index: 5;
+  transition: left 0.08s ease-out, top 0.08s ease-out, width 0.08s ease-out, height 0.08s ease-out, opacity 0.25s ease;
+  opacity: 0; /* Hidden until hand is detected */
+}
+
+.bounding-box-overlay.visible {
+  opacity: 1;
+}
+
+.box-tag {
+  display: none; /* Keep clean like screenshot */
+}
+
+/* ==========================================================================
+   TRANSLATION OUTPUT CARD (HASIL TRANSLASI)
+   ========================================================================== */
+.translation-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-card);
+  margin-top: 14px;
+  padding: 16px 20px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+  min-height: 122px; /* Stable height when empty before detection */
+}
+
+.translation-card:hover {
+  background: var(--bg-card-hover);
+}
+
+.card-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-meta-title {
+  font-family: var(--font-sans);
+  font-style: italic;
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.confidence-pill {
+  background: var(--lime-green);
+  color: #000000;
+  font-family: var(--font-sans);
+  font-weight: 800;
+  font-size: 0.82rem;
+  padding: 3px 14px;
+  border-radius: 999px;
+  letter-spacing: 0.02em;
+  box-shadow: 0 2px 8px var(--lime-green-glow);
+  transition: background 0.2s ease;
+}
+
+.confidence-pill.low {
+  background: #f59e0b;
+  color: #000000;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
+}
+
+.card-body-row {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.translated-word {
+  font-family: var(--font-sans);
+  font-size: 2.35rem;
+  font-weight: 900;
+  color: var(--text-primary);
+  text-align: center;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+/* Soundwave Equalizer on Speaking */
+.audio-wave-bars {
+  position: absolute;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  height: 20px;
+}
+
+.audio-wave-bars span {
+  width: 3px;
+  height: 100%;
+  background: var(--lime-green);
+  border-radius: 3px;
+  animation: wavePulse 0.8s ease-in-out infinite alternate;
+}
+
+.audio-wave-bars span:nth-child(1) { height: 40%; animation-delay: 0.1s; }
+.audio-wave-bars span:nth-child(2) { height: 80%; animation-delay: 0.3s; }
+.audio-wave-bars span:nth-child(3) { height: 100%; animation-delay: 0.5s; }
+.audio-wave-bars span:nth-child(4) { height: 60%; animation-delay: 0.2s; }
+.audio-wave-bars span:nth-child(5) { height: 30%; animation-delay: 0.4s; }
+
+@keyframes wavePulse {
+  0% { transform: scaleY(0.3); }
+  100% { transform: scaleY(1); }
+}
+
+/* Fallback Quick Suggestions */
+.fallback-suggestions {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fallback-label {
+  font-size: 0.72rem;
+  font-style: italic;
+  color: #fcd34d;
+}
+
+.fallback-chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.fallback-chip-btn {
+  background: #3e4a57;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.fallback-chip-btn:hover {
+  background: var(--lime-green);
+  color: #000000;
+}
+
+/* ==========================================================================
+   MODE 2: SPEECH TO SIGN VIEWPORT
+   ========================================================================== */
+.speech-viewport-card {
+  width: 100%;
+  height: 480px;
+  background: #0d1e30;
+  border-radius: var(--radius-card);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 20px;
+  gap: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.speech-mic-area {
+  position: relative;
+  width: 110px;
+  height: 110px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mic-wave-pulse {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 2px solid #3b82f6;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.speech-mic-area.recording .mic-wave-pulse {
+  animation: pulseMic 1.8s ease-out infinite;
+}
+
+@keyframes pulseMic {
+  0% { transform: scale(0.9); opacity: 0.8; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+.speech-mic-circle {
+  width: 86px;
+  height: 86px;
+  background: #1e3a5f;
+  border: 3px solid rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+  transition: all 0.2s ease;
+}
+
+.speech-mic-circle:hover {
+  transform: scale(1.05);
+  background: #254b7d;
+}
+
+.speech-mic-circle.active {
+  background: #ef4444;
+  border-color: #fca5a5;
+  box-shadow: 0 0 24px rgba(239, 68, 68, 0.5);
+}
+
+.speech-mic-circle svg {
+  width: 36px;
+  height: 36px;
+}
+
+.speech-hint-text {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-align: center;
+  max-width: 240px;
+  line-height: 1.4;
+}
+
+.quick-speech-presets {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.speech-sample-chip {
+  background: #192b3e;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #cbd5e1;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s ease;
+}
+
+.speech-sample-chip:hover {
+  background: #233b55;
+  color: #ffffff;
+}
+
+.speech-transcript-text {
+  font-size: 1.6rem;
+  font-weight: 800;
+  text-align: center;
+  line-height: 1.25;
+  color: #ffffff;
+}
+
+.speech-visual-tags {
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.visual-pill-item {
+  background: #1a2530;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 6px 12px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+/* ==========================================================================
+   BOTTOM SEGMENTED BAR: SIGN -> SPEECH vs SPEECH -> SIGN
+   ========================================================================== */
+.segmented-nav {
+  width: 100%;
+  margin-top: auto;
+  margin-bottom: 12px;
+  height: 48px;
+  border-radius: 12px;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.segment-btn {
+  border: none;
+  font-family: var(--font-sans);
+  font-style: italic;
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: var(--segment-inactive-bg);
+  color: var(--segment-inactive-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.segment-btn.active {
+  background: var(--segment-active-bg);
+  color: var(--segment-active-text);
+}
+
+/* ==========================================================================
+   FOOTER
+   ========================================================================== */
+.phone-footer {
+  text-align: center;
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: var(--text-footer);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
+
+/* ==========================================================================
+   PRESENTER DEMO DRAWER (Clean Overlay)
+   ========================================================================== */
+.demo-drawer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(14, 25, 38, 0.96);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 24px 24px 0 0;
+  padding: 18px 20px 24px 20px;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.7);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.demo-drawer.hidden {
+  transform: translateY(105%);
+}
+
+.drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.drawer-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.drawer-badge {
+  font-size: 0.65rem;
+  font-weight: 800;
+  background: #f59e0b;
+  color: #000000;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.drawer-title h3 {
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.drawer-close-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.3rem;
+  cursor: pointer;
+}
+
+.drawer-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.section-label {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.demo-buttons-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.demo-btn {
+  background: #233446;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.demo-btn:hover {
+  background: #2f455d;
+  border-color: var(--lime-green);
+}
+
+.demo-btn.warn-btn:hover {
+  border-color: #f59e0b;
+}
+
+.demo-btn kbd {
+  background: #000;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 0.68rem;
+  color: var(--lime-green);
+}
+
+.hotkeys-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.hotkeys-summary kbd {
+  background: #000;
+  padding: 1px 4px;
+  border-radius: 4px;
+  color: #fff;
+}
+
+/* Helpers */
+.hidden {
+  display: none !important;
+}
