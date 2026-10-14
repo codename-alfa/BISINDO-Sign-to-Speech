@@ -4,7 +4,7 @@
 > **Proyek**: *Real-Time BISINDO Sign Language Translator Based on Edge AI & Bi-Directional Speech*  
 > **Tim Pengembang**: Ahmad Malik Prasetyo (2406416270), Danish Al Fayyadh Sunarta (2406416951), Vanesa Kayla Zahra (2306161901)  
 
-Repositori prototipe interaktif ini dibangun secara terpisah untuk keperluan demonstrasi dan presentasi progres mata kuliah RPL. Prototipe ini mengimplementasikan seluruh spesifikasi desain pada `docs/one_week_mockup_plan.md` dan siap dideploy ke **Vercel**.
+Prototipe interaktif ini berada di dalam monorepo `BISINDO-Sign-to-Speech` (folder `bisindo-web-mockup/`) untuk keperluan demonstrasi dan presentasi progres mata kuliah RPL. Prototipe ini mensimulasikan alur UI aplikasi Android (Arah 1 & Arah 2) dan siap dideploy ke **Vercel**.
 
 ---
 
@@ -42,7 +42,8 @@ Repositori prototipe interaktif ini dibangun secara terpisah untuk keperluan dem
 # Masuk ke direktori web mockup
 cd bisindo-web-mockup
 
-# Jalankan development server
+# Install dependency (sekali saja) lalu jalankan development server
+npm install
 npm run dev
 ```
 
@@ -73,24 +74,15 @@ Buka URL lokal yang muncul di terminal (biasanya `http://localhost:5173`) di bro
 
 ---
 
-### Cara 2: Deploy Melalui Repositori GitHub Baru
+### Cara 2: Import dari Repositori GitHub (Monorepo)
 
-Jika Anda ingin menghubungkannya ke repositori GitHub terpisah:
+Mockup ini sudah berada di repositori `BISINDO-Sign-to-Speech`, jadi **tidak perlu membuat repositori baru**:
 
-1. Buat repositori baru di GitHub (misal: `bisindo-web-mockup`).
-2. Di dalam folder `bisindo-web-mockup`, inisialisasi Git:
-   ```bash
-   cd bisindo-web-mockup
-   git init
-   git add .
-   git commit -m "feat: initial release of bisindo web mockup prototype"
-   git branch -M main
-   git remote add origin https://github.com/<username-github-anda>/bisindo-web-mockup.git
-   git push -u origin main
-   ```
-3. Buka dashboard [Vercel](https://vercel.com/new).
-4. Klik **Import Project** dan pilih repositori `bisindo-web-mockup`.
-5. Vercel akan otomatis mengenali framework **Vite** dan pengaturan `vercel.json`. Klik **Deploy**!
+1. Buka dashboard [Vercel](https://vercel.com/new).
+2. Klik **Import Project** dan pilih repositori `BISINDO-Sign-to-Speech`.
+3. Pada **Root Directory**, pilih `bisindo-web-mockup`.
+4. Vercel akan otomatis mengenali framework **Vite** dan pengaturan `vercel.json`. Klik **Deploy**!
+5. Setiap merge ke branch `main` akan memicu deploy ulang otomatis.
 
 ---
 

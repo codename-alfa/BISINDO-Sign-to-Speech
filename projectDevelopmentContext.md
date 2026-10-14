@@ -19,22 +19,31 @@ Seluruh aktivitas koding, *environment setup*, pelatihan model, dan *build* APK 
 
 ```text
 projectRepo/
-├── projectDevelopmentContext.md   # [FILE INI] Dashboard konteks operasional kodingan
-├── DEVELOPMENT_PLAN.md             # ⚙️ Technical Code Implementation & Execution Plan
+├── README.md                       # Halaman utama GitHub: setup, branching, handoff model
+├── projectDevelopmentContext.md    # [FILE INI] Dashboard konteks operasional kodingan
+├── DEVELOPMENT_PLAN.md             # ⚙️ Kontrak interface & checklist teknis
+├── .gitignore
 │
-├── android_app/                    # 📱 Project Android Studio (Native Kotlin)
+├── android_app/                    # 📱 Project Android Studio (Native Kotlin) — dibuat Ahmad
 │   ├── app/
 │   │   ├── src/main/
 │   │   │   ├── java/com/signtospeech/
-│   │   │   ├── assets/             # Tempat menyimpan static_model.tflite & dynamic_model.tflite
+│   │   │   ├── assets/             # hand_landmarker.task, *.tflite, *_labels.txt
 │   │   │   └── res/
 │   │   └── build.gradle.kts
 │   └── build.gradle.kts
 │
-└── ml_pipeline/                    # 🧠 Project Python Machine Learning
-    ├── requirements.txt
-    ├── data/                       # Dataset static (CSV) & dynamic (.npy)
-    └── models/                     # Output model .h5 & .tflite
+├── ml_pipeline/                    # 🧠 Project Python Machine Learning (Python 3.12)
+│   ├── requirements.txt            # Versi ter-pin & terverifikasi
+│   ├── setup_check.py              # Verifikasi environment end-to-end
+│   ├── feature_utils.py            # Kontrak normalisasi (mirror FeatureExtractor.kt)
+│   ├── labels/                     # static_labels.txt (A-Z), dynamic_labels.txt (5 kata)
+│   ├── tests/                      # normalization_vectors.json (parity Python ↔ Kotlin)
+│   ├── assets/                     # hand_landmarker.task
+│   ├── data/                       # static/ (CSV, di-commit) · dynamic/ (.npy, via Google Drive)
+│   └── models/                     # *.keras & *.tflite final
+│
+└── bisindo-web-mockup/             # 🌐 Prototipe web interaktif (Vite) untuk presentasi
 ```
 
 ---
@@ -42,16 +51,22 @@ projectRepo/
 ## ⚙️ 3. Quick Start & Execution Commands
 
 ### A. Setup Python ML Pipeline (`ml_pipeline/`)
+> Wajib **Python 3.10–3.12** — TensorFlow & MediaPipe belum mendukung 3.13/3.14. MediaPipe memakai **Tasks API** (`HandLandmarker`), bukan legacy `mp.solutions`.
+
 ```bash
+# 0. (Sekali saja) install Python 3.12 via Python Install Manager
+py install 3.12
+
 # 1. Masuk ke folder ML
 cd ml_pipeline
 
 # 2. Buat & aktifkan virtual environment
-python -m venv venv
-venv\Scripts\activate       # Windows PowerShell / CMD
+py -3.12 -m venv .venv
+.venv\Scripts\activate      # Windows PowerShell / CMD
 
-# 3. Install dependensi ML
+# 3. Install dependensi ML & verifikasi environment
 pip install -r requirements.txt
+python setup_check.py        # harus: ALL CHECKS PASSED
 
 # 4. Jalankan script perekaman data dinamis via webcam
 python collect_dynamic_data.py
@@ -67,15 +82,39 @@ python convert_to_tflite.py
 ### B. Setup Android Native App (`android_app/`)
 1. Buka **Android Studio**.
 2. Pilih **Open an Existing Project** ➔ Arahkan ke folder `projectRepo/android_app`.
-3. Pastikan `static_model.tflite` dan `dynamic_model.tflite` sudah disalin ke `app/src/main/assets/`.
+3. Pastikan `hand_landmarker.task`, `static_model.tflite`, `dynamic_model.tflite`, dan `*_labels.txt` sudah disalin dari `ml_pipeline/` ke `app/src/main/assets/`.
 4. Hubungkan HP Android fisik (Samsung A30s / Xiaomi 13T) via USB Debugging.
 5. Tekan **Run App (`Shift + F10`)** di Android Studio.
 
 ---
 
-## 🔗 4. Referensi Spesifikasi Teknis Complete
-Untuk melihat spesifikasi arsitektur teoretis, diagram UML (Use Case, Sequence, Class Diagram), dan target SLA, rujuk berkas spesifikasi di root dokumentasi:
-- [01_uml_and_architecture.md](file:///d:/programming/python/RPL/docs/specs/01_uml_and_architecture.md)
-- [02_ml_pipeline_spec.md](file:///d:/programming/python/RPL/docs/specs/02_ml_pipeline_spec.md)
-- [03_android_app_spec.md](file:///d:/programming/python/RPL/docs/specs/03_android_app_spec.md)
-- [04_operational_timeline.md](file:///d:/programming/python/RPL/docs/specs/04_operational_timeline.md)
+### C. Web Mockup (`bisindo-web-mockup/`)
+```bash
+cd bisindo-web-mockup
+npm install
+npm run dev
+```
+
+---
+
+## 🌿 4. Alur Git: Branch per Anggota ➔ Pull Request
+
+| Anggota | Branch |
+|:---|:---|
+| Danish (ML) | `alfa` |
+| Ahmad (Android) | `malik` |
+| Vanesa (QA & Data) | `vanesa` |
+
+1. `git pull origin main` sebelum mulai kerja.
+2. Commit dengan format `type(scope): pesan` (mis. `feat(ml): train static MLP`).
+3. `git push origin <branch>` ➔ buka Pull Request ke `main` ➔ 1 anggota review ➔ merge.
+4. `main` diproteksi: tidak ada push langsung.
+
+---
+
+## 🔗 5. Referensi Spesifikasi Teknis Complete
+Spesifikasi arsitektur, diagram UML, dan target SLA ada di repositori dokumentasi [`RPL-sign-to-speech-context`](https://github.com/codename-alfa/RPL-sign-to-speech-context):
+- [01_uml_and_architecture.md](https://github.com/codename-alfa/RPL-sign-to-speech-context/blob/main/docs/specs/01_uml_and_architecture.md)
+- [02_ml_pipeline_spec.md](https://github.com/codename-alfa/RPL-sign-to-speech-context/blob/main/docs/specs/02_ml_pipeline_spec.md)
+- [03_android_app_spec.md](https://github.com/codename-alfa/RPL-sign-to-speech-context/blob/main/docs/specs/03_android_app_spec.md)
+- [04_operational_timeline.md](https://github.com/codename-alfa/RPL-sign-to-speech-context/blob/main/docs/specs/04_operational_timeline.md)
