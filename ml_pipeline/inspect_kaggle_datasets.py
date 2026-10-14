@@ -35,7 +35,23 @@ KAGGLE_DATASETS = {
         "total_files": 780,
         "format": ".jpg + .xml",
         "mediapipe_rate": "100.0%",
-        "status": "Sangat Cocok & Direkomendasikan",
+        "status": "Sangat Cocok & Direkomendasikan (Statis A-Z)",
+    },
+    "niputukarismadewi/talkee-bisindo-sign-language-dataset": {
+        "desc": "Sekuens 30-Frame Landmark MediaPipe (33 kelas: A-Z + 7 Kata)",
+        "path": Path(r"C:\Users\CodenameAlfa\.cache\kagglehub\datasets\niputukarismadewi\talkee-bisindo-sign-language-dataset\versions\2"),
+        "total_files": 99000,
+        "format": ".npy (shape 30, 126)",
+        "mediapipe_rate": "100.0% (Pre-extracted MediaPipe)",
+        "status": "Emas untuk Dinamis (Memuat 'Halo' + 7 Kata Percakapan)",
+    },
+    "meisyavira/abjad-bahasa-isyarat-indonesia-bisindo": {
+        "desc": "Citra Statis Alfabet A-Z Berkualitas Tinggi (25 sampel/kelas)",
+        "path": Path(r"C:\Users\CodenameAlfa\.cache\kagglehub\datasets\meisyavira\abjad-bahasa-isyarat-indonesia-bisindo\versions\1"),
+        "total_files": 650,
+        "format": ".jpg",
+        "mediapipe_rate": "100.0% (30/30 sampel uji)",
+        "status": "Sangat Cocok untuk Enrich Statis A-Z",
     },
 }
 
