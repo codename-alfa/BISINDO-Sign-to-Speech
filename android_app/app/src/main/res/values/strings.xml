@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">SignToSpeech</string>
+    <string name="camera_permission_required">Aplikasi membutuhkan izin kamera untuk mendeteksi bahasa isyarat BISINDO.</string>
+    <string name="grant_permission">Beri Izin</string>
+    <string name="status_searching">Mencari tangan...</string>
+    <string name="status_detected">%1$d tangan terdeteksi</string>
+    <string name="fps_format">FPS: %1$.1f</string>
+</resources>
