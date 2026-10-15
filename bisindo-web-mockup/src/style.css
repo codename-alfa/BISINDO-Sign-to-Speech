@@ -350,6 +350,24 @@ body {
   letter-spacing: -0.01em;
   line-height: 1.1;
   text-transform: uppercase;
+  transition: color 0.25s ease, font-size 0.2s ease;
+}
+
+/* "Tidak Terdeteksi." muted amber state */
+.translated-word.tidak-terdeteksi {
+  font-size: 1.45rem;
+  font-weight: 700;
+  font-style: italic;
+  color: #f59e0b;
+  text-transform: none;
+  letter-spacing: 0;
+  opacity: 0.85;
+  animation: fadeInSlide 0.3s ease;
+}
+
+@keyframes fadeInSlide {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 0.85; transform: translateY(0); }
 }
 
 /* Soundwave Equalizer on Speaking */

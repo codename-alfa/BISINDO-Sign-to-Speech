@@ -2,6 +2,7 @@ import './style.css';
 import { SpeechManager } from './modules/speechManager.js';
 import { KeywordMatcher } from './modules/keywordMatcher.js';
 import { MockPredictionEngine } from './modules/mockPredictionEngine.js';
+import { classifyGesture } from './modules/gestureClassifier.js';
 
 class BisindoApp {
   constructor() {
@@ -19,6 +20,8 @@ class BisindoApp {
     this.isTrackingRunning = false;
     this.lastDetectedGestureTime = 0;
     this.clearGestureTimeout = null;
+    this.tidakTerdeteksiTimeout = null; // debounce before showing "Tidak Terdeteksi"
+    this.lastClassification = null;    // last classification result (for stable display)
 
     // DOM Elements
     this.dom = {
@@ -206,22 +209,26 @@ class BisindoApp {
       this.dom.handBoundingBox.style.height = `${heightPercent}%`;
       this.dom.handBoundingBox.classList.add('visible');
 
-      // Simple heuristic gesture recognition:
-      // Raised open hand: fingertips extended above wrist and knuckle joints
-      const isRaisedOpenPalm = (
-        landmarks[8].y < landmarks[6].y &&
-        landmarks[12].y < landmarks[10].y &&
-        landmarks[16].y < landmarks[14].y &&
-        landmarks[20].y < landmarks[18].y
-      );
+      // --- Gesture Classification (GestureClassifier module) ---
+      const result = classifyGesture(landmarks, this.useFrontCamera);
+      this.lastClassification = result;
+
+      // Clear any pending "Tidak Terdeteksi" timer since hand IS visible
+      clearTimeout(this.tidakTerdeteksiTimeout);
 
       const now = Date.now();
-      if (isRaisedOpenPalm && now - this.lastDetectedGestureTime > 5000) {
-        this.triggerDetection('TERIMA KASIH', '96%');
+      const cooldown = result.isHighConfidence ? 4000 : 2500;
+
+      if (result.detected && now - this.lastDetectedGestureTime > cooldown) {
+        this.triggerDetection(result.gesture, result.confidencePct, result.isHighConfidence);
+      } else if (!result.detected && now - this.lastDetectedGestureTime > 3000) {
+        // Show "Tidak Terdeteksi" only after hand has been visible but unrecognized
+        this.showTidakTerdeteksi(result.confidencePct);
       }
     } else {
       // Hide bounding box when no hand is in view
       this.dom.handBoundingBox.classList.remove('visible');
+      this.lastClassification = null;
     }
   }
 
@@ -303,16 +310,42 @@ class BisindoApp {
   clearHUD() {
     this.dom.translatedWord.textContent = '';
     this.dom.translatedWord.classList.add('empty');
+    this.dom.translatedWord.classList.remove('tidak-terdeteksi');
     this.dom.confidencePill.textContent = '';
     this.dom.confidencePill.classList.add('hidden');
     this.dom.fallbackSuggestions.classList.add('hidden');
     this.dom.audioWaveBars.classList.add('hidden');
   }
 
-  triggerDetection(word, confidence = '96%', isConfident = true) {
+  /**
+   * Show "Tidak Terdeteksi" in the HUD when no gesture is recognized.
+   * Debounced so it won't flicker every frame.
+   */
+  showTidakTerdeteksi(confidencePct = '') {
+    // Only update if not already showing it
+    if (this.dom.translatedWord.classList.contains('tidak-terdeteksi')) return;
+    this.dom.translatedWord.textContent = 'Tidak Terdeteksi.';
+    this.dom.translatedWord.classList.add('tidak-terdeteksi');
+    this.dom.translatedWord.classList.remove('empty');
+    if (confidencePct) {
+      this.dom.confidencePill.textContent = confidencePct;
+      this.dom.confidencePill.className = 'confidence-pill low';
+      this.dom.confidencePill.classList.remove('hidden');
+    }
+    this.dom.fallbackSuggestions.classList.add('hidden');
+    this.dom.audioWaveBars.classList.add('hidden');
+    // Auto-clear after 3 seconds
+    clearTimeout(this.clearGestureTimeout);
+    this.clearGestureTimeout = setTimeout(() => this.clearHUD(), 3000);
+  }
+
+  triggerDetection(word, confidence = '92%', isConfident = true) {
     this.lastDetectedGestureTime = Date.now();
     this.updateHUD(word, confidence, isConfident);
-    this.speakWord(word);
+    // Don't speak "Tidak Terdeteksi"
+    if (word !== 'Tidak Terdeteksi') {
+      this.speakWord(word);
+    }
 
     // Auto-clear back to empty after 4.5 seconds if no new detection occurs
     clearTimeout(this.clearGestureTimeout);
@@ -321,9 +354,10 @@ class BisindoApp {
     }, 4500);
   }
 
-  updateHUD(word, confidence = '96%', isConfident = true) {
+  updateHUD(word, confidence = '92%', isConfident = true) {
     this.dom.translatedWord.textContent = word;
     this.dom.translatedWord.classList.remove('empty');
+    this.dom.translatedWord.classList.remove('tidak-terdeteksi');
     this.dom.confidencePill.textContent = confidence;
     this.dom.confidencePill.classList.remove('hidden');
 
@@ -332,7 +366,7 @@ class BisindoApp {
       this.dom.fallbackSuggestions.classList.add('hidden');
     } else {
       this.dom.confidencePill.className = 'confidence-pill low';
-      this.renderFallbackChips(['Tolong', 'Halo', 'Terima kasih']);
+      this.renderFallbackChips(['Halo', 'Terima Kasih', 'Cinta']);
       this.dom.fallbackSuggestions.classList.remove('hidden');
     }
   }
@@ -414,12 +448,15 @@ class BisindoApp {
         const action = btn.dataset.action;
         if (action === 'sim-word') {
           const word = btn.dataset.word;
-          const conf = btn.dataset.conf || '95%';
+          const conf = btn.dataset.conf || '85%';
           this.switchMode('mode1');
           this.triggerDetection(word.toUpperCase(), conf, true);
         } else if (action === 'sim-uncertain') {
           this.switchMode('mode1');
           this.triggerDetection('TIDAK YAKIN', '54%', false);
+        } else if (action === 'sim-tidak-terdeteksi') {
+          this.switchMode('mode1');
+          this.showTidakTerdeteksi('38%');
         }
       });
     });
@@ -547,11 +584,11 @@ class BisindoApp {
 
     // Word Shortcuts
     const shortcuts = {
-      '1': { word: 'TERIMA KASIH', conf: '96%' },
-      '2': { word: 'HALO', conf: '94%' },
-      '3': { word: 'TOLONG', conf: '91%' },
+      '1': { word: 'TERIMA KASIH', conf: '88%' },
+      '2': { word: 'HALO', conf: '91%' },
+      '3': { word: 'CINTA', conf: '85%' },
       '4': { word: 'YA', conf: '95%' },
-      '5': { word: 'TIDAK', conf: '92%' }
+      '5': { word: 'TIDAK', conf: '78%' }
     };
 
     if (shortcuts[key]) {
@@ -568,15 +605,22 @@ class BisindoApp {
       return;
     }
 
+    // Simulate "Tidak Terdeteksi" state
+    if (key === 't') {
+      this.switchMode('mode1');
+      this.showTidakTerdeteksi('31%');
+      return;
+    }
+
     // Spacebar trigger
     if (key === ' ' || e.code === 'Space') {
       e.preventDefault();
       if (this.currentMode === 'mode1') {
         const word = this.dom.translatedWord.textContent.trim();
-        if (word && word !== 'TIDAK YAKIN') {
+        if (word && word !== 'TIDAK YAKIN' && word !== 'Tidak Terdeteksi.') {
           this.speakWord(word);
         } else {
-          this.triggerDetection('TERIMA KASIH', '96%', true);
+          this.triggerDetection('HALO', '91%', true);
         }
       } else {
         this.handleMicToggle();
