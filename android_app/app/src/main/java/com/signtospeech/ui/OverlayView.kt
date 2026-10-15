@@ -2,7 +2,6 @@ package com.signtospeech.ui
 
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
@@ -27,31 +26,31 @@ class OverlayView @JvmOverloads constructor(
     private var imageWidth: Int = 1
     private var isFrontCamera: Boolean = false
 
+    private val density = context.resources.displayMetrics.density
+
     private val pointPaint = Paint().apply {
         color = ContextCompat.getColor(context, R.color.landmark_point)
-        strokeWidth = 8f
         style = Paint.Style.FILL
         isAntiAlias = true
     }
 
     private val wristPaint = Paint().apply {
         color = ContextCompat.getColor(context, R.color.landmark_wrist)
-        strokeWidth = 10f
         style = Paint.Style.FILL
         isAntiAlias = true
     }
 
     private val linePaint = Paint().apply {
         color = ContextCompat.getColor(context, R.color.landmark_connection)
-        strokeWidth = 4f
+        strokeWidth = 3f * density
         style = Paint.Style.STROKE
+        strokeCap = Paint.Cap.ROUND
+        strokeJoin = Paint.Join.ROUND
         isAntiAlias = true
     }
 
     fun clear() {
         results = null
-        pointPaint.reset()
-        linePaint.reset()
         invalidate()
     }
 
@@ -74,7 +73,7 @@ class OverlayView @JvmOverloads constructor(
         val currentResults = results ?: return
         if (currentResults.landmarks().isEmpty()) return
 
-        // Hitung faktor skala untuk mode fillCenter / fitCenter
+        // Hitung faktor skala untuk mode fillCenter
         val scaleFactor = max(width * 1f / imageWidth, height * 1f / imageHeight)
         val offsetX = (width - imageWidth * scaleFactor) / 2f
         val offsetY = (height - imageHeight * scaleFactor) / 2f
@@ -89,18 +88,13 @@ class OverlayView @JvmOverloads constructor(
                     val p1 = landmarkList[startIdx]
                     val p2 = landmarkList[endIdx]
 
-                    val startX = if (isFrontCamera) {
-                        (imageWidth - p1.x() * imageWidth) * scaleFactor + offsetX
-                    } else {
-                        p1.x() * imageWidth * scaleFactor + offsetX
-                    }
+                    val p1NormX = if (isFrontCamera) (1f - p1.x()) else p1.x()
+                    val p2NormX = if (isFrontCamera) (1f - p2.x()) else p2.x()
+
+                    val startX = p1NormX * imageWidth * scaleFactor + offsetX
                     val startY = p1.y() * imageHeight * scaleFactor + offsetY
 
-                    val endX = if (isFrontCamera) {
-                        (imageWidth - p2.x() * imageWidth) * scaleFactor + offsetX
-                    } else {
-                        p2.x() * imageWidth * scaleFactor + offsetX
-                    }
+                    val endX = p2NormX * imageWidth * scaleFactor + offsetX
                     val endY = p2.y() * imageHeight * scaleFactor + offsetY
 
                     canvas.drawLine(startX, startY, endX, endY, linePaint)
@@ -109,18 +103,15 @@ class OverlayView @JvmOverloads constructor(
 
             // 2. Gambar 21 titik sendi (Landmarks)
             for ((index, landmark) in landmarkList.withIndex()) {
-                val pointX = if (isFrontCamera) {
-                    (imageWidth - landmark.x() * imageWidth) * scaleFactor + offsetX
-                } else {
-                    landmark.x() * imageWidth * scaleFactor + offsetX
-                }
+                val normX = if (isFrontCamera) (1f - landmark.x()) else landmark.x()
+                val pointX = normX * imageWidth * scaleFactor + offsetX
                 val pointY = landmark.y() * imageHeight * scaleFactor + offsetY
 
-                // Wrist (index 0) ditonjolkan dengan warna berbeda sebagai titik acuan normalisasi
+                // Wrist (index 0) ditonjolkan dengan warna kuning terang sebagai titik acuan normalisasi
                 if (index == 0) {
-                    canvas.drawCircle(pointX, pointY, 12f, wristPaint)
+                    canvas.drawCircle(pointX, pointY, 9f * density, wristPaint)
                 } else {
-                    canvas.drawCircle(pointX, pointY, 8f, pointPaint)
+                    canvas.drawCircle(pointX, pointY, 6f * density, pointPaint)
                 }
             }
         }

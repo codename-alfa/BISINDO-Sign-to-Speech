@@ -86,10 +86,6 @@ class HandLandmarkerHelper(
 
             val matrix = Matrix().apply {
                 postRotate(imageProxy.imageInfo.rotationDegrees.toFloat())
-                if (isFrontCamera) {
-                    // Balik horizontal untuk preview kamera depan yang natural
-                    postScale(-1f, 1f, imageProxy.width.toFloat(), imageProxy.height.toFloat())
-                }
             }
 
             val rotatedBitmap = Bitmap.createBitmap(
@@ -101,6 +97,10 @@ class HandLandmarkerHelper(
                 matrix,
                 true
             )
+
+            if (rotatedBitmap != bitmapBuffer) {
+                bitmapBuffer.recycle()
+            }
 
             val mpImage = BitmapImageBuilder(rotatedBitmap).build()
             handLandmarker?.detectAsync(mpImage, frameTime)
