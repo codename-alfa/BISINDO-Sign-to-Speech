@@ -1,4 +1,4 @@
-﻿/**
+/**
  * GestureClassifier — Landmark-based hand gesture recognizer
  *
  * Supports three BISINDO gestures using MediaPipe 21-point hand landmarks:
@@ -25,9 +25,9 @@ function estimateOrientation(lm, isMirrored = true) {
   const pinkyX = lm[17].x;
   const thumbIsLeft = thumbX < pinkyX;
   if (isMirrored) {
-    return thumbIsLeft ? 'palm' : 'back';
-  } else {
     return thumbIsLeft ? 'back' : 'palm';
+  } else {
+    return thumbIsLeft ? 'palm' : 'back';
   }
 }
 
