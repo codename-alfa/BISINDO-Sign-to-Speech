@@ -1,0 +1,49 @@
+# =====================================================================
+# BISINDO Sign-to-Speech — Code Repository .gitignore
+# =====================================================================
+
+# ---------- Python ----------
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.ipynb_checkpoints/
+.pytest_cache/
+
+# ---------- ML data (dibagikan via Google Drive, bukan Git) ----------
+# Raw images (Kaggle) & rekaman mentah
+ml_pipeline/data/raw/
+# Sequence dynamic gesture (.npy) — besar, sinkron via Drive
+ml_pipeline/data/dynamic/**/*.npy
+# Checkpoint training sementara
+ml_pipeline/models/checkpoints/
+ml_pipeline/logs/
+*.h5
+# Yang TETAP di-commit: data/static/*.csv, models/*.keras, models/*.tflite,
+# assets/hand_landmarker.task, labels/*.txt, tests/*.json
+
+# ---------- Android ----------
+android_app/.gradle/
+android_app/**/build/
+android_app/local.properties
+android_app/.idea/
+android_app/captures/
+android_app/**/.cxx/
+android_app/.kotlin/
+*.apk
+*.aab
+*.keystore
+*.jks
+
+# ---------- Web mockup ----------
+# (node_modules & dist sudah di-handle bisindo-web-mockup/.gitignore)
+.vercel/
+
+# ---------- Secrets, editor & OS ----------
+.env
+.env.*
+.vscode/
+.DS_Store
+Thumbs.db
+desktop.ini
