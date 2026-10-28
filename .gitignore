@@ -14,8 +14,9 @@ env/
 # ---------- ML data (dibagikan via Google Drive, bukan Git) ----------
 # Raw images (Kaggle) & rekaman mentah
 ml_pipeline/data/raw/
-# Sequence dynamic gesture (.npy) — besar, sinkron via Drive
+# Sequence dynamic gesture (.npy & .npz raw) — besar, sinkron via Drive
 ml_pipeline/data/dynamic/**/*.npy
+ml_pipeline/data/dynamic_raw/**/*.npz
 # Checkpoint training sementara
 ml_pipeline/models/checkpoints/
 ml_pipeline/logs/

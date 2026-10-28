@@ -3,8 +3,14 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="dark_surface">#121212</color>
-    <color name="badge_bg">#99000000</color>
-    
+    <color name="badge_bg">#B30F172A</color>
+    <color name="panel_bg">#D90F172A</color>
+    <color name="chip_active_bg">#0284C7</color>
+    <color name="chip_inactive_bg">#334155</color>
+    <color name="chip_disabled_bg">#1E293B</color>
+    <color name="text_muted">#94A3B8</color>
+    <color name="confidence_low">#FF9100</color>
+
     <!-- BISINDO Landmark Colors -->
     <color name="landmark_point">#00E676</color>      <!-- Vibrant Neon Green -->
     <color name="landmark_point_thumb">#FF9100</color><!-- Vibrant Orange -->

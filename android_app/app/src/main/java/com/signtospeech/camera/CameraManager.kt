@@ -36,6 +36,12 @@ class CameraManager(
 
     fun isFrontCamera(): Boolean = lensFacing == CameraSelector.LENS_FACING_FRONT
 
+    fun runOnCameraThread(task: () -> Unit) {
+        if (!cameraExecutor.isShutdown) {
+            cameraExecutor.execute(task)
+        }
+    }
+
     fun startCamera(onSuccess: (() -> Unit)? = null, onError: ((Throwable) -> Unit)? = null) {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
 

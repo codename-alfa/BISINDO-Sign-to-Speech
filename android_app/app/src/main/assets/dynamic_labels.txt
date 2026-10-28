@@ -3,3 +3,4 @@ Terima kasih
 Tolong
 Ya
 Tidak
+_idle

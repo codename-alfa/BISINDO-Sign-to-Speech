@@ -1,0 +1,22 @@
+{
+  "schema_version": 2,
+  "window_ms": 1500,
+  "hop_ms": 200,
+  "sequence_length": 30,
+  "num_features": 66,
+  "max_gap_ms": 300,
+  "min_valid_frames": 5,
+  "labels": [
+    "Halo",
+    "Terima kasih",
+    "Tolong",
+    "Ya",
+    "Tidak",
+    "_idle"
+  ],
+  "val_accuracy": 1.0,
+  "val_loss": 0.2296,
+  "validation_mode": "leave_one_signer_out (held_out=vanesa)",
+  "is_bootstrap_synthetic": true,
+  "tflite_parity_max_diff": 2e-08
+}

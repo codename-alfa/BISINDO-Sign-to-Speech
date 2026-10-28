@@ -5,4 +5,13 @@
     <string name="status_searching">Mencari tangan...</string>
     <string name="status_detected">%1$d tangan terdeteksi</string>
     <string name="fps_format">FPS: %1$.1f</string>
+    <string name="mode_letter">Huruf (A–Z)</string>
+    <string name="mode_word">Kata</string>
+    <string name="delegate_cpu">CPU</string>
+    <string name="delegate_gpu">GPU</string>
+    <string name="waiting_gesture">Arahkan 1 tangan ke kamera...</string>
+    <string name="transcript_placeholder">Transkrip hasil terjemahan akan tampil di sini</string>
+    <string name="clear_transcript">Hapus</string>
+    <string name="tts_on">Suara ON</string>
+    <string name="tts_muted">Suara MUTE</string>
 </resources>
