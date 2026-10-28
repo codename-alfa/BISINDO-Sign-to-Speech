@@ -9,46 +9,118 @@ import androidx.camera.core.ImageProxy
 import com.google.mediapipe.framework.image.BitmapImageBuilder
 import com.google.mediapipe.framework.image.MPImage
 import com.google.mediapipe.tasks.core.BaseOptions
+import com.google.mediapipe.tasks.core.Delegate
 import com.google.mediapipe.tasks.vision.core.RunningMode
 import com.google.mediapipe.tasks.vision.handlandmarker.HandLandmarker
 import com.google.mediapipe.tasks.vision.handlandmarker.HandLandmarkerResult
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * Helper untuk mengelola siklus hidup MediaPipe HandLandmarker Tasks Vision
- * dalam mode LIVE_STREAM.
+ * dalam mode LIVE_STREAM (1 tangan, mendukung pergantian delegate CPU | GPU dengan DelegateGuard).
  */
 class HandLandmarkerHelper(
     var minHandDetectionConfidence: Float = DEFAULT_HAND_DETECTION_CONFIDENCE,
     var minHandTrackingConfidence: Float = DEFAULT_HAND_TRACKING_CONFIDENCE,
     var minHandPresenceConfidence: Float = DEFAULT_HAND_PRESENCE_CONFIDENCE,
     var maxNumHands: Int = DEFAULT_NUM_HANDS,
+    initialDelegate: DelegateMode = DelegateMode.CPU,
+    private val delegateGuard: DelegateGuard? = null,
     val context: Context,
     val handLandmarkerHelperListener: LandmarkerListener? = null
 ) {
 
     private var handLandmarker: HandLandmarker? = null
 
+    @Volatile
+    var activeDelegate: DelegateMode = initialDelegate
+        private set
+
+    private val isSwitching = AtomicBoolean(false)
+    private val gpuConfirmedThisRun = AtomicBoolean(false)
+
     init {
-        setupHandLandmarker()
+        setupHandLandmarker(initialDelegate)
     }
 
+    @Synchronized
     fun clearHandLandmarker() {
-        handLandmarker?.close()
-        handLandmarker = null
-    }
-
-    fun isClose(): Boolean {
-        return handLandmarker == null
-    }
-
-    fun setupHandLandmarker() {
-        val baseOptionsBuilder = BaseOptions.builder()
-            .setModelAssetPath(MP_HAND_LANDMARKER_TASK)
-
-        val baseOptions = baseOptionsBuilder.build()
-
         try {
-            val optionsBuilder = HandLandmarker.HandLandmarkerOptions.builder()
+            handLandmarker?.close()
+        } catch (e: Exception) {
+            Log.w(TAG, "Gagal menutup HandLandmarker: ${e.message}")
+        } finally {
+            handLandmarker = null
+        }
+    }
+
+    fun isClose(): Boolean = handLandmarker == null
+
+    /**
+     * Inisialisasi HandLandmarker dengan mode delegate yang diminta.
+     * Jika GPU gagal di level Kotlin/Java, otomatis fallback ke CPU.
+     */
+    @Synchronized
+    fun setupHandLandmarker(requestedMode: DelegateMode = activeDelegate) {
+        clearHandLandmarker()
+
+        val targetMode = if (requestedMode == DelegateMode.GPU && delegateGuard?.isGpuAvailable() == false) {
+            DelegateMode.CPU
+        } else {
+            requestedMode
+        }
+
+        if (targetMode == DelegateMode.GPU) {
+            gpuConfirmedThisRun.set(false)
+            delegateGuard?.markGpuAttempt()
+        }
+
+        val initialized = tryCreateLandmarker(targetMode)
+        if (initialized) {
+            activeDelegate = targetMode
+            handLandmarkerHelperListener?.onDelegateChanged(targetMode, null)
+            return
+        }
+
+        // Jika tadi mencoba GPU dan gagal secara graceful (exception Kotlin tertangkap), fallback ke CPU
+        if (targetMode == DelegateMode.GPU) {
+            delegateGuard?.markGpuFailedGracefully()
+            Log.w(TAG, "Inisialisasi Delegate.GPU gagal, melakukan fallback otomatis ke Delegate.CPU")
+            if (tryCreateLandmarker(DelegateMode.CPU)) {
+                activeDelegate = DelegateMode.CPU
+                handLandmarkerHelperListener?.onDelegateChanged(
+                    DelegateMode.CPU,
+                    "GPU tidak didukung perangkat ini, beralih ke CPU"
+                )
+            }
+        }
+    }
+
+    /**
+     * Dipanggil pada cameraExecutor thread untuk mengganti delegate CPU <-> GPU secara aman.
+     */
+    fun switchDelegate(newMode: DelegateMode) {
+        if (newMode == activeDelegate && handLandmarker != null) {
+            handLandmarkerHelperListener?.onDelegateChanged(activeDelegate, null)
+            return
+        }
+        if (!isSwitching.compareAndSet(false, true)) return
+        try {
+            setupHandLandmarker(newMode)
+        } finally {
+            isSwitching.set(false)
+        }
+    }
+
+    private fun tryCreateLandmarker(mode: DelegateMode): Boolean {
+        return try {
+            val mpDelegate = if (mode == DelegateMode.GPU) Delegate.GPU else Delegate.CPU
+            val baseOptions = BaseOptions.builder()
+                .setModelAssetPath(MP_HAND_LANDMARKER_TASK)
+                .setDelegate(mpDelegate)
+                .build()
+
+            val options = HandLandmarker.HandLandmarkerOptions.builder()
                 .setBaseOptions(baseOptions)
                 .setMinHandDetectionConfidence(minHandDetectionConfidence)
                 .setMinTrackingConfidence(minHandTrackingConfidence)
@@ -57,20 +129,19 @@ class HandLandmarkerHelper(
                 .setRunningMode(RunningMode.LIVE_STREAM)
                 .setResultListener(this::returnLivestreamResult)
                 .setErrorListener(this::returnLivestreamError)
+                .build()
 
-            val options = optionsBuilder.build()
             handLandmarker = HandLandmarker.createFromOptions(context, options)
-            Log.d(TAG, "MediaPipe HandLandmarker berhasil diinisialisasi")
-        } catch (e: IllegalStateException) {
-            handLandmarkerHelperListener?.onError(
-                "Gagal inisialisasi HandLandmarker: " + e.message
-            )
-            Log.e(TAG, "MediaPipe error", e)
-        } catch (e: RuntimeException) {
-            handLandmarkerHelperListener?.onError(
-                "Runtime error inisialisasi HandLandmarker: " + e.message
-            )
-            Log.e(TAG, "MediaPipe runtime error", e)
+            Log.d(TAG, "MediaPipe HandLandmarker aktif (delegate=$mode, maxNumHands=$maxNumHands)")
+            true
+        } catch (t: Throwable) {
+            Log.e(TAG, "Gagal inisialisasi HandLandmarker (delegate=$mode): ${t.message}", t)
+            if (mode == DelegateMode.CPU) {
+                handLandmarkerHelperListener?.onError(
+                    "Gagal inisialisasi HandLandmarker (${mode.name}): ${t.message}"
+                )
+            }
+            false
         }
     }
 
@@ -79,6 +150,11 @@ class HandLandmarkerHelper(
      * dan mengirimkan ke MediaPipe HandLandmarker via detectAsync.
      */
     fun detectLiveStream(imageProxy: ImageProxy, isFrontCamera: Boolean) {
+        if (isSwitching.get()) {
+            imageProxy.close()
+            return
+        }
+
         val frameTime = SystemClock.uptimeMillis()
 
         try {
@@ -107,7 +183,6 @@ class HandLandmarkerHelper(
         } catch (e: Exception) {
             Log.e(TAG, "Error saat memproses frame kamera untuk MediaPipe", e)
         } finally {
-            // Selalu tutup ImageProxy agar CameraX dapat mengirim frame berikutnya
             imageProxy.close()
         }
     }
@@ -116,15 +191,22 @@ class HandLandmarkerHelper(
         result: HandLandmarkerResult,
         input: MPImage
     ) {
+        if (activeDelegate == DelegateMode.GPU && gpuConfirmedThisRun.compareAndSet(false, true)) {
+            delegateGuard?.markGpuConfirmed()
+        }
+
         val finishTimeMs = SystemClock.uptimeMillis()
-        val inferenceTime = finishTimeMs - result.timestampMs()
+        val frameTs = result.timestampMs()
+        val inferenceTime = (finishTimeMs - frameTs).coerceAtLeast(0L)
 
         handLandmarkerHelperListener?.onResults(
             ResultBundle(
                 results = listOf(result),
                 inferenceTime = inferenceTime,
+                frameTimestampMs = frameTs,
                 inputImageHeight = input.height,
-                inputImageWidth = input.width
+                inputImageWidth = input.width,
+                activeDelegate = activeDelegate
             )
         )
     }
@@ -138,13 +220,16 @@ class HandLandmarkerHelper(
     data class ResultBundle(
         val results: List<HandLandmarkerResult>,
         val inferenceTime: Long,
+        val frameTimestampMs: Long,
         val inputImageHeight: Int,
-        val inputImageWidth: Int
+        val inputImageWidth: Int,
+        val activeDelegate: DelegateMode = DelegateMode.CPU
     )
 
     interface LandmarkerListener {
         fun onError(error: String)
         fun onResults(resultBundle: ResultBundle)
+        fun onDelegateChanged(active: DelegateMode, reason: String?) {}
     }
 
     companion object {
@@ -154,6 +239,6 @@ class HandLandmarkerHelper(
         const val DEFAULT_HAND_DETECTION_CONFIDENCE = 0.5f
         const val DEFAULT_HAND_TRACKING_CONFIDENCE = 0.5f
         const val DEFAULT_HAND_PRESENCE_CONFIDENCE = 0.5f
-        const val DEFAULT_NUM_HANDS = 2
+        const val DEFAULT_NUM_HANDS = 1
     }
 }

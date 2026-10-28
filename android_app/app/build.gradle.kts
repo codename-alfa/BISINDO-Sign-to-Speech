@@ -15,6 +15,13 @@ android {
         versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // Mencegah UnsatisfiedLinkError di AVD x86_64: TFLite punya x86_64 sedangkan
+        // MediaPipe tasks-vision 0.10.14 tidak. Dengan hanya memaketkan ARM, HP fisik
+        // berjalan native arm64-v8a dan AVD x86_64 (Google Play) otomatis memakai ndk_translation.
+        ndk {
+            abiFilters += listOf("arm64-v8a", "armeabi-v7a")
+        }
     }
 
     buildTypes {
@@ -43,6 +50,8 @@ android {
     androidResources {
         noCompress += listOf("tflite", "task")
     }
+
+    sourceSets["test"].resources.srcDir("../../ml_pipeline/tests")
 }
 
 dependencies {
@@ -70,6 +79,7 @@ dependencies {
 
     // Unit Testing
     testImplementation("junit:junit:4.13.2")
+    testImplementation("org.json:json:20231013")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 }
