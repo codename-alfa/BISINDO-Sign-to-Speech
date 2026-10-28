@@ -123,7 +123,8 @@ def run_webcam():
             landmarks = detection_result.hand_landmarks[0]
 
             try:
-                features = feature_utils.normalize_landmarks(landmarks)
+                model_space_pts = feature_utils.to_model_space(landmarks, w, h, mirror_x=False)
+                features = feature_utils.normalize_landmarks(model_space_pts)
                 # TFLite inference
                 infer_start = time.perf_counter()
                 input_data = np.expand_dims(features, axis=0)
