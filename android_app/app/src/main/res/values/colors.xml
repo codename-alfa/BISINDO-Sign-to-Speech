@@ -16,4 +16,15 @@
     <color name="landmark_point_thumb">#FF9100</color><!-- Vibrant Orange -->
     <color name="landmark_connection">#00B0FF</color> <!-- Vibrant Neon Blue -->
     <color name="landmark_wrist">#FFD600</color>      <!-- Vibrant Yellow -->
+
+    <!-- Arah 2 (Dengar -> Tuli) Colors -->
+    <color name="color_arah2_bg">#0B0F19</color>
+    <color name="color_mic_active">#EF4444</color>
+    <color name="color_mic_idle">#0284C7</color>
+    <color name="color_card_bg">#1E293B</color>
+    <color name="color_card_border">#334155</color>
+    <color name="color_highlight_default">#38BDF8</color>
+    <color name="color_audio_level">#10B981</color>
+    <color name="color_nav_active">#38BDF8</color>
+    <color name="color_nav_inactive">#64748B</color>
 </resources>

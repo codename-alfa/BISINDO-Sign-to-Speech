@@ -33,8 +33,26 @@ class CameraManager(
     private var cameraExecutor: ExecutorService = Executors.newSingleThreadExecutor()
 
     private var lensFacing: Int = CameraSelector.LENS_FACING_BACK
+    private var isCameraPaused: Boolean = false
 
     fun isFrontCamera(): Boolean = lensFacing == CameraSelector.LENS_FACING_FRONT
+    fun isPaused(): Boolean = isCameraPaused
+
+    fun pauseCamera() {
+        if (!isCameraPaused) {
+            isCameraPaused = true
+            cameraProvider?.unbindAll()
+            Log.d(TAG, "Camera dipause (unbindAll) untuk menghemat daya/resource")
+        }
+    }
+
+    fun resumeCamera() {
+        if (isCameraPaused) {
+            isCameraPaused = false
+            bindCameraUseCases()
+            Log.d(TAG, "Camera diresume (bindCameraUseCases)")
+        }
+    }
 
     fun runOnCameraThread(task: () -> Unit) {
         if (!cameraExecutor.isShutdown) {

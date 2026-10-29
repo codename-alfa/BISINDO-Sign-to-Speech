@@ -3,6 +3,7 @@ package com.signtospeech
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -19,20 +20,26 @@ import com.signtospeech.mediapipe.DelegateMode
 import com.signtospeech.mediapipe.HandLandmarkerHelper
 import com.signtospeech.mediapipe.SharedPreferencesDelegateStore
 import com.signtospeech.ml.RecognitionMode
+import com.signtospeech.pipeline.AppDirection
 import com.signtospeech.pipeline.TranslationPipeline
+import com.signtospeech.speech.KeywordMatcher
+import com.signtospeech.speech.SpeechToTextManager
 import com.signtospeech.speech.TTSManager
 import com.signtospeech.ui.PredictionDisplay
+import com.signtospeech.ui.TextCardDisplay
 import java.util.Locale
 
 /**
- * MainActivity sebagai orchestrator tipis untuk Pipeline Arah 1 (Sprint 2):
- * - Meminta izin CAMERA secara runtime.
- * - Menginisialisasi DelegateGuard (CPU default, GPU opsional dengan proteksi crash & lock emulator).
- * - Menghubungkan CameraManager -> HandLandmarkerHelper -> TranslationPipeline -> PredictionDisplay + TTSManager.
+ * MainActivity sebagai orchestrator utama untuk Sistem Komunikasi Dua Arah Penuh (Full Bi-Directional):
+ * - Arah 1 (Tuli -> Dengar): Kamera CameraX + HandLandmarker + TranslationPipeline (Huruf/Kata) + TTS.
+ * - Arah 2 (Dengar -> Tuli): Mikrofon + SpeechToTextManager (id-ID) + KeywordMatcher + TextCardDisplay.
+ * - Mode Switcher: Berpindah mulus via Bottom Navigation Bar tanpa konflik resource kamera/audio.
  */
 class MainActivity : AppCompatActivity(), HandLandmarkerHelper.LandmarkerListener {
 
     private lateinit var binding: ActivityMainBinding
+
+    // Arah 1 Components
     private lateinit var cameraManager: CameraManager
     private lateinit var handLandmarkerHelper: HandLandmarkerHelper
     private lateinit var translationPipeline: TranslationPipeline
@@ -40,19 +47,39 @@ class MainActivity : AppCompatActivity(), HandLandmarkerHelper.LandmarkerListene
     private lateinit var ttsManager: TTSManager
     private lateinit var delegateGuard: DelegateGuard
 
+    // Arah 2 Components
+    private lateinit var speechToTextManager: SpeechToTextManager
+    private lateinit var textCardDisplay: TextCardDisplay
+
+    private var currentDirection: AppDirection = AppDirection.SIGN_TO_SPEECH
+
     private var frameCount = 0
     private var lastFpsTimestamp = System.currentTimeMillis()
     private var currentFps = 0.0
     private var lastMediaPipeMs = 0L
     private var lastClassifierMs = 0f
 
-    private val requestPermissionLauncher = registerForActivityResult(
+    private val requestCameraPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
             setupCameraAndPipeline()
         } else {
             showPermissionDeniedUI()
+        }
+    }
+
+    private val requestAudioPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            speechToTextManager.toggleListening()
+        } else {
+            Toast.makeText(
+                this,
+                getString(R.string.audio_permission_required),
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 
@@ -95,11 +122,14 @@ class MainActivity : AppCompatActivity(), HandLandmarkerHelper.LandmarkerListene
             },
             onCommitted = { committedLabel, _ ->
                 runOnUiThread {
-                    ttsManager.speak(committedLabel)
+                    if (currentDirection == AppDirection.SIGN_TO_SPEECH) {
+                        ttsManager.speak(committedLabel)
+                    }
                 }
             }
         )
 
+        setupArah2Components()
         setupUiListeners()
 
         if (hasCameraPermission()) {
@@ -109,7 +139,94 @@ class MainActivity : AppCompatActivity(), HandLandmarkerHelper.LandmarkerListene
         }
     }
 
+    private fun setupArah2Components() {
+        textCardDisplay = TextCardDisplay(
+            context = this,
+            tvSpeechTranscript = binding.tvSpeechTranscript,
+            tvSpeechStatus = binding.tvSpeechStatus,
+            tvCardsHeader = binding.tvCardsHeader,
+            llVisualCards = binding.llVisualCards,
+            llQuickPresets = binding.llQuickPresets,
+            progressAudioLevel = binding.progressAudioLevel,
+            btnToggleMic = binding.btnToggleMic,
+            tvMicIcon = binding.tvMicIcon,
+            tvMicLabel = binding.tvMicLabel,
+            tvArah2ModeBadge = binding.tvArah2ModeBadge,
+            btnArah2Manual = binding.btnArah2Manual,
+            btnArah2Clear = binding.btnArah2Clear,
+            scrollArah2Content = binding.scrollArah2Content,
+            onPresetSelected = { presetText ->
+                val analysis = KeywordMatcher.match(presetText)
+                textCardDisplay.updateAnalysis(analysis)
+            },
+            onManualInputSubmitted = { inputText ->
+                val analysis = KeywordMatcher.match(inputText)
+                textCardDisplay.updateAnalysis(analysis)
+            },
+            onClearClicked = {
+                speechToTextManager.cancel()
+            },
+            onToggleMicClicked = {
+                handleMicToggleClick()
+            }
+        )
+
+        speechToTextManager = SpeechToTextManager(
+            context = this,
+            onPartialResult = { partialText ->
+                runOnUiThread {
+                    val analysis = KeywordMatcher.match(partialText)
+                    textCardDisplay.updateAnalysis(analysis)
+                }
+            },
+            onFinalResult = { finalText ->
+                runOnUiThread {
+                    val analysis = KeywordMatcher.match(finalText)
+                    textCardDisplay.updateAnalysis(analysis)
+                }
+            },
+            onRmsChanged = { rmsdB ->
+                runOnUiThread {
+                    textCardDisplay.updateAudioLevel(rmsdB)
+                }
+            },
+            onListeningStateChanged = { isListening ->
+                runOnUiThread {
+                    textCardDisplay.updateListeningState(isListening)
+                }
+            },
+            onError = { _, errorMessage ->
+                runOnUiThread {
+                    Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show()
+                }
+            },
+            onOfflineModeChanged = { isOffline ->
+                runOnUiThread {
+                    textCardDisplay.updateOfflineBadge(isOffline)
+                }
+            }
+        )
+    }
+
+    private fun handleMicToggleClick() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
+            speechToTextManager.toggleListening()
+        } else {
+            requestAudioPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+        }
+    }
+
     private fun setupUiListeners() {
+        // Navigation Switcher Tabs
+        binding.tabArah1.setOnClickListener {
+            switchDirection(AppDirection.SIGN_TO_SPEECH)
+        }
+
+        binding.tabArah2.setOnClickListener {
+            switchDirection(AppDirection.SPEECH_TO_TEXT)
+        }
+
+        // Arah 1 Controls
         binding.btnGrantPermission.setOnClickListener {
             requestCameraPermission()
         }
@@ -169,6 +286,71 @@ class MainActivity : AppCompatActivity(), HandLandmarkerHelper.LandmarkerListene
             )
             Toast.makeText(this, "Blokir GPU telah direset. Anda dapat mencoba GPU kembali.", Toast.LENGTH_SHORT).show()
             true
+        }
+    }
+
+    /**
+     * Berpindah mode komunikasi antara Arah 1 (Tuli -> Dengar) dan Arah 2 (Dengar -> Tuli).
+     * Memastikan isolasi resource (kamera di-pause dan TTS di-stop pada Arah 2).
+     */
+    private fun switchDirection(targetDirection: AppDirection) {
+        if (currentDirection == targetDirection) return
+        currentDirection = targetDirection
+
+        if (targetDirection == AppDirection.SPEECH_TO_TEXT) {
+            // 1. Masuk ke Arah 2: Dengar -> Tuli
+            if (::cameraManager.isInitialized) {
+                cameraManager.pauseCamera()
+            }
+            if (::ttsManager.isInitialized) {
+                ttsManager.stop()
+            }
+
+            // Sembunyikan Layer Arah 1
+            binding.previewView.visibility = View.GONE
+            binding.overlayView.visibility = View.GONE
+            binding.badgeContainer.visibility = View.GONE
+            binding.btnSwitchCamera.visibility = View.GONE
+            binding.predictionPanel.visibility = View.GONE
+
+            // Tampilkan Layer Arah 2
+            binding.arah2Container.visibility = View.VISIBLE
+
+            // Perbarui visual tab navigasi
+            binding.tvTabArah1Title.setTextColor(ContextCompat.getColor(this, R.color.color_nav_inactive))
+            binding.indicatorTabArah1.setBackgroundColor(Color.TRANSPARENT)
+            binding.tvTabArah2Title.setTextColor(ContextCompat.getColor(this, R.color.color_nav_active))
+            binding.indicatorTabArah2.setBackgroundColor(ContextCompat.getColor(this, R.color.color_nav_active))
+
+            Log.d(TAG, "Beralih ke Subsistem Arah 2 (Dengar -> Tuli)")
+        } else {
+            // 2. Kembali ke Arah 1: Tuli -> Dengar
+            if (::speechToTextManager.isInitialized && speechToTextManager.isListening) {
+                speechToTextManager.stopListening()
+            }
+
+            // Sembunyikan Layer Arah 2
+            binding.arah2Container.visibility = View.GONE
+
+            // Tampilkan Layer Arah 1
+            binding.previewView.visibility = View.VISIBLE
+            binding.overlayView.visibility = View.VISIBLE
+            binding.badgeContainer.visibility = View.VISIBLE
+            binding.btnSwitchCamera.visibility = View.VISIBLE
+            binding.predictionPanel.visibility = View.VISIBLE
+
+            // Resume kamera
+            if (::cameraManager.isInitialized) {
+                cameraManager.resumeCamera()
+            }
+
+            // Perbarui visual tab navigasi
+            binding.tvTabArah1Title.setTextColor(ContextCompat.getColor(this, R.color.color_nav_active))
+            binding.indicatorTabArah1.setBackgroundColor(ContextCompat.getColor(this, R.color.color_nav_active))
+            binding.tvTabArah2Title.setTextColor(ContextCompat.getColor(this, R.color.color_nav_inactive))
+            binding.indicatorTabArah2.setBackgroundColor(Color.TRANSPARENT)
+
+            Log.d(TAG, "Beralih ke Subsistem Arah 1 (Tuli -> Dengar)")
         }
     }
 
@@ -242,7 +424,7 @@ class MainActivity : AppCompatActivity(), HandLandmarkerHelper.LandmarkerListene
     }
 
     private fun requestCameraPermission() {
-        requestPermissionLauncher.launch(Manifest.permission.CAMERA)
+        requestCameraPermissionLauncher.launch(Manifest.permission.CAMERA)
     }
 
     private fun showPermissionDeniedUI() {
@@ -252,6 +434,7 @@ class MainActivity : AppCompatActivity(), HandLandmarkerHelper.LandmarkerListene
         binding.badgeContainer.visibility = View.GONE
         binding.btnSwitchCamera.visibility = View.GONE
         binding.predictionPanel.visibility = View.GONE
+        binding.arah2Container.visibility = View.GONE
     }
 
     private fun setupCameraAndPipeline() {
@@ -366,6 +549,13 @@ class MainActivity : AppCompatActivity(), HandLandmarkerHelper.LandmarkerListene
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+        if (::speechToTextManager.isInitialized && speechToTextManager.isListening) {
+            speechToTextManager.stopListening()
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         if (::cameraManager.isInitialized) {
@@ -379,6 +569,9 @@ class MainActivity : AppCompatActivity(), HandLandmarkerHelper.LandmarkerListene
         }
         if (::ttsManager.isInitialized) {
             ttsManager.shutdown()
+        }
+        if (::speechToTextManager.isInitialized) {
+            speechToTextManager.destroy()
         }
     }
 
