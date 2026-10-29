@@ -77,6 +77,14 @@ class TTSManager(
         tts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, "utt_${now}")
     }
 
+    fun stop() {
+        try {
+            tts?.stop()
+        } catch (e: Exception) {
+            Log.w(TAG, "Error saat menghentikan TTS: ${e.message}")
+        }
+    }
+
     fun toggleMute(): Boolean {
         isMuted = !isMuted
         if (isMuted) {

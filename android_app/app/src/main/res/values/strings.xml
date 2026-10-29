@@ -14,4 +14,23 @@
     <string name="clear_transcript">Hapus</string>
     <string name="tts_on">Suara ON</string>
     <string name="tts_muted">Suara MUTE</string>
+
+    <!-- Arah 2 Strings -->
+    <string name="direction_arah1">Isyarat ➔ Suara</string>
+    <string name="direction_arah2">Suara ➔ Teks</string>
+    <string name="arah2_title">Komunikasi Suara ➔ Teks</string>
+    <string name="arah2_instruction">Ketuk mikrofon lalu bicara dalam Bahasa Indonesia</string>
+    <string name="arah2_tap_to_start">Ketuk untuk Bicara</string>
+    <string name="arah2_tap_to_stop">Selesai Bicara</string>
+    <string name="arah2_listening">Mendengarkan ucapan lawan bicara...</string>
+    <string name="arah2_placeholder">Teks ucapan lawan bicara akan muncul di sini secara otomatis dalam ukuran besar...</string>
+    <string name="arah2_manual_input">Ketik</string>
+    <string name="arah2_clear">Hapus</string>
+    <string name="arah2_mode_offline">Mode: Offline</string>
+    <string name="arah2_mode_system">Mode: Sistem</string>
+    <string name="audio_permission_required">Aplikasi membutuhkan izin mikrofon untuk mentranskripsi suara menjadi teks.</string>
+    <string name="dialog_manual_title">Ketik Pesan Cepat</string>
+    <string name="dialog_manual_hint">Ketik kalimat untuk ditampilkan...</string>
+    <string name="btn_send">Tampilkan</string>
+    <string name="btn_cancel">Batal</string>
 </resources>
