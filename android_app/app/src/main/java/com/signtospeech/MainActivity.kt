@@ -188,14 +188,21 @@ class MainActivity : AppCompatActivity(), HandLandmarkerHelper.LandmarkerListene
             tvMicIcon = binding.tvMicIcon,
             tvMicLabel = binding.tvMicLabel,
             tvArah2ModeBadge = binding.tvArah2ModeBadge,
-            btnArah2Manual = binding.btnArah2Manual,
             btnArah2Clear = binding.btnArah2Clear,
             scrollArah2Content = binding.scrollArah2Content,
+            etArah2KeyboardInput = binding.etArah2KeyboardInput,
+            btnSubmitKeyboard = binding.btnSubmitKeyboard,
             onPresetSelected = { presetText ->
+                if (::speechToTextManager.isInitialized && speechToTextManager.isListening) {
+                    speechToTextManager.stopListening()
+                }
                 val analysis = KeywordMatcher.match(presetText)
                 textCardDisplay.updateAnalysis(analysis)
             },
             onManualInputSubmitted = { inputText ->
+                if (::speechToTextManager.isInitialized && speechToTextManager.isListening) {
+                    speechToTextManager.stopListening()
+                }
                 val analysis = KeywordMatcher.match(inputText)
                 textCardDisplay.updateAnalysis(analysis)
             },

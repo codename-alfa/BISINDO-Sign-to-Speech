@@ -130,6 +130,18 @@ class KeywordMatcherTest {
     }
 
     @Test
+    fun `test typed keyboard sentence with punctuation and mixed casing`() {
+        // Simulasi input kalimat yang diketik via soft keyboard
+        val typedInput = "Halo! Silakan tebus OBAT Anda di apotek lantai 2 ya..."
+        val analysis = KeywordMatcher.match(typedInput)
+
+        assertTrue(analysis.highlights.any { it.categoryId == "OBAT" })
+        val obatCard = analysis.matchedCards.find { it.categoryId == "OBAT" }
+        assertNotNull(obatCard)
+        assertEquals("💊", obatCard?.icon)
+    }
+
+    @Test
     fun `test quick presets are all valid`() {
         for (preset in KeywordMatcher.QUICK_PRESETS) {
             val analysis = KeywordMatcher.match(preset)

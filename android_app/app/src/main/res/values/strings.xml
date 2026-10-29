@@ -25,6 +25,8 @@
     <string name="arah2_listening">Mendengarkan ucapan lawan bicara...</string>
     <string name="arah2_placeholder">Teks ucapan lawan bicara akan muncul di sini secara otomatis dalam ukuran besar...</string>
     <string name="arah2_manual_input">Ketik</string>
+    <string name="arah2_input_hint">Ketik pesan untuk lawan bicara...</string>
+    <string name="arah2_btn_submit">Tampilkan</string>
     <string name="arah2_clear">Hapus</string>
     <string name="arah2_mode_offline">Mode: Offline</string>
     <string name="arah2_mode_system">Mode: Sistem</string>
