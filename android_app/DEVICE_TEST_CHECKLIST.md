@@ -6,7 +6,7 @@ Dokumen ini digunakan oleh **Vanesa** dan **Ahmad** untuk memverifikasi aplikasi
 
 ## ⚙️ 1. Cara Unduh, Install & Menjalankan Pengujian
 
-### A. Unduh Langsung di HP (Paling Cepat untuk Ahmad & Vanesa):
+### A. Unduh Langsung di HP / Tablet:
 1. Buka link rilis resmi: [GitHub Release v0.2.0-sprint2](https://github.com/codename-alfa/BISINDO-Sign-to-Speech/releases/tag/v0.2.0-sprint2).
 2. Langsung unduh paket instalasi: **[SignToSpeech-v0.2.0-sprint2.apk](https://github.com/codename-alfa/BISINDO-Sign-to-Speech/releases/download/v0.2.0-sprint2/SignToSpeech-v0.2.0-sprint2.apk)** (43.7 MB).
 3. Buka file hasil download di HP dan izinkan instalasi sumber tidak dikenal (*Install Unknown Apps*).
