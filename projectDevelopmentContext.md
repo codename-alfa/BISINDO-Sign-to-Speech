@@ -37,11 +37,12 @@ projectRepo/
 │   ├── requirements.txt            # Versi ter-pin & terverifikasi
 │   ├── setup_check.py              # Verifikasi environment end-to-end
 │   ├── feature_utils.py            # Kontrak normalisasi (mirror FeatureExtractor.kt)
-│   ├── labels/                     # static_labels.txt (A-Z), dynamic_labels.txt (5 kata)
-│   ├── tests/                      # normalization_vectors.json (parity Python ↔ Kotlin)
+│   ├── labels/                     # static_labels.txt (A-Z), dynamic_labels.txt (6 kelas termasuk _idle)
+│   ├── tests/                      # normalization/model_space/dynamic test vectors JSON (parity Python ↔ Kotlin)
 │   ├── assets/                     # hand_landmarker.task
-│   ├── data/                       # static/ (CSV, di-commit) · dynamic/ (.npy, via Google Drive)
-│   └── models/                     # *.keras & *.tflite final
+│   ├── data/                       # static/ (CSV) · dynamic_raw/ (.npz 874 take valid 3 signer)
+│   ├── models/                     # dynamic_model.tflite (149.6 KB, LOSO 88.03%) & static_model.tflite
+│   └── sync_android_assets.py      # Otomasi sinkronisasi model & label ke Android assets
 │
 └── bisindo-web-mockup/             # 🌐 Prototipe web interaktif (Vite) untuk presentasi
 ```
@@ -68,23 +69,24 @@ py -3.12 -m venv .venv
 pip install -r requirements.txt
 python setup_check.py        # harus: ALL CHECKS PASSED
 
-# 4. Jalankan script perekaman data dinamis via webcam
-python collect_dynamic_data.py
+# 4. Jalankan script perekaman data dinamis via webcam (opsional review per file)
+python collect_dynamic_data.py --signer danish
+python collect_dynamic_data.py --file data/dynamic_raw/Terima_kasih/danish_053.npz
 
-# 5. Latih model MLP & LSTM
+# 5. Latih model MLP (Statis) & LSTM 66D (Dinamis LOSO)
 python train_static_model.py
 python train_dynamic_model.py
 
-# 6. Konversi model ke .tflite
-python convert_to_tflite.py
+# 6. Sinkronisasi aset model & label ke Android app
+python sync_android_assets.py
 ```
 
 ### B. Setup Android Native App (`android_app/`)
 1. Buka **Android Studio**.
 2. Pilih **Open an Existing Project** ➔ Arahkan ke folder `projectRepo/android_app`.
-3. Pastikan `hand_landmarker.task`, `static_model.tflite`, `dynamic_model.tflite`, dan `*_labels.txt` sudah disalin dari `ml_pipeline/` ke `app/src/main/assets/`.
-4. Hubungkan HP Android fisik (Samsung A30s / Xiaomi 13T) via USB Debugging.
-5. Tekan **Run App (`Shift + F10`)** di Android Studio.
+3. Pastikan `hand_landmarker.task`, `static_model.tflite`, `dynamic_model.tflite`, `dynamic_model_meta.json`, dan `*_labels.txt` sudah tersinkronisasi di `app/src/main/assets/`.
+4. Hubungkan HP Android fisik (Samsung A30s / Xiaomi 15 / Redmi Pad 2) via USB Debugging.
+5. Tekan **Run App (`Shift + F10`)** di Android Studio atau jalankan `.\gradlew.bat installDebug`.
 
 ---
 

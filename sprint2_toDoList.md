@@ -29,8 +29,22 @@
   * Variasi alami ini sangat penting agar model AI tidak menghafal satu latar belakang saja, melainkan benar-benar belajar mengenali pola gerakan tangan murni (*generalized gesture tracking*).
 * **Setup untuk Teman Tim (Vanesa & Ahmad)**:
   1. Clone atau `git pull origin main` dari repository proyek.
-  2. Buka folder `projectRepo/ml_pipeline` di terminal laptop masing-masing.
-  3. Pastikan dependensi terpasang (`pip install -r requirements.txt`).
+  2. Buka folder `projectRepo/ml_pipeline` di terminal laptop masing-masing:
+     ```powershell
+     cd d:\programming\python\RPL\projectRepo\ml_pipeline
+     ```
+  3. **Wajib gunakan Python 3.12** (TensorFlow & MediaPipe belum mendukung Python 3.14). Buat & aktifkan virtual environment:
+     ```powershell
+     # Buat venv dengan Python 3.12
+     py -3.12 -m venv .venv
+
+     # Aktifkan venv di PowerShell
+     .\.venv\Scripts\Activate.ps1
+     ```
+  4. Pasang seluruh dependensi ter-pin:
+     ```powershell
+     pip install -r requirements.txt
+     ```
 
 #### 1.2 Mekanisme Tombol: Memulai & Menghentikan Rekaman
 * **Memulai Setiap Take (Tombol `r`)**:
@@ -49,16 +63,16 @@
   * Tekan **`q`** jika sudah selesai semua kelas (Quit).
 
 #### 1.3 Kuota Rekaman per Orang (6 Kelas):
-- [ ] **`Halo`** (50 take): Lambaian telapak tangan terbuka di samping kepala/bahu (~1.5 detik).
-- [ ] **`Terima_kasih`** (50 take): Ujung jari menyentuh dagu/bibir lalu bergerak maju-turun ke depan.
-- [ ] **`Tolong`** (50 take): Dua tangan / satu tangan mengatup di dada digerakkan naik-turun memohon.
-- [ ] **`Ya`** (50 take): Tangan mengepal mengangguk turun-naik tegas di depan bahu.
-- [ ] **`Tidak`** (50 take): Jari telunjuk atau telapak tangan digoyangkan ke kiri dan kanan.
-- [ ] **`_idle`** (40 take): Tangan diam rileks, menurunkan tangan, menggaruk pipi, atau gerakan transisi santai.
+- [x] **`Halo`** (50 take): Lambaian telapak tangan terbuka di samping kepala/bahu (~1.5 detik) — **Tuntas (150/150 total tim)**.
+- [x] **`Terima_kasih`** (50 take): Ujung jari menyentuh dagu/bibir lalu bergerak maju-turun ke depan — **Tuntas (150/150 total tim)**.
+- [x] **`Tolong`** (50 take): Dua tangan / satu tangan mengatup di dada digerakkan naik-turun memohon — **Tuntas (155/150 total tim)**.
+- [x] **`Ya`** (50 take): Tangan mengepal mengangguk turun-naik tegas di depan bahu — **Tuntas (153/150 total tim)**.
+- [x] **`Tidak`** (50 take): Jari telunjuk atau telapak tangan digoyangkan ke kiri dan kanan — **Tuntas (154/150 total tim)**.
+- [x] **`_idle`** (40 take): Tangan diam rileks, menurunkan tangan, menggaruk pipi, atau gerakan transisi santai — **Tuntas (112/120 total tim, 100% valid)**.
 
 #### 1.4 Aturan Variasi Wajib Saat Merekam:
-- [ ] **Pencahayaan**: 25 take di ruangan terang + 25 take di ruangan agak redup / cahaya samping.
-- [ ] **Jarak Kamera**: 25 take pada jarak dekat (~40–50 cm) + 25 take pada jarak sedang (~70–80 cm).
+- [x] **Pencahayaan**: 25 take di ruangan terang + 25 take di ruangan agak redup / cahaya samping.
+- [x] **Jarak Kamera**: 25 take pada jarak dekat (~40–50 cm) + 25 take pada jarak sedang (~70–80 cm).
 
 ---
 
@@ -122,21 +136,21 @@ Get-ChildItem data\dynamic_raw -Directory | ForEach-Object {
 > 🎯 **Target**: Menghasilkan model LSTM `dynamic_model.tflite` (30x66 fitur) berbasis data manusia nyata dengan akurasi LOSO $\ge 75\%$.  
 > ⏱️ **Estimasi Waktu**: ±10–15 menit.
 
-- [ ] Pastikan folder `data/dynamic_raw/` telah terisi minimal 30–50 take per kelas dari ke-3 signer.
-- [ ] Jalankan skrip pelatihan:
+- [x] Pastikan folder `data/dynamic_raw/` telah terisi minimal 30–50 take per kelas dari ke-3 signer (Terkumpul 874 take valid).
+- [x] Jalankan skrip pelatihan:
   ```powershell
   cd d:\programming\python\RPL\projectRepo\ml_pipeline
   .\.venv\Scripts\python.exe train_dynamic_model.py
   ```
-- [ ] Periksa luaran evaluasi:
-  - [ ] Pastikan mode validasi otomatis menggunakan **Leave-One-Signer-Out (LOSO)**.
-  - [ ] Periksa akurasi validasi akhir (Target: $\ge 75\%$, Minimum Lulus: $\ge 60\%$).
-  - [ ] Buka dan periksa grafik `models/training_curves_dynamic.png` dan `models/confusion_matrix_dynamic.png`.
-- [ ] Jalankan sinkronisasi model dan label ke proyek Android:
+- [x] Periksa luaran evaluasi:
+  - [x] Mode validasi otomatis menggunakan **Leave-One-Signer-Out (LOSO, held_out=vanesa)**.
+  - [x] Akurasi validasi akhir: **88.03%** (Macro F1-score: **86.04%** — melampaui target $\ge 75\%$).
+  - [x] Grafik tersimpan di `models/training_curves_dynamic.png` dan `models/confusion_matrix_dynamic.png`.
+- [x] Jalankan sinkronisasi model dan label ke proyek Android:
   ```powershell
   .\.venv\Scripts\python.exe sync_android_assets.py
   ```
-- [ ] Pastikan verifikasi otomatis di terminal menampilkan tanda `[OK]` untuk `dynamic_model.tflite: input=[1, 30, 66], output=[1, 6]`.
+- [x] Verifikasi otomatis di terminal menampilkan tanda `[OK]` untuk `dynamic_model.tflite: input=[1, 30, 66], output=[1, 6]` (149.6 KB, parity check max diff = 0.000000).
 
 ---
 
@@ -179,7 +193,7 @@ Get-ChildItem data\dynamic_raw -Directory | ForEach-Object {
   - **Kriteria Lulus**: Tidak boleh ada kata yang tertebak secara palsu (*false trigger $\le 1$ kali*).
 
 #### 3.4 Evaluasi Komparatif Delegate `CPU` vs `GPU`
-- [ ] Di HP fisik (**Xiaomi 13T** dan **Redmi Pad 2**):
+- [ ] Di HP fisik (**Xiaomi 15** dan **Redmi Pad 2**):
   - Catat FPS dan nilai `MP: ... ms` di bar status atas saat menggunakan `CPU`.
   - Ketuk tombol `GPU`: tunggu transisi singkat, lalu catat FPS dan `MP: ... ms` saat menggunakan `GPU`.
   - **Uji Keandalan**: Tekan bergantian `CPU ➔ GPU ➔ CPU` sebanyak 5 kali, pastikan aplikasi tidak *force close*.
@@ -191,9 +205,9 @@ Get-ChildItem data\dynamic_raw -Directory | ForEach-Object {
 
 ## 🎯 Kriteria Keberhasilan Sprint 2 (Definition of Done)
 
-- [ ] Seluruh 6 kelas dinamis (`Halo`, `Terima kasih`, `Tolong`, `Ya`, `Tidak`, `_idle`) memiliki minimal 30–50 rekaman nyata per kelas dari 3 orang.
-- [ ] Model `dynamic_model.tflite` dilatih dengan arsitektur 66 fitur dan lolos pengujian paritas Keras vs TFLite.
-- [ ] Unit test paritas Android JUnit lolos 100% (15/15 test passed).
-- [ ] Mode Huruf (A–Z) dan Mode Kata berfungsi *end-to-end* (Kamera ➔ Deteksi Landmark ➔ Klasifikasi TFLite ➔ Teks UI ➔ Suara TTS Bahasa Indonesia).
+- [x] Seluruh 6 kelas dinamis (`Halo`, `Terima kasih`, `Tolong`, `Ya`, `Tidak`, `_idle`) memiliki minimal 30–50 rekaman nyata per kelas dari 3 orang (Total 874 take valid).
+- [x] Model `dynamic_model.tflite` dilatih dengan arsitektur 66 fitur dan lolos pengujian paritas Keras vs TFLite (Max Diff = 0.000000, Akurasi LOSO = 88.03%).
+- [x] Unit test paritas Android JUnit lolos 100% (15/15 test passed).
+- [ ] Mode Huruf (A–Z) dan Mode Kata berfungsi *end-to-end* (Kamera ➔ Deteksi Landmark ➔ Klasifikasi TFLite ➔ Teks UI ➔ Suara TTS Bahasa Indonesia) saat diuji di HP fisik.
 - [ ] Matriks pada file `DEVICE_TEST_CHECKLIST.md` terisi lengkap sebagai bukti progres untuk laporan mingguan proyek RPL.
 

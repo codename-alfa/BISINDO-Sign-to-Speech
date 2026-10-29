@@ -1,6 +1,6 @@
 # 📱 Checklist Pengujian Perangkat & Evaluasi CPU vs GPU (Sprint 2 — Pipeline Arah 1)
 
-Dokumen ini digunakan oleh **Vanesa** dan **Ahmad** untuk memverifikasi aplikasi Android pada Emulator (AVD) dan perangkat keras fisik (**Redmi Pad 2**, **Samsung Galaxy A30s**, **Xiaomi 13T**).
+Dokumen ini digunakan oleh **Vanesa** dan **Ahmad** untuk memverifikasi aplikasi Android pada Emulator (AVD) dan perangkat keras fisik (**Redmi Pad 2**, **Samsung Galaxy A30s**, **Xiaomi 15**).
 
 ---
 
@@ -31,8 +31,8 @@ Uji selama **60 detik per delegate** dengan 1 tangan bergerak aktif di depan kam
 | **Xiaomi Redmi Pad 2** | **GPU** | ... | ... | ... | ... | ... | ... | ... | ... |
 | **Samsung Galaxy A30s** | **CPU** | ... | ... | ... | ... | — | ... | ... | ... |
 | **Samsung Galaxy A30s** | **GPU** | ... | ... | ... | ... | ... | ... | ... | ... |
-| **Xiaomi 13T (Live Demo)** | **CPU** | ... | ... | ... | ... | — | ... | ... | ... |
-| **Xiaomi 13T (Live Demo)** | **GPU** | ... | ... | ... | ... | ... | ... | ... | ... |
+| **Xiaomi 15 (Live Demo)** | **CPU** | ... | ... | ... | ... | — | ... | ... | ... |
+| **Xiaomi 15 (Live Demo)** | **GPU** | ... | ... | ... | ... | ... | ... | ... | ... |
 
 > **Aturan Keputusan Demo**: Gunakan `GPU` saat Live Demo **hanya jika** rata-rata FPS atau `MP ms` membaik **≥ 20%** tanpa adanya gejala *crash* atau *freeze*. Jika tidak, tetap gunakan `CPU`.
 
