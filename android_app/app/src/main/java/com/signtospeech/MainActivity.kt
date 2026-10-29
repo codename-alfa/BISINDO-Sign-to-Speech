@@ -2,10 +2,12 @@ package com.signtospeech
 
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.speech.RecognizerIntent
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -73,13 +75,47 @@ class MainActivity : AppCompatActivity(), HandLandmarkerHelper.LandmarkerListene
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
-            speechToTextManager.toggleListening()
+            handleMicToggleClick()
         } else {
             Toast.makeText(
                 this,
                 getString(R.string.audio_permission_required),
                 Toast.LENGTH_LONG
             ).show()
+        }
+    }
+
+    private val speechDialogLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK && result.data != null) {
+            val matches = result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+            val recognizedText = matches?.firstOrNull()?.trim()
+            if (!recognizedText.isNullOrEmpty()) {
+                val analysis = KeywordMatcher.match(recognizedText)
+                textCardDisplay.updateAnalysis(analysis)
+            }
+        }
+        textCardDisplay.updateListeningState(false)
+    }
+
+    private fun launchSystemSpeechDialog() {
+        try {
+            val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+                putExtra(RecognizerIntent.EXTRA_LANGUAGE, "id-ID")
+                putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, "id-ID")
+                putExtra(RecognizerIntent.EXTRA_PROMPT, getString(R.string.arah2_instruction))
+            }
+            speechDialogLauncher.launch(intent)
+        } catch (e: Exception) {
+            Log.e(TAG, "Gagal meluncurkan dialog suara sistem: ${e.message}", e)
+            Toast.makeText(
+                this,
+                "Layanan suara tidak tersedia pada perangkat. Silakan gunakan tombol Ketik Manual.",
+                Toast.LENGTH_LONG
+            ).show()
+            textCardDisplay.updateListeningState(false)
         }
     }
 
@@ -204,13 +240,27 @@ class MainActivity : AppCompatActivity(), HandLandmarkerHelper.LandmarkerListene
                 runOnUiThread {
                     textCardDisplay.updateOfflineBadge(isOffline)
                 }
+            },
+            onFallbackToIntentRequested = {
+                runOnUiThread {
+                    launchSystemSpeechDialog()
+                }
             }
         )
     }
 
     private fun handleMicToggleClick() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
-            speechToTextManager.toggleListening()
+            try {
+                if (speechToTextManager.isServiceAvailable) {
+                    speechToTextManager.toggleListening()
+                } else {
+                    launchSystemSpeechDialog()
+                }
+            } catch (t: Throwable) {
+                Log.e(TAG, "Pengecualian saat toggleListening, beralih ke dialog suara sistem", t)
+                launchSystemSpeechDialog()
+            }
         } else {
             requestAudioPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
         }
