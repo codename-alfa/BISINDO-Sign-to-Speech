@@ -121,11 +121,13 @@ Progres proyek dihitung menggunakan dua metrik: **(A) Progres Implementasi Kode 
 
 #### A. Subsistem Arah 2: Dengar ➔ Tuli (Ahmad & Vanesa)
 - [x] Buat `AppDirection.kt`: Enum arah komunikasi (`SIGN_TO_SPEECH` vs `SPEECH_TO_TEXT`)
-- [x] Buat `SpeechToTextManager.kt`: Wrapper Android `SpeechRecognizer` Bahasa Indonesia (`EXTRA_PREFER_OFFLINE=true` dengan *smart fallback* online & toggle mic)
+- [x] Buat `SpeechToTextManager.kt`: Wrapper Android `SpeechRecognizer` Bahasa Indonesia (`EXTRA_PREFER_OFFLINE=true` dengan *smart fallback* online, Xiaomi HyperOS shield, dan dialog suara sistem)
 - [x] Buat `KeywordMatcher.kt`: Ekstraksi kata kunci 9 kategori layanan publik (obat, dokter, darurat, kasir, transportasi, arah, pendaftaran, bantuan, sapaan)
 - [x] Buat `TextCardDisplay.kt`: Mode tampilan kartu visual kontras tinggi berukuran besar (26sp) untuk pengguna Tuli
-- [x] Integrasikan tombol mikrofon, chip kalimat cepat, dialog ketik manual, dan Bottom Navigation Bar pada `MainActivity.kt` & `activity_main.xml`
-- [x] Tambahkan 11 unit test baru (8 tes KeywordMatcher + 2 tes STT Helper) — **Total 26/26 Unit Test Lulus 100%**
+- [x] Tambahkan opsi pengetikan keyboard inline (*First-Class Inline Keyboard Input* + tombol *Tampilkan* + *IME Action Send*) tepat di atas kontrol mikrofon untuk fleksibilitas di lingkungan bising / hening
+- [x] Konfigurasi `android:windowSoftInputMode="adjustResize"` di `AndroidManifest.xml` agar transkrip visual tetap responsif saat keyboard virtual muncul
+- [x] Integrasikan tombol mikrofon, bar input keyboard, chip kalimat cepat, dan Bottom Navigation Bar pada `MainActivity.kt` & `activity_main.xml`
+- [x] Tambahkan unit test baru — **Total 27/27 Unit Test Lulus 100%**
 - [x] Rilis APK GitHub: [`SignToSpeech-v0.3.0-bidirectional.apk`](https://github.com/codename-alfa/BISINDO-Sign-to-Speech/releases/tag/v0.3.0-bidirectional)
 
 #### B. Pengujian Lintas Perangkat, UAT & Live Demo Readiness (Semua Anggota)

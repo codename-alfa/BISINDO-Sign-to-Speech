@@ -103,5 +103,5 @@ Pengujian interaksi dari lawan bicara Dengar ke pengguna Tuli:
 - [ ] **Visual Meter Audio**: Bar hijau berdenyut merespons volume suara saat berbicara.
 - [ ] **Smart Offline Fallback**: Pengenalan suara berjalan mulus (baik offline maupun fallback sistem online).
 - [ ] **Chip Kalimat Cepat**: Mengetuk chip langsung memuat teks dan kartu visual tanpa mikrofon.
-- [ ] **Dialog Ketik Manual**: Tombol "Ketik" memunculkan dialog masukan teks alternatif untuk ruangan bising.
+- [ ] **Ketik Keyboard Inline**: Mengetik kalimat pada kolom input bawah lalu menekan tombol "Tampilkan" atau Enter keyboard langsung menampilkan teks 26sp + kartu visual, menutup keyboard secara otomatis, dan menghentikan mikrofon jika sedang aktif.
 - [ ] **Isolasi Kamera & TTS**: Saat berpindah ke tab *"Suara ➔ Teks"*, kamera berhenti menganalisis frame dan TTS berhenti bersuara; saat kembali ke *"Isyarat ➔ Suara"*, kamera menyala kembali.

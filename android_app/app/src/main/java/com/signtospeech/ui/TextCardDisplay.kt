@@ -1,6 +1,5 @@
 package com.signtospeech.ui
 
-import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
@@ -10,7 +9,10 @@ import android.text.style.BackgroundColorSpan
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
 import android.view.Gravity
+import android.view.KeyEvent
 import android.view.View
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.ProgressBar
@@ -29,7 +31,7 @@ import com.signtospeech.speech.ServiceCard
  * - Memberi sorotan warna cerah (Spannable) pada kata kunci konteks layanan publik.
  * - Merender Kartu Visual (Visual Assistance Cards) kontekstual.
  * - Mengelola bar visualisasi audio level input mikrofon.
- * - Mengelola chip kalimat cepat (Quick Presets) dan dialog input teks manual.
+ * - Mengelola baris input keyboard inline dan chip kalimat cepat (Quick Presets).
  */
 class TextCardDisplay(
     private val context: Context,
@@ -43,9 +45,10 @@ class TextCardDisplay(
     private val tvMicIcon: TextView,
     private val tvMicLabel: TextView,
     private val tvArah2ModeBadge: TextView,
-    private val btnArah2Manual: TextView,
     private val btnArah2Clear: TextView,
     private val scrollArah2Content: ScrollView,
+    private val etArah2KeyboardInput: EditText,
+    private val btnSubmitKeyboard: View,
     private val onPresetSelected: (String) -> Unit,
     private val onManualInputSubmitted: (String) -> Unit,
     private val onClearClicked: () -> Unit,
@@ -67,8 +70,20 @@ class TextCardDisplay(
             onClearClicked()
         }
 
-        btnArah2Manual.setOnClickListener {
-            showManualInputDialog()
+        btnSubmitKeyboard.setOnClickListener {
+            submitKeyboardText()
+        }
+
+        etArah2KeyboardInput.setOnEditorActionListener { _, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_SEND ||
+                actionId == EditorInfo.IME_ACTION_DONE ||
+                (event != null && event.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)
+            ) {
+                submitKeyboardText()
+                true
+            } else {
+                false
+            }
         }
     }
 
@@ -307,29 +322,28 @@ class TextCardDisplay(
         llVisualCards.removeAllViews()
         tvCardsHeader.visibility = View.GONE
         progressAudioLevel.progress = 0
+        etArah2KeyboardInput.text?.clear()
     }
 
     /**
-     * Menampilkan dialog input manual jika mikrofon tidak dapat digunakan atau lingkungan bising.
+     * Mengirim teks yang diketik via keyboard inline ke pemroses kata kunci dan kartu visual.
      */
-    private fun showManualInputDialog() {
-        val input = EditText(context).apply {
-            hint = context.getString(R.string.dialog_manual_hint)
-            setPadding(dpToPx(16), dpToPx(16), dpToPx(16), dpToPx(16))
-            setTextColor(Color.BLACK)
+    private fun submitKeyboardText() {
+        val text = etArah2KeyboardInput.text.toString().trim()
+        if (text.isNotEmpty()) {
+            onManualInputSubmitted(text)
+            etArah2KeyboardInput.text?.clear()
+            hideSoftKeyboard(etArah2KeyboardInput)
         }
+    }
 
-        AlertDialog.Builder(context)
-            .setTitle(context.getString(R.string.dialog_manual_title))
-            .setView(input)
-            .setPositiveButton(context.getString(R.string.btn_send)) { _, _ ->
-                val text = input.text.toString().trim()
-                if (text.isNotEmpty()) {
-                    onManualInputSubmitted(text)
-                }
-            }
-            .setNegativeButton(context.getString(R.string.btn_cancel), null)
-            .show()
+    /**
+     * Menyembunyikan virtual soft keyboard setelah teks dikirimkan.
+     */
+    private fun hideSoftKeyboard(view: View) {
+        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+        imm?.hideSoftInputFromWindow(view.windowToken, 0)
+        view.clearFocus()
     }
 
     private fun dpToPx(dp: Int): Int {
