@@ -14,9 +14,9 @@
     "Tidak",
     "_idle"
   ],
-  "val_accuracy": 1.0,
-  "val_loss": 0.2296,
+  "val_accuracy": 0.8803,
+  "val_loss": 0.8442,
   "validation_mode": "leave_one_signer_out (held_out=vanesa)",
-  "is_bootstrap_synthetic": true,
-  "tflite_parity_max_diff": 2e-08
+  "is_bootstrap_synthetic": false,
+  "tflite_parity_max_diff": 6e-08
 }

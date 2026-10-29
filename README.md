@@ -59,7 +59,7 @@ python setup_check.py                    # harus: ALL CHECKS PASSED
 2. *New Project → Empty Views Activity* di folder `android_app/` — Kotlin, Gradle Kotlin DSL, package `com.signtospeech`, **minSdk 26**.
 3. Salin dari `ml_pipeline/`: `assets/hand_landmarker.task`, `models/*.tflite`, `labels/*.txt` → `android_app/app/src/main/assets/`.
 4. Unit test `FeatureExtractor` wajib lolos terhadap `ml_pipeline/tests/normalization_vectors.json`.
-5. Aktifkan USB debugging di Samsung A30s / Xiaomi 13T → **Run**.
+5. Aktifkan USB debugging di Samsung A30s / Xiaomi 15 / Redmi Pad 2 → **Run**.
 
 ### 🌐 Web Mockup
 ```powershell

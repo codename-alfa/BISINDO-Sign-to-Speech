@@ -17,8 +17,8 @@ Progres proyek dihitung menggunakan dua metrik: **(A) Progres Implementasi Kode 
 
 | Metrik Evaluasi | Persentase Saat Ini | Visualisasi | Keterangan |
 |:---|:---:|:---|:---|
-| **A. Progres Kode & Rekayasa Perangkat Lunak** | **78%** | `████████████████░░░░` | Seluruh kode ML Pipeline (Statis & Dinamis 66D) dan Android Pipeline Arah 1 (Kamera ➔ MediaPipe ➔ TFLite ➔ Stabilizer ➔ TTS + Toggle CPU/GPU) telah **100% selesai & lulus 15 unit test**. Hanya tersisa kode Arah 2 (STT + Keyword Card) & *UI polish*. |
-| **B. Progres Keseluruhan Proyek (End-to-End)** | **62%** | `████████████░░░░░░░░` | Mencakup bobot tugas manusia (*human tasks*) yang sedang berjalan: perekaman mandiri 870 sekuens `.npz` oleh 3 anggota tim, pengujian perangkat fisik Sprint 2–3, dan pembuatan video demo akhir. |
+| **A. Progres Kode & Rekayasa Perangkat Lunak** | **82%** | `████████████████░░░░` | Seluruh kode ML Pipeline (Statis & Dinamis 66D berbasis 3 signer nyata) dan Android Pipeline Arah 1 (Kamera ➔ MediaPipe ➔ TFLite ➔ Stabilizer ➔ TTS + Toggle CPU/GPU) telah **100% selesai & lulus 15 unit test**. Hanya tersisa kode Arah 2 (STT + Keyword Card) & *UI polish*. |
+| **B. Progres Keseluruhan Proyek (End-to-End)** | **76%** | `███████████████░░░░░` | Perekaman mandiri 874 sekuens `.npz` oleh 3 anggota tim, training model LOSO nyata (Val Acc 88.03%), dan sinkronisasi model ke Android telah **100% tuntas**. Tersisa pengujian perangkat fisik (`DEVICE_TEST_CHECKLIST.md`) dan implementasi Sprint 3 (Arah 2). |
 
 ---
 
@@ -28,21 +28,21 @@ Progres proyek dihitung menggunakan dua metrik: **(A) Progres Implementasi Kode 
 |:--:|:---|:---:|:---:|:---:|:---|
 | **1** | **Pre-Development, Arsitektur & Spesifikasi (SRS, UML, MoU)** | 10% | **100%** | **10.0%** | Proposal Bab 1–4, MoU Klien, Jira Board, Git Repo & Kontrak Paritas selesai. |
 | **2** | **ML Pipeline — Alfabet Statis (A–Z, MLP 63 Fitur)** | 15% | **100%** | **15.0%** | 3.890 sampel nyata Kaggle, Val Acc **92.42%**, `static_model.tflite` (73.5 KB), paritas 100%. |
-| **3** | **ML Pipeline — Kata Dinamis (LSTM 30×66 Fitur, LOSO)** | 20% | **65%** | **13.0%** | Skrip perekam `.npz` 2.0s, ekstraksi 66 fitur, skrip training LOSO & model *bootstrap* selesai (100% kode). Menunggu sesi rekam nyata 3 signer (35% sisa). |
+| **3** | **ML Pipeline — Kata Dinamis (LSTM 30×66 Fitur, LOSO)** | 20% | **100%** | **20.0%** | 874 take valid dari 3 signer, Val Acc **88.03%** (LOSO held-out Vanesa), `dynamic_model.tflite` (149.6 KB), paritas 100%. |
 | **4** | **Android Fondasi Vision (CameraX + MediaPipe + Overlay + DelegateGuard)** | 15% | **100%** | **15.0%** | Berjalan mulus di Redmi Pad 2 (15–20 FPS), dilengkapi toggle `CPU \| GPU` + `DelegateGuard` anti-crash & proteksi AVD. |
-| **5** | **Android Pipeline Arah 1 (Tuli ➔ Dengar: Classifier + Buffer + Stabilizer + TTS)** | 15% | **90%** | **13.5%** | Seluruh modul Kotlin & 15 JUnit test lulus 100%, APK debug terkompilasi. Tersisa verifikasi tabel lapangan (`DEVICE_TEST_CHECKLIST.md`). |
+| **5** | **Android Pipeline Arah 1 (Tuli ➔ Dengar: Classifier + Buffer + Stabilizer + TTS)** | 15% | **95%** | **14.25%** | Seluruh modul Kotlin & 15 JUnit test lulus 100%, APK debug terkompilasi & aset tersinkronisasi. Tersisa verifikasi tabel lapangan (`DEVICE_TEST_CHECKLIST.md`). |
 | **6** | **Android Pipeline Arah 2 (Dengar ➔ Tuli: STT + KeywordMatcher + Visual Card)** | 12% | **0% (Web Mockup 100%)** | **0.0%** | Dijadwalkan pada Sprint 3 (Minggu 4–5). Prototipe alur sudah tervalidasi di `bisindo-web-mockup/`. |
-| **7** | **Pengujian Lintas Perangkat, Optimasi & Persiapan Live Demo** | 13% | **20%** | **2.6%** | Pengujian fisik Sprint 1 di Redmi Pad 2 selesai. UAT, uji Xiaomi 13T/Samsung A30s & video demo di Sprint 3. |
-| — | **TOTAL PROGRES KESELURUHAN PROYEK** | **100%** | — | **~69.1% (Dibulatkan 62%–69%)** | **On-Track / Lebih Cepat dari Jadwal Asli** |
+| **7** | **Pengujian Lintas Perangkat, Optimasi & Persiapan Live Demo** | 13% | **25%** | **3.25%** | Pengujian fisik Sprint 1 di Redmi Pad 2 selesai. UAT, uji Xiaomi 15/Samsung A30s & video demo di Sprint 3. |
+| — | **TOTAL PROGRES KESELURUHAN PROYEK** | **100%** | — | **~76.5%** | **On-Track / Sangat Baik** |
 
 ---
 
 ### Ringkasan Status per Fase Sprint
 
 | Fase Sprint | Rentang Jadwal | Target Utama | Status Kode | Status Tugas Tim (Human Tasks) | Progres Sprint |
-|:---|:---|:---|:---:|:---:|:---:|
+| :--- | :--- | :--- | :---: | :---: | :---: |
 | **Sprint 1** | Minggu 1–2 (26 Okt – 6 Nov) | Environment, Dataset & Model Statis A–Z, CameraX + MediaPipe + OverlayView di HP fisik | ✅ **100%** | ✅ **100%** (Teruji di Redmi Pad 2) | **100%** |
-| **Sprint 2** | Minggu 3–4 (9 Nov – 20 Nov) | Kontrak 66D Dinamis, Perekam `.npz`, Training LSTM (LOSO), Full Pipeline Arah 1 + TTS + Toggle CPU/GPU | ✅ **100%** | 🔄 **25%** (Menunggu sesi rekam 3 signer & isi checklist device) | **75%** |
+| **Sprint 2** | Minggu 3–4 (9 Nov – 20 Nov) | Kontrak 66D Dinamis, Perekam `.npz`, Training LSTM (LOSO 88.03%), Full Pipeline Arah 1 + TTS + Toggle CPU/GPU | ✅ **100%** | 🔄 **90%** (Dataset 874 take tuntas, tersisa pengujian fisik di Xiaomi 15 & Redmi Pad 2) | **95%** |
 | **Sprint 3** | Minggu 5–6 (23 Nov – 7 Des) | Pipeline Arah 2 (`SpeechToTextManager`, `KeywordMatcher`, `TextCardDisplay`), Cross-Device Testing, UI Polish & Live Demo | ⏳ **0%** | ⏳ **0%** | **0%** |
 
 ---
@@ -104,14 +104,14 @@ Progres proyek dihitung menggunakan dua metrik: **(A) Progres Implementasi Kode 
 - [x] Verifikasi 15 Unit Test JVM (`FeatureExtractorTest`, `ModelSpaceTest`, `DynamicFeatureBuilderTest`, `GestureBufferTest`, `PredictionStabilizerTest`, `DelegateGuardTest`) — **100% Lulus (15/15)**
 
 #### C. Tugas Lapangan Tim yang Sedang Berjalan (Danish, Vanesa, Ahmad)
-- [ ] **Sesi Rekam Mandiri** sesuai [`ml_pipeline/RECORDING_GUIDE.md`](ml_pipeline/RECORDING_GUIDE.md):
-  - [ ] Danish: Rekam 50 take × 5 kata + 40 take `_idle` (290 file `.npz`)
-  - [ ] Vanesa: Rekam 50 take × 5 kata + 40 take `_idle` (290 file `.npz`)
-  - [ ] Ahmad: Rekam 50 take × 5 kata + 40 take `_idle` (290 file `.npz`)
-- [ ] **Penggabungan & Retraining Data Nyata** (Danish):
-  - [ ] Gabungkan 870 file `.npz` ke `ml_pipeline/data/dynamic_raw/`
-  - [ ] Jalankan `python train_dynamic_model.py` (target akurasi LOSO $\ge 75\%$)
-  - [ ] Jalankan `python sync_android_assets.py` & rebuild APK
+- [x] **Sesi Rekam Mandiri** sesuai [`ml_pipeline/RECORDING_GUIDE.md`](ml_pipeline/RECORDING_GUIDE.md):
+  - [x] Danish: Rekam 50 take × 5 kata + 45 take `_idle` (309 file `.npz` valid)
+  - [x] Vanesa: Rekam 50 take × 5 kata + 34 take `_idle` (284 file `.npz` valid)
+  - [x] Ahmad: Rekam 50 take × 5 kata + 33 take `_idle` (281 file `.npz` valid)
+- [x] **Penggabungan & Retraining Data Nyata** (Danish):
+  - [x] Gabungkan 874 file `.npz` bersih ke `ml_pipeline/data/dynamic_raw/`
+  - [x] Jalankan `python train_dynamic_model.py` — **Akurasi LOSO: 88.03%** (Macro F1: **86.04%**, melampaui target $\ge 75\%$)
+  - [x] Jalankan `python sync_android_assets.py` & verifikasi paritas TFLite (149.6 KB, max diff 0.000000)
 - [ ] **Pengujian Perangkat Fisik Sprint 2** (Ahmad & Vanesa):
   - [ ] Isi tabel perbandingan `CPU` vs `GPU` dan akurasi manual di [`android_app/DEVICE_TEST_CHECKLIST.md`](android_app/DEVICE_TEST_CHECKLIST.md)
 
@@ -126,7 +126,7 @@ Progres proyek dihitung menggunakan dua metrik: **(A) Progres Implementasi Kode 
 - [ ] Integrasikan tombol mikrofon / mode Arah 2 pada `MainActivity.kt`
 
 #### B. Pengujian Lintas Perangkat, UAT & Live Demo Readiness (Semua Anggota)
-- [ ] Pengujian stabilitas 5 menit kontinu tanpa *crash* pada **Xiaomi 13T**, **Redmi Pad 2**, dan **Samsung Galaxy A30s**
+- [ ] Pengujian stabilitas 5 menit kontinu tanpa *crash* pada **Xiaomi 15**, **Redmi Pad 2**, dan **Samsung Galaxy A30s**
 - [ ] Pelaksanaan *User Acceptance Testing (UAT)* & pengisian kuesioner *System Usability Scale (SUS)* sesuai MoU
 - [ ] Penyempurnaan akhir UI (*app icon*, *splash screen*, *haptic feedback*)
 - [ ] Perekaman video demonstrasi (30–60 detik) & finalisasi laporan akhir/slide presentasi

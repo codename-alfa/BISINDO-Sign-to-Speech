@@ -47,7 +47,7 @@ cd d:\programming\python\RPL\projectRepo\ml_pipeline
 
 ## 📏 3. Aturan Variasi Wajib (Agar Model Tahan Uji di Live Demo)
 
-Agar model LSTM lulus validasi **Leave-One-Signer-Out (LOSO)** dan akurat saat diuji di Xiaomi 13T / Redmi Pad 2, bagi 50 take per kata ke dalam variasi berikut:
+Agar model LSTM lulus validasi **Leave-One-Signer-Out (LOSO)** dan akurat saat diuji di Xiaomi 15 / Redmi Pad 2, bagi 50 take per kata ke dalam variasi berikut:
 
 1. **Kondisi Pencahayaan (25 take vs 25 take)**:
    * **25 take Pertama**: Ruangan terang merata (lampu utama menyala / dekat jendela).

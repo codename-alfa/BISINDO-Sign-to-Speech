@@ -129,40 +129,73 @@ def compute_max_missing_gap_ms(timestamps_ms: list[float], valid_flags: list[boo
     return float(max(gaps))
 
 
-def review_recordings() -> None:
-    """Putar ulang maksimal 3 rekaman acak per kelas untuk cek kualitas."""
+def review_recordings(specific_file: Path | None = None) -> None:
+    """Putar ulang rekaman secara visual untuk cek kualitas tracking/gerakan.
+    
+    Jika specific_file diberikan, putar file tersebut berulang kali (looping)
+    hingga pengguna menekan 'q' atau ESC. Tekan spasi untuk jeda/lanjut.
+    """
     classes = load_classes()
     print("=" * 60)
     print("🔍 MODE REVIEW REKAMAN DYNAMIC_RAW (.npz)")
-    print("   Tekan spasi / tombol apa saja untuk lanjut take berikutnya, 'q' untuk keluar.")
+    print("   Kontrol: 'q' / ESC = keluar, Spasi = jeda / lanjut")
     print("=" * 60)
 
-    for cls in classes:
-        takes = list_existing_takes(cls)
-        print(f"Kelas '{cls}': {len(takes)} file .npz ditemukan.")
-        if not takes:
-            continue
-        sampled = random.sample(takes, k=min(3, len(takes)))
-        for npz_path in sampled:
-            data = np.load(npz_path, allow_pickle=True)
-            ts = data["timestamps_ms"]
-            lms = data["landmarks"]  # (N, 21, 3) in model space
-            w = int(data.get("width", CAMERA_WIDTH))
-            h = int(data.get("height", CAMERA_HEIGHT))
-            aspect = w / h if h > 0 else 1.0
+    if specific_file is not None:
+        target_files = [specific_file]
+        loop_single = True
+    else:
+        target_files = []
+        for cls in classes:
+            takes = list_existing_takes(cls)
+            if takes:
+                target_files.extend(random.sample(takes, k=min(3, len(takes))))
+        loop_single = False
 
+    if not target_files:
+        print("⚠️ Tidak ada file rekaman untuk di-review.")
+        return
+
+    for npz_path in target_files:
+        if not npz_path.exists():
+            print(f"❌ File tidak ditemukan: {npz_path}")
+            continue
+
+        data = np.load(npz_path, allow_pickle=True)
+        ts = data["timestamps_ms"]
+        lms = data["landmarks"]  # (N, 21, 3) in model space
+        w = int(data.get("width", CAMERA_WIDTH))
+        h = int(data.get("height", CAMERA_HEIGHT))
+        lbl = str(data.get("label", npz_path.parent.name))
+        signer = str(data.get("signer", npz_path.stem.split("_")[0]))
+        aspect = w / h if h > 0 else 1.0
+
+        print(f"\n▶️ Memutar: {npz_path.name} (Label: '{lbl}', Signer: '{signer}', {len(ts)} frame)")
+
+        paused = False
+        while True:
             for idx, (t_ms, pts) in enumerate(zip(ts, lms)):
                 canvas = np.zeros((h, w, 3), dtype=np.uint8)
-                cv2.rectangle(canvas, (0, 0), (w, 70), (25, 25, 25), -1)
+                cv2.rectangle(canvas, (0, 0), (w, 75), (30, 30, 30), -1)
                 cv2.putText(
                     canvas,
-                    f"REVIEW: {cls} | {npz_path.name} ({idx + 1}/{len(ts)} @ {t_ms:.0f} ms)",
+                    f"REVIEW: {lbl} [{signer}] | {npz_path.name}",
                     (15, 30),
                     cv2.FONT_HERSHEY_SIMPLEX,
-                    0.55,
+                    0.6,
                     (0, 255, 255),
                     2,
                 )
+                cv2.putText(
+                    canvas,
+                    f"Frame {idx + 1}/{len(ts)} ({t_ms:.0f} ms) | Spasi: Pause, 'q': Keluar",
+                    (15, 60),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.48,
+                    (200, 200, 200),
+                    1,
+                )
+
                 if not np.isnan(pts).any():
                     coords = [(int((pt[0] / aspect) * w), int(pt[1] * h)) for pt in pts]
                     for p1, p2 in HAND_CONNECTIONS:
@@ -170,14 +203,37 @@ def review_recordings() -> None:
                     for cx, cy in coords:
                         cv2.circle(canvas, (cx, cy), 4, (255, 255, 255), -1, cv2.LINE_AA)
                 else:
-                    cv2.putText(canvas, "TANGAN TIDAK TERDETEKSI (NaN)", (15, h // 2),
-                                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+                    cv2.putText(
+                        canvas,
+                        "TANGAN TIDAK TERDETEKSI (NaN)",
+                        (15, h // 2),
+                        cv2.FONT_HERSHEY_SIMPLEX,
+                        0.7,
+                        (0, 0, 255),
+                        2,
+                    )
 
                 cv2.imshow("BISINDO Dynamic Review", canvas)
-                key = cv2.waitKey(40) & 0xFF
-                if key == ord("q"):
+
+                # Frame timing approx 40-50ms (or responsive pause)
+                key = cv2.waitKey(45) & 0xFF
+                if key in (ord("q"), 27):
                     cv2.destroyAllWindows()
+                    print("✅ Selesai me-review rekaman.")
                     return
+                elif key == 32:  # Spasi (pause)
+                    paused = True
+                    while paused:
+                        k2 = cv2.waitKey(100) & 0xFF
+                        if k2 in (ord("q"), 27):
+                            cv2.destroyAllWindows()
+                            return
+                        elif k2 == 32:
+                            paused = False
+
+            if not loop_single:
+                break
+
     cv2.destroyAllWindows()
     print("✅ Selesai me-review rekaman.")
 
@@ -403,12 +459,20 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Putar ulang sampel rekaman acak per kelas untuk cek kualitas",
     )
+    parser.add_argument(
+        "--file",
+        type=str,
+        default="",
+        help="Path file .npz spesifik untuk diputar ulang secara visual (misal: data/dynamic_raw/Terima_kasih/danish_053.npz)",
+    )
     return parser.parse_args()
 
 
 if __name__ == "__main__":
     args = parse_args()
-    if args.review:
+    if args.file:
+        review_recordings(Path(args.file))
+    elif args.review:
         review_recordings()
     else:
         run_recorder(args.signer.lower())
