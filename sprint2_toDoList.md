@@ -160,20 +160,15 @@ Get-ChildItem data\dynamic_raw -Directory | ForEach-Object {
 > 📖 **Form Pengujian**: Buka [`android_app/DEVICE_TEST_CHECKLIST.md`](file:///d:/programming/python/RPL/projectRepo/android_app/DEVICE_TEST_CHECKLIST.md).
 
 #### 3.1 Kompilasi & Pemasangan Aplikasi
-- [ ] Buka direktori Android:
+- [x] Kompilasi APK Debug & Rilis GitHub:
+  - **Download APK Siap Pasang**: [SignToSpeech-v0.2.0-sprint2.apk](https://github.com/codename-alfa/BISINDO-Sign-to-Speech/releases/download/v0.2.0-sprint2/SignToSpeech-v0.2.0-sprint2.apk)
+  - **Halaman GitHub Release**: [v0.2.0-sprint2](https://github.com/codename-alfa/BISINDO-Sign-to-Speech/releases/tag/v0.2.0-sprint2)
+- [ ] Opsi Pasang via ADB / Android Studio (bagi pengembang):
   ```powershell
   cd d:\programming\python\RPL\projectRepo\android_app
   $env:JAVA_HOME = "$env:USERPROFILE\.jdks\jbr-17.0.14"
-  ```
-- [ ] Jalankan unit test untuk memastikan integritas logika:
-  ```powershell
-  .\gradlew.bat testDebugUnitTest
-  ```
-- [ ] Pasang APK ke perangkat yang terhubung (USB Debugging aktif):
-  ```powershell
   .\gradlew.bat installDebug
   ```
-  *(Atau buka via Android Studio dan klik tombol Run ke HP fisik/AVD).*
 
 #### 3.2 Pengujian Mode Huruf Statis (A–Z) — Arah 1
 - [ ] Pilih tombol **Huruf (A–Z)** di bar atas aplikasi.
