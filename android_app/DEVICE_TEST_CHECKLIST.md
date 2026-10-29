@@ -1,4 +1,4 @@
-# 📱 Checklist Pengujian Perangkat & Evaluasi CPU vs GPU (Sprint 2 — Pipeline Arah 1)
+# 📱 Checklist Pengujian Perangkat & Evaluasi Sistem Dua Arah (Bi-Directional)
 
 Dokumen ini digunakan oleh **Vanesa** dan **Ahmad** untuk memverifikasi aplikasi Android pada Emulator (AVD) dan perangkat keras fisik (**Redmi Pad 2**, **Samsung Galaxy A30s**, **Xiaomi 15**).
 
@@ -7,8 +7,8 @@ Dokumen ini digunakan oleh **Vanesa** dan **Ahmad** untuk memverifikasi aplikasi
 ## ⚙️ 1. Cara Unduh, Install & Menjalankan Pengujian
 
 ### A. Unduh Langsung di HP / Tablet:
-1. Buka link rilis resmi: [GitHub Release v0.2.0-sprint2](https://github.com/codename-alfa/BISINDO-Sign-to-Speech/releases/tag/v0.2.0-sprint2).
-2. Langsung unduh paket instalasi: **[SignToSpeech-v0.2.0-sprint2.apk](https://github.com/codename-alfa/BISINDO-Sign-to-Speech/releases/download/v0.2.0-sprint2/SignToSpeech-v0.2.0-sprint2.apk)** (43.7 MB).
+1. Buka link rilis resmi: [GitHub Release v0.3.0-bidirectional](https://github.com/codename-alfa/BISINDO-Sign-to-Speech/releases/tag/v0.3.0-bidirectional).
+2. Langsung unduh paket instalasi: **[SignToSpeech-v0.3.0-bidirectional.apk](https://github.com/codename-alfa/BISINDO-Sign-to-Speech/releases/download/v0.3.0-bidirectional/SignToSpeech-v0.3.0-bidirectional.apk)** (44.69 MB).
 3. Buka file hasil download di HP dan izinkan instalasi sumber tidak dikenal (*Install Unknown Apps*).
 
 ### B. Pasang via USB Debugging (Untuk Pengembang):
@@ -79,3 +79,29 @@ Setelah model dilatih dengan rekaman nyata 3 signer:
 
 - [ ] **Uji Tombol `Suara ON / MUTE`**: Saat `Suara MUTE` aktif, transkrip tetap bertambah tetapi suara TTS berhenti seketika.
 - [ ] **Uji Tombol `Hapus`**: Menghapus baris transkrip dan me-reset riwayat duplikat 2 detik.
+
+---
+
+## 🎤 6. Evaluasi Subsistem Arah 2 (Dengar ➔ Tuli: STT & Kartu Visual)
+
+Pengujian interaksi dari lawan bicara Dengar ke pengguna Tuli:
+
+| Skenario Pengujian | Masukan Uji (Suara / Teks) | Kategori Diharapkan | Hasil Teks & Sorotan Warna | Kartu Visual Muncul? |
+|:---|:---|:---:|:---:|:---:|
+| **Uji Farmasi / Obat** | *"Silakan tebus resep obat ini di apotek ya"* | 💊 `OBAT` | Teks 26sp + sorotan hijau `#10B981` | Ya / Tidak |
+| **Uji Poli / Dokter** | *"Bapak silakan masuk ke ruang dokter spesialis"* | 🩺 `DOKTER` | Teks 26sp + sorotan biru `#3B82F6` | Ya / Tidak |
+| **Uji Darurat / Sakit** | *"Pasien ini sesak dan harus segera ke IGD"* | 🚨 `DARURAT` | Teks 26sp + sorotan merah `#EF4444` | Ya / Tidak |
+| **Uji Kasir / Biaya** | *"Total tagihan bisa dibayar di loket kasir pakai QRIS"* | 💳 `KASIR` | Teks 26sp + sorotan oranye `#F59E0B` | Ya / Tidak |
+| **Uji Transportasi** | *"Jadwal keberangkatan kereta di stasiun peron 2"* | 🚆 `TRANSPORTASI` | Teks 26sp + sorotan cyan `#0EA5E9` | Ya / Tidak |
+| **Uji Petunjuk Arah** | *"Toilet belok kiri lalu lurus ke depan"* | 🧭 `ARAH` | Teks 26sp + sorotan teal `#14B8A6` | Ya / Tidak |
+| **Uji Pendaftaran** | *"Silakan ambil nomor antrean dan siapkan KTP"* | 🪪 `PENDAFTARAN` | Teks 26sp + sorotan indigo `#6366F1` | Ya / Tidak |
+| **Uji Bantuan Petugas** | *"Tolong tunggu sebentar, petugas kami akan membantu"* | 🆘 `BANTUAN` | Teks 26sp + sorotan jingga `#F97316` | Ya / Tidak |
+| **Uji Sapaan** | *"Selamat pagi, terima kasih atas kunjungannya"* | 👋 `SAPAAN` | Teks 26sp + sorotan ungu `#8B5CF6` | Ya / Tidak |
+
+### Verifikasi Fitur Kontrol & Aksesibilitas Arah 2:
+- [ ] **Toggle Mikrofon**: Mengetuk tombol mikrofon menyalakan perekaman (`⏹️ Selesai Bicara`, warna merah), mengetuk lagi menghentikan perekaman (`🎤 Ketuk untuk Bicara`, warna biru).
+- [ ] **Visual Meter Audio**: Bar hijau berdenyut merespons volume suara saat berbicara.
+- [ ] **Smart Offline Fallback**: Pengenalan suara berjalan mulus (baik offline maupun fallback sistem online).
+- [ ] **Chip Kalimat Cepat**: Mengetuk chip langsung memuat teks dan kartu visual tanpa mikrofon.
+- [ ] **Dialog Ketik Manual**: Tombol "Ketik" memunculkan dialog masukan teks alternatif untuk ruangan bising.
+- [ ] **Isolasi Kamera & TTS**: Saat berpindah ke tab *"Suara ➔ Teks"*, kamera berhenti menganalisis frame dan TTS berhenti bersuara; saat kembali ke *"Isyarat ➔ Suara"*, kamera menyala kembali.
