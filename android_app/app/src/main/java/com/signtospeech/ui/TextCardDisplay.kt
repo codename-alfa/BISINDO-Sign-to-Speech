@@ -349,6 +349,16 @@ class TextCardDisplay(
     }
 
     /**
+     * Meminta fokus pada input keyboard inline dan menampilkan virtual soft keyboard.
+     * Digunakan sebagai alihan otomatis ketika fitur mikrofon/layanan suara sistem tidak tersedia.
+     */
+    fun focusKeyboardInput() {
+        etArah2KeyboardInput.requestFocus()
+        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+        imm?.showSoftInput(etArah2KeyboardInput, InputMethodManager.SHOW_IMPLICIT)
+    }
+
+    /**
      * Menyembunyikan virtual soft keyboard setelah teks dikirimkan.
      */
     private fun hideSoftKeyboard(view: View) {

@@ -82,36 +82,39 @@ class SpeechToTextManager(
         val availablePkgNames = availableServices.map { it.serviceInfo.packageName }.toSet()
         AppLogger.i(TAG, "Layanan speech recognition terdaftar di OS: $availablePkgNames")
 
-        // 2. Prioritas 1: Google Speech Services HANYA jika paketnya benar-benar terpasang di perangkat
-        val googleServices = listOf(
-            ComponentName("com.google.android.tts", "com.google.android.apps.speech.tts.googletts.service.GoogleTTSRecognitionService"),
-            ComponentName("com.google.android.googlequicksearchbox", "com.google.android.voicesearch.service.RecognitionService")
-        )
-
-        for (googleComp in googleServices) {
-            if (!availablePkgNames.contains(googleComp.packageName)) {
-                AppLogger.d(TAG, "Lewati $googleComp karena paket tidak terdaftar di perangkat")
-                continue
-            }
+        // 2. Prioritas 1: Google QuickSearchBox (Google App resmi) dengan resolusi class name dinamis
+        val googleResolveInfo = availableServices.firstOrNull {
+            it.serviceInfo.packageName == "com.google.android.googlequicksearchbox"
+        }
+        if (googleResolveInfo != null) {
+            val googleComp = ComponentName(
+                googleResolveInfo.serviceInfo.packageName,
+                googleResolveInfo.serviceInfo.name
+            )
             try {
                 val recognizer = SpeechRecognizer.createSpeechRecognizer(context, googleComp)
                 recognizer.setRecognitionListener(createListener())
                 speechRecognizer = recognizer
                 isServiceAvailable = true
-                AppLogger.i(TAG, "SpeechRecognizer berhasil dibuat via Google service: $googleComp")
+                AppLogger.i(TAG, "SpeechRecognizer berhasil dibuat via Google Search Service dinamis: $googleComp")
                 return
             } catch (t: Throwable) {
-                AppLogger.w(TAG, "Gagal mengikat ke $googleComp: ${t.message}")
+                AppLogger.w(TAG, "Gagal mengikat ke Google Search Service $googleComp: ${t.message}")
             }
         }
 
-        // 3. Prioritas 2: Coba layanan pihak ketiga non-MIUI/Xiaomi yang terdaftar
+        // 3. Prioritas 2: Coba layanan pihak ketiga lain yang terdaftar dan BUKAN paket terlarang
         for (resolveInfo in availableServices) {
             val pkg = resolveInfo.serviceInfo.packageName
-            // Hindari com.miui.voiceassist yang sering melempar SecurityException pada aplikasi pihak ketiga
-            if (pkg.contains("miui", ignoreCase = true) || pkg.contains("xiaomi", ignoreCase = true)) {
-                AppLogger.d(TAG, "Abaikan service OEM rawan SecurityException: $pkg")
+            if (pkg in BLACKLISTED_STT_PACKAGES ||
+                pkg.contains("miui", ignoreCase = true) ||
+                pkg.contains("xiaomi", ignoreCase = true)
+            ) {
+                AppLogger.d(TAG, "Abaikan service tidak kompatibel / rawan SecurityException: $pkg")
                 continue
+            }
+            if (pkg == "com.google.android.googlequicksearchbox") {
+                continue // Sudah dievaluasi pada Prioritas 1
             }
             try {
                 val comp = ComponentName(pkg, resolveInfo.serviceInfo.name)
@@ -126,13 +129,15 @@ class SpeechToTextManager(
             }
         }
 
-        // 4. Prioritas 3: Default createSpeechRecognizer(context) HANYA jika bukan sistem MIUI/Xiaomi murni
-        val hasNonMiuiService = availableServices.any {
+        // 4. Prioritas 3: Default createSpeechRecognizer(context) HANYA jika ada service valid yang aman
+        val hasValidService = availableServices.any {
             val pkg = it.serviceInfo.packageName
-            !pkg.contains("miui", ignoreCase = true) && !pkg.contains("xiaomi", ignoreCase = true)
+            pkg !in BLACKLISTED_STT_PACKAGES &&
+                    !pkg.contains("miui", ignoreCase = true) &&
+                    !pkg.contains("xiaomi", ignoreCase = true)
         }
 
-        if (hasNonMiuiService) {
+        if (hasValidService) {
             try {
                 if (SpeechRecognizer.isRecognitionAvailable(context)) {
                     val recognizer = SpeechRecognizer.createSpeechRecognizer(context)
@@ -148,12 +153,12 @@ class SpeechToTextManager(
                 isServiceAvailable = false
             }
         } else {
-            AppLogger.w(TAG, "Tidak ditemukan layanan recognition yang aman untuk diikat langsung di HyperOS. Dialihkan ke Fallback Dialog.")
+            AppLogger.w(TAG, "Tidak ditemukan layanan recognition yang aman untuk diikat langsung di OS tablet. Dialihkan ke Fallback Dialog / Keyboard.")
         }
 
         speechRecognizer = null
         isServiceAvailable = false
-        AppLogger.i(TAG, "In-app SpeechRecognizer tidak diaktifkan. Mode aman Fallback System Voice Dialog disiapkan.")
+        AppLogger.i(TAG, "In-app SpeechRecognizer tidak diaktifkan. Mode aman Fallback System Voice Dialog / Keyboard disiapkan.")
     }
 
     private fun createListener(): RecognitionListener {
@@ -297,6 +302,14 @@ class SpeechToTextManager(
                 onListeningStateChanged(true)
                 onOfflineModeChanged(preferOffline)
                 AppLogger.i(TAG, "speechRecognizer.startListening berhasil dipanggil (preferOffline: $preferOffline)")
+            } catch (se: SecurityException) {
+                AppLogger.e(TAG, "SecurityException saat speechRecognizer.startListening: ${se.message}. Menonaktifkan recognizer.", se)
+                try { speechRecognizer?.destroy() } catch (_: Throwable) {}
+                speechRecognizer = null
+                isServiceAvailable = false
+                isListening = false
+                onListeningStateChanged(false)
+                onFallbackToIntentRequested?.invoke()
             } catch (t: Throwable) {
                 AppLogger.e(TAG, "Pengecualian saat speechRecognizer.startListening: ${t.message}", t)
                 isListening = false
@@ -361,6 +374,17 @@ class SpeechToTextManager(
     companion object {
         private const val TAG = "SpeechToTextManager"
         private const val EXTRA_PREFER_OFFLINE = "android.speech.extra.PREFER_OFFLINE"
+
+        /**
+         * Paket-paket layanan suara yang dilarang untuk STT karena bukan layanan pihak ketiga publik,
+         * atau sering melempar SecurityException pada Android 14/15 HyperOS.
+         */
+        val BLACKLISTED_STT_PACKAGES = setOf(
+            "com.google.android.tts",       // Paket TTS synthesis, unexported untuk pemanggilan STT pihak ketiga di Android 15
+            "com.google.android.as",        // Android System Intelligence, sistem internal tertutup
+            "com.miui.voiceassist",         // Asisten OEM MIUI/Xiaomi internal
+            "com.xiaomi.mibrain.speech"     // Mesin suara OEM Xiaomi internal
+        )
 
         /**
          * Pemetaan kode error native Android ke pesan ramah pengguna berbahasa Indonesia.

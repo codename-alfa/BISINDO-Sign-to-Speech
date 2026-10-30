@@ -118,19 +118,42 @@ class MainActivity : AppCompatActivity(), HandLandmarkerHelper.LandmarkerListene
             }
 
             val activities = packageManager.queryIntentActivities(intent, 0)
-            if (activities.isEmpty()) {
-                AppLogger.w(TAG, "Tidak ada aplikasi dialog suara sistem (ACTION_RECOGNIZE_SPEECH) pada perangkat.")
+            
+            // Filter hanya aktivitas yang diekspor (exported == true) dan BUKAN paket terlarang / unexported stub
+            val validActivities = activities.filter { resolveInfo ->
+                val actInfo = resolveInfo.activityInfo
+                val pkg = actInfo.packageName
+                actInfo.exported &&
+                        pkg !in SpeechToTextManager.BLACKLISTED_STT_PACKAGES &&
+                        !pkg.contains("miui", ignoreCase = true) &&
+                        !pkg.contains("xiaomi", ignoreCase = true)
+            }
+
+            if (validActivities.isEmpty()) {
+                AppLogger.w(TAG, "Tidak ada aplikasi dialog suara sistem yang valid/diekspor (ditemukan ${activities.size} stub tertutup: ${activities.map { it.activityInfo.name }}). Beralih ke input keyboard.")
                 Toast.makeText(
                     this,
-                    "Layanan dialog suara sistem tidak tersedia pada perangkat. Silakan gunakan opsi pengetikan keyboard.",
+                    "Layanan suara sistem tidak tersedia di perangkat ini. Silakan gunakan pengetikan teks.",
                     Toast.LENGTH_LONG
                 ).show()
                 textCardDisplay.updateListeningState(false)
+                textCardDisplay.focusKeyboardInput()
                 return
             }
 
-            AppLogger.i(TAG, "Meluncurkan system voice dialog via: ${activities.map { it.activityInfo.packageName }}")
+            val chosenActivity = validActivities.first()
+            intent.setClassName(chosenActivity.activityInfo.packageName, chosenActivity.activityInfo.name)
+            AppLogger.i(TAG, "Meluncurkan system voice dialog via: ${chosenActivity.activityInfo.packageName}/${chosenActivity.activityInfo.name}")
             speechDialogLauncher.launch(intent)
+        } catch (se: SecurityException) {
+            AppLogger.e(TAG, "SecurityException saat meluncurkan dialog suara: ${se.message}. Mengalihkan ke keyboard.", se)
+            Toast.makeText(
+                this,
+                "Layanan suara sistem tidak diizinkan oleh OS tablet. Mengalihkan ke opsi pengetikan keyboard.",
+                Toast.LENGTH_LONG
+            ).show()
+            textCardDisplay.updateListeningState(false)
+            textCardDisplay.focusKeyboardInput()
         } catch (e: Exception) {
             AppLogger.e(TAG, "Gagal meluncurkan dialog suara sistem: ${e.message}", e)
             Toast.makeText(
@@ -139,6 +162,7 @@ class MainActivity : AppCompatActivity(), HandLandmarkerHelper.LandmarkerListene
                 Toast.LENGTH_LONG
             ).show()
             textCardDisplay.updateListeningState(false)
+            textCardDisplay.focusKeyboardInput()
         }
     }
 
