@@ -178,21 +178,21 @@ object AppLogger {
     }
 
     /**
-     * Menyimpan seluruh buffer log saat ini ke berkas fisik internal app_debug.log.
+     * Menyimpan seluruh laporan diagnostik lengkap ke berkas fisik internal app_debug.log,
+     * termasuk metadata perangkat, layanan suara terdeteksi, riwayat crash fatal (jika ada),
+     * dan seluruh buffer event log.
      */
     @Synchronized
     fun flushToFile(context: Context) {
         val logFile = File(context.filesDir, LOG_FILE_NAME)
-        logFile.printWriter().use { out ->
-            out.println("=== SIGN-TO-SPEECH EVENT LOG ===")
-            out.println(deviceSummary)
-            out.println("Generated: ${dateFormat.format(Date())}")
-            out.println("----------------------------------------")
-            logBuffer.forEach { line ->
-                out.println(line)
-            }
-        }
+        val fullReport = getFormattedDiagnostics()
+        logFile.writeText(fullReport)
     }
+
+    /**
+     * Alias publik untuk mendapatkan seluruh laporan diagnostik terformat.
+     */
+    fun exportFullDiagnosticReport(): String = getFormattedDiagnostics()
 
     /**
      * Mendapatkan referensi berkas log fisik untuk keperluan dibagikan (Share Intent).

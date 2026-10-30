@@ -44,5 +44,18 @@ class SpeechToTextHelperTest {
         assertEquals(0, normalize(-10f)) // bawah batas
         assertEquals(100, normalize(20f)) // atas batas
     }
+
+    @Test
+    fun `test blacklisted stt packages protects against security exceptions`() {
+        val blacklist = SpeechToTextManager.BLACKLISTED_STT_PACKAGES
+        // Memastikan paket yang unexported atau internal di-blacklist
+        assertTrue(blacklist.contains("com.google.android.tts"))
+        assertTrue(blacklist.contains("com.google.android.as"))
+        assertTrue(blacklist.contains("com.miui.voiceassist"))
+        assertTrue(blacklist.contains("com.xiaomi.mibrain.speech"))
+
+        // Memastikan Google Search app resmi TIDAK di-blacklist
+        assertTrue(!blacklist.contains("com.google.android.googlequicksearchbox"))
+    }
 }
 

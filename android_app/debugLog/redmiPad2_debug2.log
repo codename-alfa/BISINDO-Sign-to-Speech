@@ -1,0 +1,12 @@
+=== SIGN-TO-SPEECH EVENT LOG ===
+Model: Xiaomi 25040RP0AG (taiko) | Android: 15 (API 35) | Build: AP3A.240905.015.A2
+Generated: 2026-10-30 08:03:54
+----------------------------------------
+[08:03:51.175][INFO][AppLogger] === App Initialized ===
+[08:03:51.184][INFO][AppLogger] Model: Xiaomi 25040RP0AG (taiko) | Android: 15 (API 35) | Build: AP3A.240905.015.A2
+[08:03:51.186][INFO][AppLogger] RecognitionServices terdeteksi: [com.google.android.as/com.google.android.apps.miphone.aiai.app.AiAiSpeechRecognitionService, com.google.android.tts/com.google.android.apps.speech.tts.googletts.service.GoogleTTSRecognitionService]
+[08:03:51.188][INFO][AppLogger] SpeechActivities terdeteksi: [com.google.android.tts/com.google.android.apps.speech.tts.googletts.service.GoogleTTSActivity]
+[08:03:51.190][INFO][AppLogger] Permissions: RECORD_AUDIO=true, INTERNET=true
+[08:03:52.857][INFO][SpeechToTextManager] Layanan speech recognition terdaftar di OS: [com.google.android.as, com.google.android.tts]
+[08:03:52.859][INFO][SpeechToTextManager] SpeechRecognizer berhasil dibuat via Google service: ComponentInfo{com.google.android.tts/com.google.android.apps.speech.tts.googletts.service.GoogleTTSRecognitionService}
+[08:03:54.488][INFO][SignToSpeechMainActivity] Membuka Android share sheet untuk file: app_debug.log

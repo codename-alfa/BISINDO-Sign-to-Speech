@@ -1,0 +1,55 @@
+========================================
+SIGN-TO-SPEECH DIAGNOSTIC REPORT
+Waktu: 2026-10-30 07:57:33
+========================================
+
+--- SPESIFIKASI PERANGKAT ---
+Model: samsung SM-A307GN (a30s) | Android: 11 (API 30) | Build: RP1A.200720.012.A307GNDXS6CWH1
+
+--- LAYANAN SUARA TERDETEKSI (RecognitionService) ---
+* com.google.android.googlequicksearchbox/com.google.android.voicesearch.serviceapi.GoogleRecognitionService
+
+--- AKTIVITAS DIALOG SUARA (ACTION_RECOGNIZE_SPEECH) ---
+* com.google.android.googlequicksearchbox/com.google.android.voicesearch.intentapi.IntentApiActivity
+
+--- RIWAYAT EVENT TERAKHIR (Maks 100 Event) ---
+[07:53:06.635][INFO][AppLogger] === App Initialized ===
+[07:53:06.641][INFO][AppLogger] Model: samsung SM-A307GN (a30s) | Android: 11 (API 30) | Build: RP1A.200720.012.A307GNDXS6CWH1
+[07:53:06.644][INFO][AppLogger] RecognitionServices terdeteksi: [com.google.android.googlequicksearchbox/com.google.android.voicesearch.serviceapi.GoogleRecognitionService]
+[07:53:06.647][INFO][AppLogger] SpeechActivities terdeteksi: [com.google.android.googlequicksearchbox/com.google.android.voicesearch.intentapi.IntentApiActivity]
+[07:53:06.652][INFO][AppLogger] Permissions: RECORD_AUDIO=false, INTERNET=true
+[07:53:07.485][INFO][SpeechToTextManager] Layanan speech recognition terdaftar di OS: [com.google.android.googlequicksearchbox]
+[07:53:07.488][DEBUG][SpeechToTextManager] Lewati ComponentInfo{com.google.android.tts/com.google.android.apps.speech.tts.googletts.service.GoogleTTSRecognitionService} karena paket tidak terdaftar di perangkat
+[07:53:07.491][INFO][SpeechToTextManager] SpeechRecognizer berhasil dibuat via Google service: ComponentInfo{com.google.android.googlequicksearchbox/com.google.android.voicesearch.service.RecognitionService}
+[07:53:19.436][INFO][SpeechToTextManager] Mode diubah manual oleh pengguna: preferOffline=false
+[07:53:19.470][INFO][SignToSpeechMainActivity] Mode suara diganti manual: isOffline=false
+[07:53:23.334][INFO][SignToSpeechMainActivity] Meminta izin RECORD_AUDIO...
+[07:53:25.889][DEBUG][SignToSpeechMainActivity] Tombol mic diklik (serviceAvailable=true)
+[07:53:25.906][DEBUG][SpeechToTextManager] startListeningInternal dipanggil (preferOffline: false)
+[07:53:25.923][INFO][SpeechToTextManager] speechRecognizer.startListening berhasil dipanggil (preferOffline: false)
+[07:56:09.127][INFO][AppLogger] === App Initialized ===
+[07:56:09.130][INFO][AppLogger] Model: samsung SM-A307GN (a30s) | Android: 11 (API 30) | Build: RP1A.200720.012.A307GNDXS6CWH1
+[07:56:09.132][INFO][AppLogger] RecognitionServices terdeteksi: [com.google.android.googlequicksearchbox/com.google.android.voicesearch.serviceapi.GoogleRecognitionService]
+[07:56:09.135][INFO][AppLogger] SpeechActivities terdeteksi: [com.google.android.googlequicksearchbox/com.google.android.voicesearch.intentapi.IntentApiActivity]
+[07:56:09.140][INFO][AppLogger] Permissions: RECORD_AUDIO=true, INTERNET=true
+[07:56:09.600][INFO][SpeechToTextManager] Layanan speech recognition terdaftar di OS: [com.google.android.googlequicksearchbox]
+[07:56:09.603][DEBUG][SpeechToTextManager] Lewati ComponentInfo{com.google.android.tts/com.google.android.apps.speech.tts.googletts.service.GoogleTTSRecognitionService} karena paket tidak terdaftar di perangkat
+[07:56:09.606][INFO][SpeechToTextManager] SpeechRecognizer berhasil dibuat via Google service: ComponentInfo{com.google.android.googlequicksearchbox/com.google.android.voicesearch.service.RecognitionService}
+[07:56:58.014][DEBUG][SignToSpeechMainActivity] Tombol mic diklik (serviceAvailable=true)
+[07:56:58.019][DEBUG][SpeechToTextManager] startListeningInternal dipanggil (preferOffline: true)
+[07:56:58.027][INFO][SpeechToTextManager] speechRecognizer.startListening berhasil dipanggil (preferOffline: true)
+[07:57:02.537][DEBUG][SignToSpeechMainActivity] Tombol mic diklik (serviceAvailable=true)
+[07:57:08.222][DEBUG][SignToSpeechMainActivity] Tombol mic diklik (serviceAvailable=true)
+[07:57:08.227][DEBUG][SpeechToTextManager] startListeningInternal dipanggil (preferOffline: true)
+[07:57:08.235][INFO][SpeechToTextManager] speechRecognizer.startListening berhasil dipanggil (preferOffline: true)
+[07:57:12.084][DEBUG][SignToSpeechMainActivity] Tombol mic diklik (serviceAvailable=true)
+[07:57:15.612][INFO][SpeechToTextManager] Mode diubah manual oleh pengguna: preferOffline=false
+[07:57:15.633][INFO][SignToSpeechMainActivity] Mode suara diganti manual: isOffline=false
+[07:57:18.797][DEBUG][SignToSpeechMainActivity] Tombol mic diklik (serviceAvailable=true)
+[07:57:18.801][DEBUG][SpeechToTextManager] startListeningInternal dipanggil (preferOffline: false)
+[07:57:18.810][INFO][SpeechToTextManager] speechRecognizer.startListening berhasil dipanggil (preferOffline: false)
+[07:57:21.426][DEBUG][SignToSpeechMainActivity] Tombol mic diklik (serviceAvailable=true)
+[07:57:25.404][DEBUG][SignToSpeechMainActivity] Tombol mic diklik (serviceAvailable=true)
+[07:57:25.408][DEBUG][SpeechToTextManager] startListeningInternal dipanggil (preferOffline: false)
+[07:57:25.416][INFO][SpeechToTextManager] speechRecognizer.startListening berhasil dipanggil (preferOffline: false)
+[07:57:28.107][DEBUG][SignToSpeechMainActivity] Tombol mic diklik (serviceAvailable=true)

@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.speech.tts.TextToSpeech
 import android.util.Log
+import com.signtospeech.debug.AppLogger
 import java.util.Locale
 
 /**
@@ -51,6 +52,7 @@ class TTSManager(
         when (result) {
             TextToSpeech.LANG_MISSING_DATA, TextToSpeech.LANG_NOT_SUPPORTED -> {
                 Log.w(TAG, "Paket suara Bahasa Indonesia (id-ID) belum terinstal (code=$result)")
+                AppLogger.w(TAG, "Paket suara Bahasa Indonesia (id-ID) belum terinstal di mesin TTS (code=$result)")
                 // Tetap aktifkan engine dengan locale default agar di emulator tetap bisa bersuara
                 isReady = true
                 onMissingVoiceData?.invoke()
@@ -60,6 +62,7 @@ class TTSManager(
                 engine.setSpeechRate(1.0f)
                 isReady = true
                 Log.d(TAG, "TextToSpeech Bahasa Indonesia (id-ID) siap digunakan")
+                AppLogger.i(TAG, "TextToSpeech Bahasa Indonesia (id-ID) siap digunakan")
             }
         }
     }
