@@ -1,22 +1,31 @@
 package com.signtospeech
 
 import android.Manifest
+import android.app.AlertDialog
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
 import android.speech.RecognizerIntent
 import android.util.Log
 import android.view.View
+import android.widget.ScrollView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import com.google.android.material.snackbar.Snackbar
 import com.signtospeech.camera.CameraManager
 import com.signtospeech.databinding.ActivityMainBinding
+import com.signtospeech.debug.AppLogger
+import com.signtospeech.debug.CrashHandler
 import com.signtospeech.mediapipe.DelegateGuard
 import com.signtospeech.mediapipe.DelegateMode
 import com.signtospeech.mediapipe.HandLandmarkerHelper
@@ -107,12 +116,26 @@ class MainActivity : AppCompatActivity(), HandLandmarkerHelper.LandmarkerListene
                 putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, "id-ID")
                 putExtra(RecognizerIntent.EXTRA_PROMPT, getString(R.string.arah2_instruction))
             }
+
+            val activities = packageManager.queryIntentActivities(intent, 0)
+            if (activities.isEmpty()) {
+                AppLogger.w(TAG, "Tidak ada aplikasi dialog suara sistem (ACTION_RECOGNIZE_SPEECH) pada perangkat.")
+                Toast.makeText(
+                    this,
+                    "Layanan dialog suara sistem tidak tersedia pada perangkat. Silakan gunakan opsi pengetikan keyboard.",
+                    Toast.LENGTH_LONG
+                ).show()
+                textCardDisplay.updateListeningState(false)
+                return
+            }
+
+            AppLogger.i(TAG, "Meluncurkan system voice dialog via: ${activities.map { it.activityInfo.packageName }}")
             speechDialogLauncher.launch(intent)
         } catch (e: Exception) {
-            Log.e(TAG, "Gagal meluncurkan dialog suara sistem: ${e.message}", e)
+            AppLogger.e(TAG, "Gagal meluncurkan dialog suara sistem: ${e.message}", e)
             Toast.makeText(
                 this,
-                "Layanan suara tidak tersedia pada perangkat. Silakan gunakan tombol Ketik Manual.",
+                "Layanan suara tidak tersedia pada perangkat. Silakan gunakan opsi pengetikan keyboard.",
                 Toast.LENGTH_LONG
             ).show()
             textCardDisplay.updateListeningState(false)
@@ -121,6 +144,9 @@ class MainActivity : AppCompatActivity(), HandLandmarkerHelper.LandmarkerListene
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        AppLogger.init(this)
+        CrashHandler.install(this)
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -168,6 +194,10 @@ class MainActivity : AppCompatActivity(), HandLandmarkerHelper.LandmarkerListene
         setupArah2Components()
         setupUiListeners()
 
+        if (AppLogger.hasPreviousCrash(this)) {
+            checkPreviousCrash()
+        }
+
         if (hasCameraPermission()) {
             setupCameraAndPipeline()
         } else {
@@ -188,6 +218,7 @@ class MainActivity : AppCompatActivity(), HandLandmarkerHelper.LandmarkerListene
             tvMicIcon = binding.tvMicIcon,
             tvMicLabel = binding.tvMicLabel,
             tvArah2ModeBadge = binding.tvArah2ModeBadge,
+            btnArah2DebugLog = binding.btnArah2DebugLog,
             btnArah2Clear = binding.btnArah2Clear,
             scrollArah2Content = binding.scrollArah2Content,
             etArah2KeyboardInput = binding.etArah2KeyboardInput,
@@ -211,6 +242,12 @@ class MainActivity : AppCompatActivity(), HandLandmarkerHelper.LandmarkerListene
             },
             onToggleMicClicked = {
                 handleMicToggleClick()
+            },
+            onToggleModeClicked = {
+                handleModeToggle()
+            },
+            onShowLogClicked = {
+                showDebugLogDialog()
             }
         )
 
@@ -256,19 +293,114 @@ class MainActivity : AppCompatActivity(), HandLandmarkerHelper.LandmarkerListene
         )
     }
 
+    private fun handleModeToggle() {
+        val isOffline = speechToTextManager.toggleOfflineMode()
+        textCardDisplay.updateOfflineBadge(isOffline)
+        val msg = getString(if (isOffline) R.string.mode_offline_toast else R.string.mode_online_toast)
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+        AppLogger.i(TAG, "Mode suara diganti manual: isOffline=$isOffline")
+    }
+
+    private fun showDebugLogDialog() {
+        val diagnostics = AppLogger.getFormattedDiagnostics()
+        val logView = TextView(this).apply {
+            text = diagnostics
+            typeface = Typeface.MONOSPACE
+            textSize = 10f
+            setTextColor(Color.WHITE)
+            setPadding(dpToPx(16), dpToPx(16), dpToPx(16), dpToPx(16))
+            setTextIsSelectable(true)
+        }
+        val scrollView = ScrollView(this).apply {
+            addView(logView)
+            setBackgroundColor(Color.parseColor("#0F172A"))
+        }
+
+        AlertDialog.Builder(this)
+            .setTitle(getString(R.string.dialog_log_title))
+            .setView(scrollView)
+            .setPositiveButton(getString(R.string.btn_copy_log)) { _, _ ->
+                copyLogToClipboard(diagnostics)
+            }
+            .setNeutralButton(getString(R.string.btn_share_file)) { _, _ ->
+                shareLogFile()
+            }
+            .setNegativeButton(getString(R.string.btn_clear_log)) { _, _ ->
+                AppLogger.clearLogs(this)
+                Toast.makeText(this, "Log diagnostik telah dibersihkan.", Toast.LENGTH_SHORT).show()
+            }
+            .show()
+    }
+
+    private fun checkPreviousCrash() {
+        val crashDump = AppLogger.getLatestCrashDump(this) ?: return
+        AlertDialog.Builder(this)
+            .setTitle(getString(R.string.previous_crash_title))
+            .setMessage(getString(R.string.previous_crash_message))
+            .setPositiveButton(getString(R.string.btn_copy_log)) { _, _ ->
+                copyLogToClipboard(crashDump)
+                AppLogger.clearCrashDump(this)
+            }
+            .setNeutralButton(getString(R.string.btn_share_file)) { _, _ ->
+                shareLogFile()
+                AppLogger.clearCrashDump(this)
+            }
+            .setNegativeButton(getString(R.string.btn_close)) { _, _ ->
+                AppLogger.clearCrashDump(this)
+            }
+            .show()
+    }
+
+    private fun copyLogToClipboard(text: String) {
+        val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
+        val clip = ClipData.newPlainText("SignToSpeech_Diagnostics", text)
+        clipboard?.setPrimaryClip(clip)
+        Toast.makeText(this, getString(R.string.log_copied_toast), Toast.LENGTH_SHORT).show()
+        AppLogger.i(TAG, "Log berhasil disalin ke clipboard pengguna")
+    }
+
+    private fun shareLogFile() {
+        try {
+            val logFile = AppLogger.getLogFile(this)
+            val uri = FileProvider.getUriForFile(
+                this,
+                "${applicationContext.packageName}.fileprovider",
+                logFile
+            )
+            val intent = Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_STREAM, uri)
+                putExtra(Intent.EXTRA_SUBJECT, "SignToSpeech Diagnostic Log")
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+            startActivity(Intent.createChooser(intent, "Bagikan Berkas Log"))
+            AppLogger.i(TAG, "Membuka Android share sheet untuk file: ${logFile.name}")
+        } catch (e: Exception) {
+            AppLogger.e(TAG, "Gagal membagikan berkas log: ${e.message}", e)
+            Toast.makeText(this, "Gagal membagikan file: ${e.message}", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun dpToPx(dp: Int): Int {
+        val density = resources.displayMetrics.density
+        return (dp * density).toInt()
+    }
+
     private fun handleMicToggleClick() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
             try {
+                AppLogger.d(TAG, "Tombol mic diklik (serviceAvailable=${speechToTextManager.isServiceAvailable})")
                 if (speechToTextManager.isServiceAvailable) {
                     speechToTextManager.toggleListening()
                 } else {
                     launchSystemSpeechDialog()
                 }
             } catch (t: Throwable) {
-                Log.e(TAG, "Pengecualian saat toggleListening, beralih ke dialog suara sistem", t)
+                AppLogger.e(TAG, "Pengecualian saat toggleListening: ${t.message}", t)
                 launchSystemSpeechDialog()
             }
         } else {
+            AppLogger.i(TAG, "Meminta izin RECORD_AUDIO...")
             requestAudioPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
         }
     }

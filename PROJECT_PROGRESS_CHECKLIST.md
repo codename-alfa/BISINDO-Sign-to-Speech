@@ -121,12 +121,14 @@ Progres proyek dihitung menggunakan dua metrik: **(A) Progres Implementasi Kode 
 
 #### A. Subsistem Arah 2: Dengar ➔ Tuli (Ahmad & Vanesa)
 - [x] Buat `AppDirection.kt`: Enum arah komunikasi (`SIGN_TO_SPEECH` vs `SPEECH_TO_TEXT`)
-- [x] Buat `SpeechToTextManager.kt`: Wrapper Android `SpeechRecognizer` Bahasa Indonesia (`EXTRA_PREFER_OFFLINE=true` dengan *smart fallback* online, Xiaomi HyperOS shield, dan dialog suara sistem)
+- [x] Buat `SpeechToTextManager.kt`: Wrapper Android `SpeechRecognizer` Bahasa Indonesia (`EXTRA_PREFER_OFFLINE=true` dengan *smart fallback* online, Xiaomi HyperOS shield, validasi queryIntentServices, dan dialog suara sistem)
 - [x] Buat `KeywordMatcher.kt`: Ekstraksi kata kunci 9 kategori layanan publik (obat, dokter, darurat, kasir, transportasi, arah, pendaftaran, bantuan, sapaan)
 - [x] Buat `TextCardDisplay.kt`: Mode tampilan kartu visual kontras tinggi berukuran besar (26sp) untuk pengguna Tuli
 - [x] Tambahkan opsi pengetikan keyboard inline (*First-Class Inline Keyboard Input* + tombol *Tampilkan* + *IME Action Send*) tepat di atas kontrol mikrofon untuk fleksibilitas di lingkungan bising / hening
 - [x] Konfigurasi `android:windowSoftInputMode="adjustResize"` di `AndroidManifest.xml` agar transkrip visual tetap responsif saat keyboard virtual muncul
-- [x] Integrasikan tombol mikrofon, bar input keyboard, chip kalimat cepat, dan Bottom Navigation Bar pada `MainActivity.kt` & `activity_main.xml`
+- [x] Tambahkan tombol toggle manual Mode (Offline ↔ Online) pada header Arah 2 dengan feedback warna badge (Hijau/Biru)
+- [x] Implementasi In-App File & Crash Logger (`AppLogger.kt`, `CrashHandler.kt`, `FileProvider`, `app_debug.log`, `latest_crash.txt`) dengan opsi ganda "Salin Teks" dan "Bagikan Berkas"
+- [x] Integrasikan tombol mikrofon, bar input keyboard, chip kalimat cepat, tombol log debug, dan Bottom Navigation Bar pada `MainActivity.kt` & `activity_main.xml`
 - [x] Tambahkan unit test baru — **Total 27/27 Unit Test Lulus 100%**
 - [x] Rilis APK GitHub: [`SignToSpeech-v0.3.0-bidirectional.apk`](https://github.com/codename-alfa/BISINDO-Sign-to-Speech/releases/tag/v0.3.0-bidirectional)
 
