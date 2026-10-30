@@ -34,7 +34,7 @@ class SpeechToTextManager(
     private val onListeningStateChanged: (Boolean) -> Unit,
     private val onError: (Int, String) -> Unit,
     private val onOfflineModeChanged: (Boolean) -> Unit,
-    private val onFallbackToIntentRequested: (() -> Unit)? = null
+    private val onServiceUnavailable: (() -> Unit)? = null
 ) {
 
     private val mainHandler = Handler(Looper.getMainLooper())
@@ -58,10 +58,19 @@ class SpeechToTextManager(
     }
 
     /**
-     * Menginisialisasi SpeechRecognizer dengan penanganan multi-layer untuk mencegah
-     * SecurityException / crash pada MIUI / HyperOS (Xiaomi / Redmi).
+     * Menginisialisasi SpeechRecognizer menggunakan factory resmi Android
+     * (System-Default Binding) melalui Application Context.
+     * Pendekatan ini menghindari native Binder SIGSEGV dan SecurityException
+     * akibat pemaksaan ComponentName internal pada berbagai varian ROM OEM.
      */
     fun initRecognizer() {
+        if (!SpeechRecognizer.isRecognitionAvailable(context)) {
+            AppLogger.w(TAG, "SpeechRecognizer.isRecognitionAvailable(context) mengembalikan false.")
+            speechRecognizer = null
+            isServiceAvailable = false
+            return
+        }
+
         try {
             speechRecognizer?.destroy()
         } catch (t: Throwable) {
@@ -70,103 +79,18 @@ class SpeechToTextManager(
         speechRecognizer = null
         isServiceAvailable = false
 
-        // 1. Cek layanan RecognitionService yang benar-benar terdaftar di perangkat
-        val serviceIntent = Intent("android.speech.RecognitionService")
-        val availableServices = try {
-            context.packageManager.queryIntentServices(serviceIntent, 0)
+        try {
+            val appContext = context.applicationContext
+            val recognizer = SpeechRecognizer.createSpeechRecognizer(appContext)
+            recognizer.setRecognitionListener(createListener())
+            speechRecognizer = recognizer
+            isServiceAvailable = true
+            AppLogger.i(TAG, "SpeechRecognizer berhasil diinisialisasi via createSpeechRecognizer(applicationContext).")
         } catch (t: Throwable) {
-            AppLogger.e(TAG, "Gagal queryIntentServices: ${t.message}", t)
-            emptyList()
+            AppLogger.e(TAG, "Pengecualian saat createSpeechRecognizer: ${t.message}", t)
+            speechRecognizer = null
+            isServiceAvailable = false
         }
-
-        val availablePkgNames = availableServices.map { it.serviceInfo.packageName }.toSet()
-        AppLogger.i(TAG, "Layanan speech recognition terdaftar di OS: $availablePkgNames")
-
-        // 2. Prioritas 1: Google Recognition Services (Google Search App ATAU Speech Services by Google)
-        // Keduanya adalah mesin STT resmi Google:
-        // - com.google.android.googlequicksearchbox: Umum pada ponsel Android standar / Samsung
-        // - com.google.android.tts: "Speech Services by Google", umum pada Xiaomi / HyperOS / Android 12+
-        val preferredGooglePackages = listOf(
-            "com.google.android.googlequicksearchbox",
-            "com.google.android.tts"
-        )
-
-        for (targetPkg in preferredGooglePackages) {
-            val resolveInfo = availableServices.firstOrNull { it.serviceInfo.packageName == targetPkg }
-            if (resolveInfo != null) {
-                val googleComp = ComponentName(
-                    resolveInfo.serviceInfo.packageName,
-                    resolveInfo.serviceInfo.name
-                )
-                try {
-                    val recognizer = SpeechRecognizer.createSpeechRecognizer(context, googleComp)
-                    recognizer.setRecognitionListener(createListener())
-                    speechRecognizer = recognizer
-                    isServiceAvailable = true
-                    AppLogger.i(TAG, "SpeechRecognizer berhasil dibuat via Google Service dinamis: $googleComp")
-                    return
-                } catch (t: Throwable) {
-                    AppLogger.w(TAG, "Gagal mengikat ke Google Service $googleComp: ${t.message}")
-                }
-            }
-        }
-
-        // 3. Prioritas 2: Coba layanan pihak ketiga lain yang terdaftar dan BUKAN paket terlarang OEM
-        for (resolveInfo in availableServices) {
-            val pkg = resolveInfo.serviceInfo.packageName
-            if (pkg in BLACKLISTED_STT_PACKAGES ||
-                pkg.contains("miui", ignoreCase = true) ||
-                pkg.contains("xiaomi", ignoreCase = true)
-            ) {
-                AppLogger.d(TAG, "Abaikan service tidak kompatibel / rawan SecurityException: $pkg")
-                continue
-            }
-            if (pkg in preferredGooglePackages) {
-                continue // Sudah dievaluasi pada Prioritas 1
-            }
-            try {
-                val comp = ComponentName(pkg, resolveInfo.serviceInfo.name)
-                val recognizer = SpeechRecognizer.createSpeechRecognizer(context, comp)
-                recognizer.setRecognitionListener(createListener())
-                speechRecognizer = recognizer
-                isServiceAvailable = true
-                AppLogger.i(TAG, "SpeechRecognizer berhasil dibuat via service pihak ketiga: $comp")
-                return
-            } catch (t: Throwable) {
-                AppLogger.w(TAG, "Gagal mengikat ke service $pkg: ${t.message}")
-            }
-        }
-
-        // 4. Prioritas 3: Default createSpeechRecognizer(context) HANYA jika ada service valid yang aman
-        val hasValidService = availableServices.any {
-            val pkg = it.serviceInfo.packageName
-            pkg !in BLACKLISTED_STT_PACKAGES &&
-                    !pkg.contains("miui", ignoreCase = true) &&
-                    !pkg.contains("xiaomi", ignoreCase = true)
-        }
-
-        if (hasValidService) {
-            try {
-                if (SpeechRecognizer.isRecognitionAvailable(context)) {
-                    val recognizer = SpeechRecognizer.createSpeechRecognizer(context)
-                    recognizer.setRecognitionListener(createListener())
-                    speechRecognizer = recognizer
-                    isServiceAvailable = true
-                    AppLogger.i(TAG, "SpeechRecognizer berhasil dibuat via default createSpeechRecognizer")
-                    return
-                }
-            } catch (t: Throwable) {
-                AppLogger.e(TAG, "Pengecualian saat createSpeechRecognizer default: ${t.message}", t)
-                speechRecognizer = null
-                isServiceAvailable = false
-            }
-        } else {
-            AppLogger.w(TAG, "Tidak ditemukan layanan recognition yang aman untuk diikat langsung di OS tablet. Dialihkan ke Fallback Dialog / Keyboard.")
-        }
-
-        speechRecognizer = null
-        isServiceAvailable = false
-        AppLogger.i(TAG, "In-app SpeechRecognizer tidak diaktifkan. Mode aman Fallback System Voice Dialog / Keyboard disiapkan.")
     }
 
     private fun createListener(): RecognitionListener {
@@ -271,15 +195,15 @@ class SpeechToTextManager(
     private fun startListeningInternal(preferOffline: Boolean) {
         mainHandler.post {
             AppLogger.d(TAG, "startListeningInternal dipanggil (preferOffline: $preferOffline)")
-            if (speechRecognizer == null || !isServiceAvailable) {
+            if (speechRecognizer == null) {
                 initRecognizer()
             }
 
-            // Jika in-app SpeechRecognizer tetap tidak tersedia di perangkat ini (misal Redmi Pad 2 tanpa GMS),
-            // langsung panggil dialog suara sistem bawaan OS tanpa crash!
             if (speechRecognizer == null || !isServiceAvailable) {
-                AppLogger.w(TAG, "SpeechRecognizer tidak tersedia di perangkat. Mengalihkan ke fallback system voice dialog.")
-                onFallbackToIntentRequested?.invoke()
+                AppLogger.w(TAG, "SpeechRecognizer tidak tersedia. Mengalihkan ke input keyboard.")
+                isListening = false
+                onListeningStateChanged(false)
+                onServiceUnavailable?.invoke()
                 return@post
             }
 
@@ -303,19 +227,15 @@ class SpeechToTextManager(
                 onOfflineModeChanged(preferOffline)
                 AppLogger.i(TAG, "speechRecognizer.startListening berhasil dipanggil (preferOffline: $preferOffline)")
             } catch (se: SecurityException) {
-                AppLogger.e(TAG, "SecurityException saat speechRecognizer.startListening: ${se.message}. Menonaktifkan recognizer.", se)
-                try { speechRecognizer?.destroy() } catch (_: Throwable) {}
-                speechRecognizer = null
-                isServiceAvailable = false
+                AppLogger.e(TAG, "SecurityException saat speechRecognizer.startListening: ${se.message}.", se)
                 isListening = false
                 onListeningStateChanged(false)
-                onFallbackToIntentRequested?.invoke()
+                onError(-1, "Izin perekaman suara ditolak oleh sistem.")
             } catch (t: Throwable) {
                 AppLogger.e(TAG, "Pengecualian saat speechRecognizer.startListening: ${t.message}", t)
                 isListening = false
                 onListeningStateChanged(false)
-                // Fallback instan ke dialog suara sistem
-                onFallbackToIntentRequested?.invoke()
+                onError(-2, "Gagal mengaktifkan mikrofon: ${t.message}")
             }
         }
     }
