@@ -30,9 +30,9 @@ class SpeechToTextManager(
     private val context: Context,
     private val onPartialResult: (String) -> Unit,
     private val onFinalResult: (String) -> Unit,
-    private val onRmsChanged: (Float) -> Unit,
+    private val onRmsLevelChanged: (Float) -> Unit,
     private val onListeningStateChanged: (Boolean) -> Unit,
-    private val onError: (Int, String) -> Unit,
+    private val onErrorOccurred: (Int, String) -> Unit,
     private val onOfflineModeChanged: (Boolean) -> Unit,
     private val onServiceUnavailable: (() -> Unit)? = null
 ) {
@@ -106,7 +106,7 @@ class SpeechToTextManager(
             }
 
             override fun onRmsChanged(rmsdB: Float) {
-                onRmsChanged(rmsdB)
+                onRmsLevelChanged(rmsdB)
             }
 
             override fun onBufferReceived(buffer: ByteArray?) {}
@@ -135,7 +135,7 @@ class SpeechToTextManager(
                     return
                 }
 
-                onError(error, message)
+                onErrorOccurred(error, message)
             }
 
             override fun onResults(results: Bundle?) {
@@ -230,12 +230,12 @@ class SpeechToTextManager(
                 AppLogger.e(TAG, "SecurityException saat speechRecognizer.startListening: ${se.message}.", se)
                 isListening = false
                 onListeningStateChanged(false)
-                onError(-1, "Izin perekaman suara ditolak oleh sistem.")
+                onErrorOccurred(-1, "Izin perekaman suara ditolak oleh sistem.")
             } catch (t: Throwable) {
                 AppLogger.e(TAG, "Pengecualian saat speechRecognizer.startListening: ${t.message}", t)
                 isListening = false
                 onListeningStateChanged(false)
-                onError(-2, "Gagal mengaktifkan mikrofon: ${t.message}")
+                onErrorOccurred(-2, "Gagal mengaktifkan mikrofon: ${t.message}")
             }
         }
     }

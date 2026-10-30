@@ -209,7 +209,12 @@ object AppLogger {
     fun saveCrashDump(context: Context, throwable: Throwable) {
         val sw = StringWriter()
         throwable.printStackTrace(PrintWriter(sw))
-        val stackTrace = sw.toString()
+        val rawStackTrace = sw.toString()
+        val stackTrace = if (rawStackTrace.length > 20_000) {
+            rawStackTrace.take(10_000) + "\n... [Stack trace dipotong karena terlalu panjang: ${rawStackTrace.length} karakter] ...\n" + rawStackTrace.takeLast(5_000)
+        } else {
+            rawStackTrace
+        }
 
         e("CRASH_SENTINEL", "FATAL UNCAUGHT EXCEPTION: ${throwable.javaClass.name}: ${throwable.message}", throwable)
 
