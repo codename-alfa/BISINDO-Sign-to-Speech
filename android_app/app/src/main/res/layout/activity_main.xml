@@ -321,10 +321,27 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@color/chip_inactive_bg"
-                android:paddingHorizontal="8dp"
-                android:paddingVertical="4dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="5dp"
                 android:text="@string/arah2_mode_offline"
                 android:textColor="@color/landmark_point"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/btnArah2DebugLog"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:background="@color/chip_inactive_bg"
+                android:clickable="true"
+                android:focusable="true"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="5dp"
+                android:text="@string/arah2_btn_log"
+                android:textColor="@color/white"
                 android:textSize="11sp"
                 android:textStyle="bold" />
 
@@ -337,10 +354,10 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:paddingHorizontal="10dp"
-                android:paddingVertical="4dp"
+                android:paddingVertical="5dp"
                 android:text="@string/arah2_clear"
                 android:textColor="@color/white"
-                android:textSize="12sp" />
+                android:textSize="11sp" />
         </LinearLayout>
 
         <!-- Quick Presets Horizontal Scroll -->

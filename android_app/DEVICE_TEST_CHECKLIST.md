@@ -101,7 +101,8 @@ Pengujian interaksi dari lawan bicara Dengar ke pengguna Tuli:
 ### Verifikasi Fitur Kontrol & Aksesibilitas Arah 2:
 - [ ] **Toggle Mikrofon**: Mengetuk tombol mikrofon menyalakan perekaman (`⏹️ Selesai Bicara`, warna merah), mengetuk lagi menghentikan perekaman (`🎤 Ketuk untuk Bicara`, warna biru).
 - [ ] **Visual Meter Audio**: Bar hijau berdenyut merespons volume suara saat berbicara.
-- [ ] **Smart Offline Fallback**: Pengenalan suara berjalan mulus (baik offline maupun fallback sistem online).
+- [ ] **Smart Offline Fallback & Manual Toggle**: Mengetuk badge mode beralih manual antara `Mode: Offline` (hijau) dan `Mode: Online` (biru).
+- [ ] **In-App Log & Crash Viewer (`🐞 Log`)**: Mengetuk tombol `🐞 Log` membuka dialog diagnostik perangkat dengan opsi "Salin Teks" ke clipboard dan "Bagikan Berkas" via Android Share Sheet.
 - [ ] **Chip Kalimat Cepat**: Mengetuk chip langsung memuat teks dan kartu visual tanpa mikrofon.
 - [ ] **Ketik Keyboard Inline**: Mengetik kalimat pada kolom input bawah lalu menekan tombol "Tampilkan" atau Enter keyboard langsung menampilkan teks 26sp + kartu visual, menutup keyboard secara otomatis, dan menghentikan mikrofon jika sedang aktif.
 - [ ] **Isolasi Kamera & TTS**: Saat berpindah ke tab *"Suara ➔ Teks"*, kamera berhenti menganalisis frame dan TTS berhenti bersuara; saat kembali ke *"Isyarat ➔ Suara"*, kamera menyala kembali.

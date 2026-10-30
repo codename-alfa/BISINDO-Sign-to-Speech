@@ -45,6 +45,7 @@ class TextCardDisplay(
     private val tvMicIcon: TextView,
     private val tvMicLabel: TextView,
     private val tvArah2ModeBadge: TextView,
+    private val btnArah2DebugLog: View,
     private val btnArah2Clear: TextView,
     private val scrollArah2Content: ScrollView,
     private val etArah2KeyboardInput: EditText,
@@ -52,7 +53,9 @@ class TextCardDisplay(
     private val onPresetSelected: (String) -> Unit,
     private val onManualInputSubmitted: (String) -> Unit,
     private val onClearClicked: () -> Unit,
-    private val onToggleMicClicked: () -> Unit
+    private val onToggleMicClicked: () -> Unit,
+    private val onToggleModeClicked: () -> Unit,
+    private val onShowLogClicked: () -> Unit
 ) {
 
     init {
@@ -68,6 +71,14 @@ class TextCardDisplay(
         btnArah2Clear.setOnClickListener {
             clear()
             onClearClicked()
+        }
+
+        tvArah2ModeBadge.setOnClickListener {
+            onToggleModeClicked()
+        }
+
+        btnArah2DebugLog.setOnClickListener {
+            onShowLogClicked()
         }
 
         btnSubmitKeyboard.setOnClickListener {
@@ -302,14 +313,14 @@ class TextCardDisplay(
     }
 
     /**
-     * Memperbarui indikator status offline vs sistem online.
+     * Memperbarui indikator status offline vs online.
      */
     fun updateOfflineBadge(isOffline: Boolean) {
         if (isOffline) {
             tvArah2ModeBadge.text = context.getString(R.string.arah2_mode_offline)
             tvArah2ModeBadge.setTextColor(ContextCompat.getColor(context, R.color.landmark_point))
         } else {
-            tvArah2ModeBadge.text = context.getString(R.string.arah2_mode_system)
+            tvArah2ModeBadge.text = context.getString(R.string.arah2_mode_online)
             tvArah2ModeBadge.setTextColor(ContextCompat.getColor(context, R.color.color_nav_active))
         }
     }
