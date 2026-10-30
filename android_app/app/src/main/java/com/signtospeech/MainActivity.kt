@@ -216,7 +216,7 @@ class MainActivity : AppCompatActivity(), HandLandmarkerHelper.LandmarkerListene
                     textCardDisplay.updateAnalysis(analysis)
                 }
             },
-            onRmsChanged = { rmsdB ->
+            onRmsLevelChanged = { rmsdB ->
                 runOnUiThread {
                     textCardDisplay.updateAudioLevel(rmsdB)
                 }
@@ -226,7 +226,7 @@ class MainActivity : AppCompatActivity(), HandLandmarkerHelper.LandmarkerListene
                     textCardDisplay.updateListeningState(isListening)
                 }
             },
-            onError = { _, errorMessage ->
+            onErrorOccurred = { _, errorMessage ->
                 runOnUiThread {
                     Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show()
                 }
@@ -309,11 +309,21 @@ class MainActivity : AppCompatActivity(), HandLandmarkerHelper.LandmarkerListene
     }
 
     private fun copyLogToClipboard(text: String) {
-        val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
-        val clip = ClipData.newPlainText("SignToSpeech_Diagnostics", text)
-        clipboard?.setPrimaryClip(clip)
-        Toast.makeText(this, getString(R.string.log_copied_toast), Toast.LENGTH_SHORT).show()
-        AppLogger.i(TAG, "Log berhasil disalin ke clipboard pengguna")
+        try {
+            val safeText = if (text.length > 50_000) {
+                text.take(25_000) + "\n\n... [Log dipotong untuk clipboard, silakan gunakan 'Bagikan Berkas' untuk log lengkap] ...\n\n" + text.takeLast(25_000)
+            } else {
+                text
+            }
+            val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
+            val clip = ClipData.newPlainText("SignToSpeech_Diagnostics", safeText)
+            clipboard?.setPrimaryClip(clip)
+            Toast.makeText(this, getString(R.string.log_copied_toast), Toast.LENGTH_SHORT).show()
+            AppLogger.i(TAG, "Log berhasil disalin ke clipboard pengguna")
+        } catch (t: Throwable) {
+            AppLogger.e(TAG, "Gagal menyalin log ke clipboard: ${t.message}", t)
+            Toast.makeText(this, "Ukuran log terlalu besar untuk clipboard. Silakan gunakan opsi Bagikan Berkas.", Toast.LENGTH_LONG).show()
+        }
     }
 
     private fun shareLogFile() {
