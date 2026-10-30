@@ -82,28 +82,36 @@ class SpeechToTextManager(
         val availablePkgNames = availableServices.map { it.serviceInfo.packageName }.toSet()
         AppLogger.i(TAG, "Layanan speech recognition terdaftar di OS: $availablePkgNames")
 
-        // 2. Prioritas 1: Google QuickSearchBox (Google App resmi) dengan resolusi class name dinamis
-        val googleResolveInfo = availableServices.firstOrNull {
-            it.serviceInfo.packageName == "com.google.android.googlequicksearchbox"
-        }
-        if (googleResolveInfo != null) {
-            val googleComp = ComponentName(
-                googleResolveInfo.serviceInfo.packageName,
-                googleResolveInfo.serviceInfo.name
-            )
-            try {
-                val recognizer = SpeechRecognizer.createSpeechRecognizer(context, googleComp)
-                recognizer.setRecognitionListener(createListener())
-                speechRecognizer = recognizer
-                isServiceAvailable = true
-                AppLogger.i(TAG, "SpeechRecognizer berhasil dibuat via Google Search Service dinamis: $googleComp")
-                return
-            } catch (t: Throwable) {
-                AppLogger.w(TAG, "Gagal mengikat ke Google Search Service $googleComp: ${t.message}")
+        // 2. Prioritas 1: Google Recognition Services (Google Search App ATAU Speech Services by Google)
+        // Keduanya adalah mesin STT resmi Google:
+        // - com.google.android.googlequicksearchbox: Umum pada ponsel Android standar / Samsung
+        // - com.google.android.tts: "Speech Services by Google", umum pada Xiaomi / HyperOS / Android 12+
+        val preferredGooglePackages = listOf(
+            "com.google.android.googlequicksearchbox",
+            "com.google.android.tts"
+        )
+
+        for (targetPkg in preferredGooglePackages) {
+            val resolveInfo = availableServices.firstOrNull { it.serviceInfo.packageName == targetPkg }
+            if (resolveInfo != null) {
+                val googleComp = ComponentName(
+                    resolveInfo.serviceInfo.packageName,
+                    resolveInfo.serviceInfo.name
+                )
+                try {
+                    val recognizer = SpeechRecognizer.createSpeechRecognizer(context, googleComp)
+                    recognizer.setRecognitionListener(createListener())
+                    speechRecognizer = recognizer
+                    isServiceAvailable = true
+                    AppLogger.i(TAG, "SpeechRecognizer berhasil dibuat via Google Service dinamis: $googleComp")
+                    return
+                } catch (t: Throwable) {
+                    AppLogger.w(TAG, "Gagal mengikat ke Google Service $googleComp: ${t.message}")
+                }
             }
         }
 
-        // 3. Prioritas 2: Coba layanan pihak ketiga lain yang terdaftar dan BUKAN paket terlarang
+        // 3. Prioritas 2: Coba layanan pihak ketiga lain yang terdaftar dan BUKAN paket terlarang OEM
         for (resolveInfo in availableServices) {
             val pkg = resolveInfo.serviceInfo.packageName
             if (pkg in BLACKLISTED_STT_PACKAGES ||
@@ -113,7 +121,7 @@ class SpeechToTextManager(
                 AppLogger.d(TAG, "Abaikan service tidak kompatibel / rawan SecurityException: $pkg")
                 continue
             }
-            if (pkg == "com.google.android.googlequicksearchbox") {
+            if (pkg in preferredGooglePackages) {
                 continue // Sudah dievaluasi pada Prioritas 1
             }
             try {
@@ -200,14 +208,6 @@ class SpeechToTextManager(
                     mainHandler.postDelayed({
                         startListeningInternal(preferOffline = false)
                     }, 200)
-                    return
-                }
-
-                // Jika terjadi ERROR_CLIENT (5) atau ERROR_INSUFFICIENT_PERMISSIONS pada OEM ROM,
-                // alihkan otomatis ke fallback dialog suara sistem yang 100% aman
-                if (error == SpeechRecognizer.ERROR_CLIENT || error == SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS) {
-                    AppLogger.w(TAG, "Error client/binding pada SpeechRecognizer. Mengaktifkan fallback dialog suara sistem...")
-                    onFallbackToIntentRequested?.invoke()
                     return
                 }
 
@@ -380,7 +380,6 @@ class SpeechToTextManager(
          * atau sering melempar SecurityException pada Android 14/15 HyperOS.
          */
         val BLACKLISTED_STT_PACKAGES = setOf(
-            "com.google.android.tts",       // Paket TTS synthesis, unexported untuk pemanggilan STT pihak ketiga di Android 15
             "com.google.android.as",        // Android System Intelligence, sistem internal tertutup
             "com.miui.voiceassist",         // Asisten OEM MIUI/Xiaomi internal
             "com.xiaomi.mibrain.speech"     // Mesin suara OEM Xiaomi internal
