@@ -11,7 +11,6 @@ import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
-import android.speech.RecognizerIntent
 import android.util.Log
 import android.view.View
 import android.widget.ScrollView
@@ -91,78 +90,6 @@ class MainActivity : AppCompatActivity(), HandLandmarkerHelper.LandmarkerListene
                 getString(R.string.audio_permission_required),
                 Toast.LENGTH_LONG
             ).show()
-        }
-    }
-
-    private val speechDialogLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == RESULT_OK && result.data != null) {
-            val matches = result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
-            val recognizedText = matches?.firstOrNull()?.trim()
-            if (!recognizedText.isNullOrEmpty()) {
-                val analysis = KeywordMatcher.match(recognizedText)
-                textCardDisplay.updateAnalysis(analysis)
-            }
-        }
-        textCardDisplay.updateListeningState(false)
-    }
-
-    private fun launchSystemSpeechDialog() {
-        try {
-            val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-                putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-                putExtra(RecognizerIntent.EXTRA_LANGUAGE, "id-ID")
-                putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, "id-ID")
-                putExtra(RecognizerIntent.EXTRA_PROMPT, getString(R.string.arah2_instruction))
-            }
-
-            val activities = packageManager.queryIntentActivities(intent, 0)
-            
-            // Filter hanya aktivitas yang diekspor (exported == true) dan BUKAN paket terlarang / unexported stub
-            val validActivities = activities.filter { resolveInfo ->
-                val actInfo = resolveInfo.activityInfo
-                val pkg = actInfo.packageName
-                actInfo.exported &&
-                        pkg !in SpeechToTextManager.BLACKLISTED_STT_PACKAGES &&
-                        !pkg.contains("miui", ignoreCase = true) &&
-                        !pkg.contains("xiaomi", ignoreCase = true)
-            }
-
-            if (validActivities.isEmpty()) {
-                AppLogger.w(TAG, "Tidak ada aplikasi dialog suara sistem yang valid/diekspor (ditemukan ${activities.size} stub tertutup: ${activities.map { it.activityInfo.name }}). Beralih ke input keyboard.")
-                Toast.makeText(
-                    this,
-                    "Layanan suara sistem tidak tersedia di perangkat ini. Silakan gunakan pengetikan teks.",
-                    Toast.LENGTH_LONG
-                ).show()
-                textCardDisplay.updateListeningState(false)
-                textCardDisplay.focusKeyboardInput()
-                return
-            }
-
-            val chosenActivity = validActivities.first()
-            intent.setClassName(chosenActivity.activityInfo.packageName, chosenActivity.activityInfo.name)
-            AppLogger.i(TAG, "Meluncurkan system voice dialog via: ${chosenActivity.activityInfo.packageName}/${chosenActivity.activityInfo.name}")
-            speechDialogLauncher.launch(intent)
-        } catch (se: SecurityException) {
-            AppLogger.e(TAG, "SecurityException saat meluncurkan dialog suara: ${se.message}. Mengalihkan ke keyboard.", se)
-            Toast.makeText(
-                this,
-                "Layanan suara sistem tidak diizinkan oleh OS tablet. Mengalihkan ke opsi pengetikan keyboard.",
-                Toast.LENGTH_LONG
-            ).show()
-            textCardDisplay.updateListeningState(false)
-            textCardDisplay.focusKeyboardInput()
-        } catch (e: Exception) {
-            AppLogger.e(TAG, "Gagal meluncurkan dialog suara sistem: ${e.message}", e)
-            Toast.makeText(
-                this,
-                "Layanan suara tidak tersedia pada perangkat. Silakan gunakan opsi pengetikan keyboard.",
-                Toast.LENGTH_LONG
-            ).show()
-            textCardDisplay.updateListeningState(false)
-            textCardDisplay.focusKeyboardInput()
         }
     }
 
@@ -309,9 +236,15 @@ class MainActivity : AppCompatActivity(), HandLandmarkerHelper.LandmarkerListene
                     textCardDisplay.updateOfflineBadge(isOffline)
                 }
             },
-            onFallbackToIntentRequested = {
+            onServiceUnavailable = {
                 runOnUiThread {
-                    launchSystemSpeechDialog()
+                    Toast.makeText(
+                        this,
+                        "Layanan suara tidak tersedia pada perangkat. Silakan gunakan opsi pengetikan keyboard.",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    textCardDisplay.updateListeningState(false)
+                    textCardDisplay.focusKeyboardInput()
                 }
             }
         )
@@ -417,11 +350,24 @@ class MainActivity : AppCompatActivity(), HandLandmarkerHelper.LandmarkerListene
                 if (speechToTextManager.isServiceAvailable) {
                     speechToTextManager.toggleListening()
                 } else {
-                    launchSystemSpeechDialog()
+                    AppLogger.w(TAG, "Layanan speech recognizer tidak tersedia. Beralih ke input keyboard.")
+                    Toast.makeText(
+                        this,
+                        "Layanan suara tidak tersedia di perangkat ini. Silakan gunakan pengetikan teks.",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    textCardDisplay.updateListeningState(false)
+                    textCardDisplay.focusKeyboardInput()
                 }
             } catch (t: Throwable) {
                 AppLogger.e(TAG, "Pengecualian saat toggleListening: ${t.message}", t)
-                launchSystemSpeechDialog()
+                Toast.makeText(
+                    this,
+                    "Layanan suara tidak tersedia pada perangkat. Silakan gunakan opsi pengetikan keyboard.",
+                    Toast.LENGTH_LONG
+                ).show()
+                textCardDisplay.updateListeningState(false)
+                textCardDisplay.focusKeyboardInput()
             }
         } else {
             AppLogger.i(TAG, "Meminta izin RECORD_AUDIO...")
