@@ -29,13 +29,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="top"
-        android:layout_marginHorizontal="12dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginHorizontal="@dimen/hud_horizontal_margin"
+        android:layout_marginTop="@dimen/top_safe_margin"
         android:background="@color/badge_bg"
         android:elevation="6dp"
         android:orientation="vertical"
-        android:paddingHorizontal="14dp"
-        android:paddingVertical="10dp">
+        android:paddingHorizontal="@dimen/hud_padding_horizontal"
+        android:paddingVertical="@dimen/hud_padding_vertical">
 
         <!-- Row 1: Hand Detection Status + Detailed HUD Latency Metrics -->
         <LinearLayout
@@ -57,7 +57,7 @@
                 android:layout_width="1dp"
                 android:layout_height="14dp"
                 android:layout_marginHorizontal="8dp"
-                android:background="#44FFFFFF" />
+                android:background="@color/divider_hud" />
 
             <TextView
                 android:id="@+id/tvFps"
@@ -152,10 +152,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_marginEnd="16dp"
+        android:layout_marginEnd="@dimen/screen_horizontal_padding"
         android:layout_marginBottom="252dp"
         android:contentDescription="Switch Camera"
-        app:backgroundTint="#263238"
+        app:backgroundTint="@color/fab_switch_camera_bg"
         app:elevation="6dp"
         app:fabSize="mini"
         app:srcCompat="@android:drawable/ic_menu_rotate"
@@ -167,11 +167,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:layout_marginBottom="56dp"
+        android:layout_marginBottom="@dimen/bottom_nav_height"
         android:background="@color/panel_bg"
         android:elevation="8dp"
         android:orientation="vertical"
-        android:paddingHorizontal="16dp"
+        android:paddingHorizontal="@dimen/screen_horizontal_padding"
         android:paddingTop="12dp"
         android:paddingBottom="20dp">
 
@@ -228,7 +228,7 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginVertical="8dp"
-            android:background="#33FFFFFF" />
+            android:background="@color/divider_subtle" />
 
         <!-- Main Prediction Label & Confidence Progress -->
         <LinearLayout
@@ -244,7 +244,7 @@
                 android:minWidth="72dp"
                 android:text="—"
                 android:textColor="@color/landmark_point"
-                android:textSize="34sp"
+                android:textSize="@dimen/text_size_prediction_main"
                 android:textStyle="bold" />
 
             <LinearLayout
@@ -291,7 +291,7 @@
         android:id="@+id/arah2Container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="56dp"
+        android:layout_marginBottom="@dimen/bottom_nav_height"
         android:background="@color/color_arah2_bg"
         android:elevation="7dp"
         android:orientation="vertical"
@@ -301,10 +301,10 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="@dimen/top_safe_margin"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingHorizontal="16dp"
+            android:paddingHorizontal="@dimen/screen_horizontal_padding"
             android:paddingVertical="10dp">
 
             <TextView
@@ -382,7 +382,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:fillViewport="true"
-            android:paddingHorizontal="16dp">
+            android:paddingHorizontal="@dimen/screen_horizontal_padding">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -426,7 +426,7 @@
                         android:text="@string/arah2_placeholder"
                         android:textColor="@color/white"
                         android:textIsSelectable="true"
-                        android:textSize="26sp"
+                        android:textSize="@dimen/text_size_arah2_transcript"
                         android:textStyle="bold" />
                 </LinearLayout>
 
@@ -459,9 +459,9 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#161F30"
+            android:background="@color/arah2_action_bar_bg"
             android:orientation="vertical"
-            android:paddingHorizontal="16dp"
+            android:paddingHorizontal="@dimen/screen_horizontal_padding"
             android:paddingTop="10dp"
             android:paddingBottom="12dp">
 
@@ -483,17 +483,17 @@
                     android:imeOptions="actionSend"
                     android:inputType="textCapSentences"
                     android:maxLines="3"
-                    android:minHeight="44dp"
+                    android:minHeight="@dimen/input_min_height"
                     android:paddingHorizontal="14dp"
                     android:paddingVertical="10dp"
                     android:textColor="@color/white"
                     android:textColorHint="@color/text_muted"
-                    android:textSize="14sp" />
+                    android:textSize="@dimen/text_size_input" />
 
                 <TextView
                     android:id="@+id/btnSubmitKeyboard"
                     android:layout_width="wrap_content"
-                    android:layout_height="44dp"
+                    android:layout_height="@dimen/input_min_height"
                     android:layout_marginStart="8dp"
                     android:background="@drawable/bg_arah2_btn_submit"
                     android:clickable="true"
@@ -502,7 +502,7 @@
                     android:paddingHorizontal="16dp"
                     android:text="@string/arah2_btn_submit"
                     android:textColor="@color/white"
-                    android:textSize="13sp"
+                    android:textSize="@dimen/text_size_body"
                     android:textStyle="bold" />
             </LinearLayout>
 
@@ -552,9 +552,9 @@
     <LinearLayout
         android:id="@+id/bottomNavDirection"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="@dimen/bottom_nav_height"
         android:layout_gravity="bottom"
-        android:background="#0F172A"
+        android:background="@color/bottom_nav_bg"
         android:elevation="14dp"
         android:orientation="horizontal">
 
@@ -590,7 +590,7 @@
             android:layout_width="1dp"
             android:layout_height="28dp"
             android:layout_gravity="center_vertical"
-            android:background="#334155" />
+            android:background="@color/divider_nav" />
 
         <LinearLayout
             android:id="@+id/tabArah2"

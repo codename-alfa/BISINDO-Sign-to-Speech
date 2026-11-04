@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Layout & Navigation -->
+    <dimen name="bottom_nav_height">56dp</dimen>
+    <dimen name="top_safe_margin">32dp</dimen>
+    <dimen name="screen_horizontal_padding">16dp</dimen>
+    <dimen name="card_corner_radius">8dp</dimen>
+    <dimen name="input_min_height">44dp</dimen>
+    <dimen name="hud_horizontal_margin">12dp</dimen>
+    <dimen name="hud_padding_horizontal">14dp</dimen>
+    <dimen name="hud_padding_vertical">10dp</dimen>
+
+    <!-- Typography Sizes -->
+    <dimen name="text_size_prediction_main">34sp</dimen>
+    <dimen name="text_size_arah2_transcript">26sp</dimen>
+    <dimen name="text_size_header">16sp</dimen>
+    <dimen name="text_size_mic_label">15sp</dimen>
+    <dimen name="text_size_input">14sp</dimen>
+    <dimen name="text_size_body">13sp</dimen>
+    <dimen name="text_size_chip">12sp</dimen>
+    <dimen name="text_size_caption">11sp</dimen>
+</resources>
+
