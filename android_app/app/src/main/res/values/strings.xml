@@ -5,7 +5,7 @@
     <string name="status_searching">Mencari tangan...</string>
     <string name="status_detected">%1$d tangan terdeteksi</string>
     <string name="fps_format">FPS: %1$.1f</string>
-    <string name="mode_letter">Huruf (A–Z)</string>
+    <string name="mode_letter">Ejaan (A–Z · 1–10)</string>
     <string name="mode_word">Kata</string>
     <string name="delegate_cpu">CPU</string>
     <string name="delegate_gpu">GPU</string>

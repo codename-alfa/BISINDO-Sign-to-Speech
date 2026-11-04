@@ -1,0 +1,1929 @@
+{
+  "golden_reference_source": "https://pkplk.kemendikdasmen.go.id/sibi/",
+  "total_classes": 36,
+  "classes": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "H",
+    "I",
+    "J",
+    "K",
+    "L",
+    "M",
+    "N",
+    "O",
+    "P",
+    "Q",
+    "R",
+    "S",
+    "T",
+    "U",
+    "V",
+    "W",
+    "X",
+    "Y",
+    "Z",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10"
+  ],
+  "provider_cosine_threshold": 0.78,
+  "sample_cosine_threshold": 0.82,
+  "provider_alignment_audit": {
+    "alfarizy29_combined_sibi:A": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.9885,
+      "samples_kept": 88,
+      "samples_dropped_as_outliers": 12
+    },
+    "cached_achmadnoer:A": {
+      "status": "REJECTED_RULE_MISMATCH",
+      "cosine_sim_to_kemendikdasmen": 0.6791,
+      "samples_dropped": 7
+    },
+    "renitriyaningsih_sibi:A": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.975,
+      "samples_kept": 35,
+      "samples_dropped_as_outliers": 3
+    },
+    "alfarizy29_combined_sibi:B": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.9903,
+      "samples_kept": 98,
+      "samples_dropped_as_outliers": 4
+    },
+    "cached_achmadnoer:B": {
+      "status": "REJECTED_RULE_MISMATCH",
+      "cosine_sim_to_kemendikdasmen": 0.0826,
+      "samples_dropped": 5
+    },
+    "renitriyaningsih_sibi:B": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.987,
+      "samples_kept": 39,
+      "samples_dropped_as_outliers": 0
+    },
+    "alfarizy29_combined_sibi:C": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.9773,
+      "samples_kept": 42,
+      "samples_dropped_as_outliers": 8
+    },
+    "cached_achmadnoer:C": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.7829,
+      "samples_kept": 4,
+      "samples_dropped_as_outliers": 8
+    },
+    "renitriyaningsih_sibi:C": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.9907,
+      "samples_kept": 38,
+      "samples_dropped_as_outliers": 2
+    },
+    "alfarizy29_combined_sibi:D": {
+      "status": "REJECTED_RULE_MISMATCH",
+      "cosine_sim_to_kemendikdasmen": 0.7494,
+      "samples_dropped": 76
+    },
+    "cached_achmadnoer:D": {
+      "status": "REJECTED_RULE_MISMATCH",
+      "cosine_sim_to_kemendikdasmen": 0.6438,
+      "samples_dropped": 7
+    },
+    "renitriyaningsih_sibi:D": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.8706,
+      "samples_kept": 35,
+      "samples_dropped_as_outliers": 5
+    },
+    "alfarizy29_combined_sibi:E": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.9922,
+      "samples_kept": 68,
+      "samples_dropped_as_outliers": 2
+    },
+    "cached_achmadnoer:E": {
+      "status": "REJECTED_RULE_MISMATCH",
+      "cosine_sim_to_kemendikdasmen": 0.1363,
+      "samples_dropped": 12
+    },
+    "renitriyaningsih_sibi:E": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.9957,
+      "samples_kept": 37,
+      "samples_dropped_as_outliers": 3
+    },
+    "alfarizy29_combined_sibi:F": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.9536,
+      "samples_kept": 62,
+      "samples_dropped_as_outliers": 0
+    },
+    "cached_achmadnoer:F": {
+      "status": "REJECTED_RULE_MISMATCH",
+      "cosine_sim_to_kemendikdasmen": 0.2026,
+      "samples_dropped": 6
+    },
+    "renitriyaningsih_sibi:F": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.9786,
+      "samples_kept": 40,
+      "samples_dropped_as_outliers": 0
+    },
+    "alfarizy29_combined_sibi:G": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.9945,
+      "samples_kept": 84,
+      "samples_dropped_as_outliers": 4
+    },
+    "cached_achmadnoer:G": {
+      "status": "REJECTED_RULE_MISMATCH",
+      "cosine_sim_to_kemendikdasmen": 0.7306,
+      "samples_dropped": 8
+    },
+    "renitriyaningsih_sibi:G": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.9816,
+      "samples_kept": 40,
+      "samples_dropped_as_outliers": 0
+    },
+    "alfarizy29_combined_sibi:H": {
+      "status": "REJECTED_RULE_MISMATCH",
+      "cosine_sim_to_kemendikdasmen": -0.5621,
+      "samples_dropped": 88
+    },
+    "cached_achmadnoer:H": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.8699,
+      "samples_kept": 8,
+      "samples_dropped_as_outliers": 0
+    },
+    "renitriyaningsih_sibi:H": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.9042,
+      "samples_kept": 34,
+      "samples_dropped_as_outliers": 6
+    },
+    "alfarizy29_combined_sibi:I": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.9692,
+      "samples_kept": 98,
+      "samples_dropped_as_outliers": 2
+    },
+    "cached_achmadnoer:I": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.9001,
+      "samples_kept": 4,
+      "samples_dropped_as_outliers": 8
+    },
+    "renitriyaningsih_sibi:I": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.9796,
+      "samples_kept": 35,
+      "samples_dropped_as_outliers": 2
+    },
+    "alfarizy29_combined_sibi:J": {
+      "status": "REJECTED_RULE_MISMATCH",
+      "cosine_sim_to_kemendikdasmen": 0.7667,
+      "samples_dropped": 57
+    },
+    "cached_achmadnoer:J": {
+      "status": "REJECTED_RULE_MISMATCH",
+      "cosine_sim_to_kemendikdasmen": 0.5596,
+      "samples_dropped": 12
+    },
+    "alfarizy29_combined_sibi:K": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.9046,
+      "samples_kept": 60,
+      "samples_dropped_as_outliers": 20
+    },
+    "cached_achmadnoer:K": {
+      "status": "REJECTED_RULE_MISMATCH",
+      "cosine_sim_to_kemendikdasmen": -0.3276,
+      "samples_dropped": 6
+    },
+    "renitriyaningsih_sibi:K": {
+      "status": "REJECTED_RULE_MISMATCH",
+      "cosine_sim_to_kemendikdasmen": 0.5946,
+      "samples_dropped": 40
+    },
+    "alfarizy29_combined_sibi:L": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.9909,
+      "samples_kept": 68,
+      "samples_dropped_as_outliers": 6
+    },
+    "cached_achmadnoer:L": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.9392,
+      "samples_kept": 5,
+      "samples_dropped_as_outliers": 5
+    },
+    "renitriyaningsih_sibi:L": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.9857,
+      "samples_kept": 36,
+      "samples_dropped_as_outliers": 4
+    },
+    "alfarizy29_combined_sibi:M": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.9694,
+      "samples_kept": 106,
+      "samples_dropped_as_outliers": 2
+    },
+    "cached_achmadnoer:M": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.8927,
+      "samples_kept": 2,
+      "samples_dropped_as_outliers": 0
+    },
+    "renitriyaningsih_sibi:M": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.9666,
+      "samples_kept": 38,
+      "samples_dropped_as_outliers": 2
+    },
+    "alfarizy29_combined_sibi:N": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.9819,
+      "samples_kept": 120,
+      "samples_dropped_as_outliers": 2
+    },
+    "cached_achmadnoer:N": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.8688,
+      "samples_kept": 7,
+      "samples_dropped_as_outliers": 0
+    },
+    "renitriyaningsih_sibi:N": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.9871,
+      "samples_kept": 33,
+      "samples_dropped_as_outliers": 4
+    },
+    "alfarizy29_combined_sibi:O": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.8144,
+      "samples_kept": 40,
+      "samples_dropped_as_outliers": 44
+    },
+    "cached_achmadnoer:O": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.8112,
+      "samples_kept": 4,
+      "samples_dropped_as_outliers": 8
+    },
+    "renitriyaningsih_sibi:O": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.975,
+      "samples_kept": 40,
+      "samples_dropped_as_outliers": 0
+    },
+    "alfarizy29_combined_sibi:P": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.9455,
+      "samples_kept": 30,
+      "samples_dropped_as_outliers": 34
+    },
+    "cached_achmadnoer:P": {
+      "status": "REJECTED_RULE_MISMATCH",
+      "cosine_sim_to_kemendikdasmen": -0.5777,
+      "samples_dropped": 5
+    },
+    "renitriyaningsih_sibi:P": {
+      "status": "REJECTED_RULE_MISMATCH",
+      "cosine_sim_to_kemendikdasmen": -0.3465,
+      "samples_dropped": 40
+    },
+    "alfarizy29_combined_sibi:Q": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.9018,
+      "samples_kept": 32,
+      "samples_dropped_as_outliers": 14
+    },
+    "cached_achmadnoer:Q": {
+      "status": "REJECTED_RULE_MISMATCH",
+      "cosine_sim_to_kemendikdasmen": -0.6552,
+      "samples_dropped": 5
+    },
+    "renitriyaningsih_sibi:Q": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.8803,
+      "samples_kept": 15,
+      "samples_dropped_as_outliers": 23
+    },
+    "alfarizy29_combined_sibi:R": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.991,
+      "samples_kept": 94,
+      "samples_dropped_as_outliers": 4
+    },
+    "cached_achmadnoer:R": {
+      "status": "REJECTED_RULE_MISMATCH",
+      "cosine_sim_to_kemendikdasmen": 0.6038,
+      "samples_dropped": 12
+    },
+    "renitriyaningsih_sibi:R": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.9867,
+      "samples_kept": 36,
+      "samples_dropped_as_outliers": 2
+    },
+    "alfarizy29_combined_sibi:S": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.9773,
+      "samples_kept": 108,
+      "samples_dropped_as_outliers": 2
+    },
+    "renitriyaningsih_sibi:S": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.9869,
+      "samples_kept": 37,
+      "samples_dropped_as_outliers": 2
+    },
+    "alfarizy29_combined_sibi:T": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.9666,
+      "samples_kept": 92,
+      "samples_dropped_as_outliers": 6
+    },
+    "cached_achmadnoer:T": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.8244,
+      "samples_kept": 1,
+      "samples_dropped_as_outliers": 1
+    },
+    "renitriyaningsih_sibi:T": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.9871,
+      "samples_kept": 30,
+      "samples_dropped_as_outliers": 5
+    },
+    "alfarizy29_combined_sibi:U": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.9931,
+      "samples_kept": 94,
+      "samples_dropped_as_outliers": 4
+    },
+    "cached_achmadnoer:U": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.8967,
+      "samples_kept": 6,
+      "samples_dropped_as_outliers": 6
+    },
+    "renitriyaningsih_sibi:U": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.976,
+      "samples_kept": 33,
+      "samples_dropped_as_outliers": 3
+    },
+    "alfarizy29_combined_sibi:V": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.9931,
+      "samples_kept": 100,
+      "samples_dropped_as_outliers": 2
+    },
+    "cached_achmadnoer:V": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.9688,
+      "samples_kept": 7,
+      "samples_dropped_as_outliers": 5
+    },
+    "renitriyaningsih_sibi:V": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.9799,
+      "samples_kept": 36,
+      "samples_dropped_as_outliers": 3
+    },
+    "alfarizy29_combined_sibi:W": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.9935,
+      "samples_kept": 82,
+      "samples_dropped_as_outliers": 6
+    },
+    "renitriyaningsih_sibi:W": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.9768,
+      "samples_kept": 35,
+      "samples_dropped_as_outliers": 4
+    },
+    "alfarizy29_combined_sibi:X": {
+      "status": "REJECTED_RULE_MISMATCH",
+      "cosine_sim_to_kemendikdasmen": 0.5741,
+      "samples_dropped": 114
+    },
+    "cached_achmadnoer:X": {
+      "status": "REJECTED_RULE_MISMATCH",
+      "cosine_sim_to_kemendikdasmen": 0.6102,
+      "samples_dropped": 7
+    },
+    "renitriyaningsih_sibi:X": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.9663,
+      "samples_kept": 40,
+      "samples_dropped_as_outliers": 0
+    },
+    "alfarizy29_combined_sibi:Y": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.9811,
+      "samples_kept": 60,
+      "samples_dropped_as_outliers": 0
+    },
+    "cached_achmadnoer:Y": {
+      "status": "REJECTED_RULE_MISMATCH",
+      "cosine_sim_to_kemendikdasmen": 0.6015,
+      "samples_dropped": 7
+    },
+    "renitriyaningsih_sibi:Y": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.9778,
+      "samples_kept": 38,
+      "samples_dropped_as_outliers": 1
+    },
+    "alfarizy29_combined_sibi:Z": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.8021,
+      "samples_kept": 20,
+      "samples_dropped_as_outliers": 36
+    },
+    "cached_achmadnoer:Z": {
+      "status": "REJECTED_RULE_MISMATCH",
+      "cosine_sim_to_kemendikdasmen": 0.5391,
+      "samples_dropped": 5
+    },
+    "renitriyaningsih_sibi:Z": {
+      "status": "REJECTED_RULE_MISMATCH",
+      "cosine_sim_to_kemendikdasmen": 0.7565,
+      "samples_dropped": 40
+    },
+    "renitriyaningsih_sibi:1": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.8434,
+      "samples_kept": 21,
+      "samples_dropped_as_outliers": 18
+    },
+    "renitriyaningsih_sibi:2": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.8579,
+      "samples_kept": 27,
+      "samples_dropped_as_outliers": 9
+    },
+    "renitriyaningsih_sibi:3": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.9086,
+      "samples_kept": 37,
+      "samples_dropped_as_outliers": 1
+    },
+    "renitriyaningsih_sibi:4": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.8263,
+      "samples_kept": 25,
+      "samples_dropped_as_outliers": 15
+    },
+    "renitriyaningsih_sibi:5": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.9645,
+      "samples_kept": 40,
+      "samples_dropped_as_outliers": 0
+    },
+    "renitriyaningsih_sibi:6": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.9668,
+      "samples_kept": 38,
+      "samples_dropped_as_outliers": 2
+    },
+    "renitriyaningsih_sibi:7": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.9734,
+      "samples_kept": 38,
+      "samples_dropped_as_outliers": 0
+    },
+    "renitriyaningsih_sibi:8": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.9582,
+      "samples_kept": 40,
+      "samples_dropped_as_outliers": 0
+    },
+    "renitriyaningsih_sibi:9": {
+      "status": "ACCEPTED",
+      "cosine_sim_to_kemendikdasmen": 0.9704,
+      "samples_kept": 40,
+      "samples_dropped_as_outliers": 0
+    }
+  },
+  "per_class_summary": {
+    "A": {
+      "kemendikdasmen_canonical_samples": 31,
+      "kaggle_raw_candidates": 145,
+      "kaggle_clean_kept": 123,
+      "accepted_providers": [
+        {
+          "provider": "alfarizy29_combined_sibi",
+          "cosine_sim": 0.9885,
+          "kept": 88,
+          "raw": 100
+        },
+        {
+          "provider": "renitriyaningsih_sibi",
+          "cosine_sim": 0.975,
+          "kept": 35,
+          "raw": 38
+        }
+      ],
+      "rejected_providers": [
+        {
+          "provider": "cached_achmadnoer",
+          "cosine_sim": 0.6791,
+          "raw_count": 7
+        }
+      ],
+      "final_canonical_samples": 250,
+      "final_mirror_samples": 250,
+      "final_total_samples": 500
+    },
+    "B": {
+      "kemendikdasmen_canonical_samples": 31,
+      "kaggle_raw_candidates": 146,
+      "kaggle_clean_kept": 137,
+      "accepted_providers": [
+        {
+          "provider": "alfarizy29_combined_sibi",
+          "cosine_sim": 0.9903,
+          "kept": 98,
+          "raw": 102
+        },
+        {
+          "provider": "renitriyaningsih_sibi",
+          "cosine_sim": 0.987,
+          "kept": 39,
+          "raw": 39
+        }
+      ],
+      "rejected_providers": [
+        {
+          "provider": "cached_achmadnoer",
+          "cosine_sim": 0.0826,
+          "raw_count": 5
+        }
+      ],
+      "final_canonical_samples": 250,
+      "final_mirror_samples": 250,
+      "final_total_samples": 500
+    },
+    "C": {
+      "kemendikdasmen_canonical_samples": 31,
+      "kaggle_raw_candidates": 102,
+      "kaggle_clean_kept": 84,
+      "accepted_providers": [
+        {
+          "provider": "alfarizy29_combined_sibi",
+          "cosine_sim": 0.9773,
+          "kept": 42,
+          "raw": 50
+        },
+        {
+          "provider": "cached_achmadnoer",
+          "cosine_sim": 0.7829,
+          "kept": 4,
+          "raw": 12
+        },
+        {
+          "provider": "renitriyaningsih_sibi",
+          "cosine_sim": 0.9907,
+          "kept": 38,
+          "raw": 40
+        }
+      ],
+      "rejected_providers": [],
+      "final_canonical_samples": 250,
+      "final_mirror_samples": 250,
+      "final_total_samples": 500
+    },
+    "D": {
+      "kemendikdasmen_canonical_samples": 31,
+      "kaggle_raw_candidates": 123,
+      "kaggle_clean_kept": 35,
+      "accepted_providers": [
+        {
+          "provider": "renitriyaningsih_sibi",
+          "cosine_sim": 0.8706,
+          "kept": 35,
+          "raw": 40
+        }
+      ],
+      "rejected_providers": [
+        {
+          "provider": "alfarizy29_combined_sibi",
+          "cosine_sim": 0.7494,
+          "raw_count": 76
+        },
+        {
+          "provider": "cached_achmadnoer",
+          "cosine_sim": 0.6438,
+          "raw_count": 7
+        }
+      ],
+      "final_canonical_samples": 250,
+      "final_mirror_samples": 250,
+      "final_total_samples": 500
+    },
+    "E": {
+      "kemendikdasmen_canonical_samples": 31,
+      "kaggle_raw_candidates": 122,
+      "kaggle_clean_kept": 105,
+      "accepted_providers": [
+        {
+          "provider": "alfarizy29_combined_sibi",
+          "cosine_sim": 0.9922,
+          "kept": 68,
+          "raw": 70
+        },
+        {
+          "provider": "renitriyaningsih_sibi",
+          "cosine_sim": 0.9957,
+          "kept": 37,
+          "raw": 40
+        }
+      ],
+      "rejected_providers": [
+        {
+          "provider": "cached_achmadnoer",
+          "cosine_sim": 0.1363,
+          "raw_count": 12
+        }
+      ],
+      "final_canonical_samples": 250,
+      "final_mirror_samples": 250,
+      "final_total_samples": 500
+    },
+    "F": {
+      "kemendikdasmen_canonical_samples": 31,
+      "kaggle_raw_candidates": 108,
+      "kaggle_clean_kept": 102,
+      "accepted_providers": [
+        {
+          "provider": "alfarizy29_combined_sibi",
+          "cosine_sim": 0.9536,
+          "kept": 62,
+          "raw": 62
+        },
+        {
+          "provider": "renitriyaningsih_sibi",
+          "cosine_sim": 0.9786,
+          "kept": 40,
+          "raw": 40
+        }
+      ],
+      "rejected_providers": [
+        {
+          "provider": "cached_achmadnoer",
+          "cosine_sim": 0.2026,
+          "raw_count": 6
+        }
+      ],
+      "final_canonical_samples": 250,
+      "final_mirror_samples": 250,
+      "final_total_samples": 500
+    },
+    "G": {
+      "kemendikdasmen_canonical_samples": 31,
+      "kaggle_raw_candidates": 136,
+      "kaggle_clean_kept": 124,
+      "accepted_providers": [
+        {
+          "provider": "alfarizy29_combined_sibi",
+          "cosine_sim": 0.9945,
+          "kept": 84,
+          "raw": 88
+        },
+        {
+          "provider": "renitriyaningsih_sibi",
+          "cosine_sim": 0.9816,
+          "kept": 40,
+          "raw": 40
+        }
+      ],
+      "rejected_providers": [
+        {
+          "provider": "cached_achmadnoer",
+          "cosine_sim": 0.7306,
+          "raw_count": 8
+        }
+      ],
+      "final_canonical_samples": 250,
+      "final_mirror_samples": 250,
+      "final_total_samples": 500
+    },
+    "H": {
+      "kemendikdasmen_canonical_samples": 31,
+      "kaggle_raw_candidates": 136,
+      "kaggle_clean_kept": 42,
+      "accepted_providers": [
+        {
+          "provider": "cached_achmadnoer",
+          "cosine_sim": 0.8699,
+          "kept": 8,
+          "raw": 8
+        },
+        {
+          "provider": "renitriyaningsih_sibi",
+          "cosine_sim": 0.9042,
+          "kept": 34,
+          "raw": 40
+        }
+      ],
+      "rejected_providers": [
+        {
+          "provider": "alfarizy29_combined_sibi",
+          "cosine_sim": -0.5621,
+          "raw_count": 88
+        }
+      ],
+      "final_canonical_samples": 250,
+      "final_mirror_samples": 250,
+      "final_total_samples": 500
+    },
+    "I": {
+      "kemendikdasmen_canonical_samples": 31,
+      "kaggle_raw_candidates": 149,
+      "kaggle_clean_kept": 137,
+      "accepted_providers": [
+        {
+          "provider": "alfarizy29_combined_sibi",
+          "cosine_sim": 0.9692,
+          "kept": 98,
+          "raw": 100
+        },
+        {
+          "provider": "cached_achmadnoer",
+          "cosine_sim": 0.9001,
+          "kept": 4,
+          "raw": 12
+        },
+        {
+          "provider": "renitriyaningsih_sibi",
+          "cosine_sim": 0.9796,
+          "kept": 35,
+          "raw": 37
+        }
+      ],
+      "rejected_providers": [],
+      "final_canonical_samples": 250,
+      "final_mirror_samples": 250,
+      "final_total_samples": 500
+    },
+    "J": {
+      "kemendikdasmen_canonical_samples": 31,
+      "kaggle_raw_candidates": 69,
+      "kaggle_clean_kept": 0,
+      "accepted_providers": [],
+      "rejected_providers": [
+        {
+          "provider": "alfarizy29_combined_sibi",
+          "cosine_sim": 0.7667,
+          "raw_count": 57
+        },
+        {
+          "provider": "cached_achmadnoer",
+          "cosine_sim": 0.5596,
+          "raw_count": 12
+        }
+      ],
+      "final_canonical_samples": 250,
+      "final_mirror_samples": 250,
+      "final_total_samples": 500
+    },
+    "K": {
+      "kemendikdasmen_canonical_samples": 31,
+      "kaggle_raw_candidates": 126,
+      "kaggle_clean_kept": 60,
+      "accepted_providers": [
+        {
+          "provider": "alfarizy29_combined_sibi",
+          "cosine_sim": 0.9046,
+          "kept": 60,
+          "raw": 80
+        }
+      ],
+      "rejected_providers": [
+        {
+          "provider": "cached_achmadnoer",
+          "cosine_sim": -0.3276,
+          "raw_count": 6
+        },
+        {
+          "provider": "renitriyaningsih_sibi",
+          "cosine_sim": 0.5946,
+          "raw_count": 40
+        }
+      ],
+      "final_canonical_samples": 250,
+      "final_mirror_samples": 250,
+      "final_total_samples": 500
+    },
+    "L": {
+      "kemendikdasmen_canonical_samples": 31,
+      "kaggle_raw_candidates": 124,
+      "kaggle_clean_kept": 109,
+      "accepted_providers": [
+        {
+          "provider": "alfarizy29_combined_sibi",
+          "cosine_sim": 0.9909,
+          "kept": 68,
+          "raw": 74
+        },
+        {
+          "provider": "cached_achmadnoer",
+          "cosine_sim": 0.9392,
+          "kept": 5,
+          "raw": 10
+        },
+        {
+          "provider": "renitriyaningsih_sibi",
+          "cosine_sim": 0.9857,
+          "kept": 36,
+          "raw": 40
+        }
+      ],
+      "rejected_providers": [],
+      "final_canonical_samples": 250,
+      "final_mirror_samples": 250,
+      "final_total_samples": 500
+    },
+    "M": {
+      "kemendikdasmen_canonical_samples": 31,
+      "kaggle_raw_candidates": 150,
+      "kaggle_clean_kept": 146,
+      "accepted_providers": [
+        {
+          "provider": "alfarizy29_combined_sibi",
+          "cosine_sim": 0.9694,
+          "kept": 106,
+          "raw": 108
+        },
+        {
+          "provider": "cached_achmadnoer",
+          "cosine_sim": 0.8927,
+          "kept": 2,
+          "raw": 2
+        },
+        {
+          "provider": "renitriyaningsih_sibi",
+          "cosine_sim": 0.9666,
+          "kept": 38,
+          "raw": 40
+        }
+      ],
+      "rejected_providers": [],
+      "final_canonical_samples": 250,
+      "final_mirror_samples": 250,
+      "final_total_samples": 500
+    },
+    "N": {
+      "kemendikdasmen_canonical_samples": 31,
+      "kaggle_raw_candidates": 166,
+      "kaggle_clean_kept": 160,
+      "accepted_providers": [
+        {
+          "provider": "alfarizy29_combined_sibi",
+          "cosine_sim": 0.9819,
+          "kept": 120,
+          "raw": 122
+        },
+        {
+          "provider": "cached_achmadnoer",
+          "cosine_sim": 0.8688,
+          "kept": 7,
+          "raw": 7
+        },
+        {
+          "provider": "renitriyaningsih_sibi",
+          "cosine_sim": 0.9871,
+          "kept": 33,
+          "raw": 37
+        }
+      ],
+      "rejected_providers": [],
+      "final_canonical_samples": 250,
+      "final_mirror_samples": 250,
+      "final_total_samples": 500
+    },
+    "O": {
+      "kemendikdasmen_canonical_samples": 31,
+      "kaggle_raw_candidates": 136,
+      "kaggle_clean_kept": 84,
+      "accepted_providers": [
+        {
+          "provider": "alfarizy29_combined_sibi",
+          "cosine_sim": 0.8144,
+          "kept": 40,
+          "raw": 84
+        },
+        {
+          "provider": "cached_achmadnoer",
+          "cosine_sim": 0.8112,
+          "kept": 4,
+          "raw": 12
+        },
+        {
+          "provider": "renitriyaningsih_sibi",
+          "cosine_sim": 0.975,
+          "kept": 40,
+          "raw": 40
+        }
+      ],
+      "rejected_providers": [],
+      "final_canonical_samples": 250,
+      "final_mirror_samples": 250,
+      "final_total_samples": 500
+    },
+    "P": {
+      "kemendikdasmen_canonical_samples": 31,
+      "kaggle_raw_candidates": 109,
+      "kaggle_clean_kept": 30,
+      "accepted_providers": [
+        {
+          "provider": "alfarizy29_combined_sibi",
+          "cosine_sim": 0.9455,
+          "kept": 30,
+          "raw": 64
+        }
+      ],
+      "rejected_providers": [
+        {
+          "provider": "cached_achmadnoer",
+          "cosine_sim": -0.5777,
+          "raw_count": 5
+        },
+        {
+          "provider": "renitriyaningsih_sibi",
+          "cosine_sim": -0.3465,
+          "raw_count": 40
+        }
+      ],
+      "final_canonical_samples": 250,
+      "final_mirror_samples": 250,
+      "final_total_samples": 500
+    },
+    "Q": {
+      "kemendikdasmen_canonical_samples": 31,
+      "kaggle_raw_candidates": 89,
+      "kaggle_clean_kept": 47,
+      "accepted_providers": [
+        {
+          "provider": "alfarizy29_combined_sibi",
+          "cosine_sim": 0.9018,
+          "kept": 32,
+          "raw": 46
+        },
+        {
+          "provider": "renitriyaningsih_sibi",
+          "cosine_sim": 0.8803,
+          "kept": 15,
+          "raw": 38
+        }
+      ],
+      "rejected_providers": [
+        {
+          "provider": "cached_achmadnoer",
+          "cosine_sim": -0.6552,
+          "raw_count": 5
+        }
+      ],
+      "final_canonical_samples": 250,
+      "final_mirror_samples": 250,
+      "final_total_samples": 500
+    },
+    "R": {
+      "kemendikdasmen_canonical_samples": 31,
+      "kaggle_raw_candidates": 148,
+      "kaggle_clean_kept": 130,
+      "accepted_providers": [
+        {
+          "provider": "alfarizy29_combined_sibi",
+          "cosine_sim": 0.991,
+          "kept": 94,
+          "raw": 98
+        },
+        {
+          "provider": "renitriyaningsih_sibi",
+          "cosine_sim": 0.9867,
+          "kept": 36,
+          "raw": 38
+        }
+      ],
+      "rejected_providers": [
+        {
+          "provider": "cached_achmadnoer",
+          "cosine_sim": 0.6038,
+          "raw_count": 12
+        }
+      ],
+      "final_canonical_samples": 250,
+      "final_mirror_samples": 250,
+      "final_total_samples": 500
+    },
+    "S": {
+      "kemendikdasmen_canonical_samples": 31,
+      "kaggle_raw_candidates": 149,
+      "kaggle_clean_kept": 145,
+      "accepted_providers": [
+        {
+          "provider": "alfarizy29_combined_sibi",
+          "cosine_sim": 0.9773,
+          "kept": 108,
+          "raw": 110
+        },
+        {
+          "provider": "renitriyaningsih_sibi",
+          "cosine_sim": 0.9869,
+          "kept": 37,
+          "raw": 39
+        }
+      ],
+      "rejected_providers": [],
+      "final_canonical_samples": 250,
+      "final_mirror_samples": 250,
+      "final_total_samples": 500
+    },
+    "T": {
+      "kemendikdasmen_canonical_samples": 31,
+      "kaggle_raw_candidates": 135,
+      "kaggle_clean_kept": 123,
+      "accepted_providers": [
+        {
+          "provider": "alfarizy29_combined_sibi",
+          "cosine_sim": 0.9666,
+          "kept": 92,
+          "raw": 98
+        },
+        {
+          "provider": "cached_achmadnoer",
+          "cosine_sim": 0.8244,
+          "kept": 1,
+          "raw": 2
+        },
+        {
+          "provider": "renitriyaningsih_sibi",
+          "cosine_sim": 0.9871,
+          "kept": 30,
+          "raw": 35
+        }
+      ],
+      "rejected_providers": [],
+      "final_canonical_samples": 250,
+      "final_mirror_samples": 250,
+      "final_total_samples": 500
+    },
+    "U": {
+      "kemendikdasmen_canonical_samples": 31,
+      "kaggle_raw_candidates": 146,
+      "kaggle_clean_kept": 133,
+      "accepted_providers": [
+        {
+          "provider": "alfarizy29_combined_sibi",
+          "cosine_sim": 0.9931,
+          "kept": 94,
+          "raw": 98
+        },
+        {
+          "provider": "cached_achmadnoer",
+          "cosine_sim": 0.8967,
+          "kept": 6,
+          "raw": 12
+        },
+        {
+          "provider": "renitriyaningsih_sibi",
+          "cosine_sim": 0.976,
+          "kept": 33,
+          "raw": 36
+        }
+      ],
+      "rejected_providers": [],
+      "final_canonical_samples": 250,
+      "final_mirror_samples": 250,
+      "final_total_samples": 500
+    },
+    "V": {
+      "kemendikdasmen_canonical_samples": 31,
+      "kaggle_raw_candidates": 153,
+      "kaggle_clean_kept": 143,
+      "accepted_providers": [
+        {
+          "provider": "alfarizy29_combined_sibi",
+          "cosine_sim": 0.9931,
+          "kept": 100,
+          "raw": 102
+        },
+        {
+          "provider": "cached_achmadnoer",
+          "cosine_sim": 0.9688,
+          "kept": 7,
+          "raw": 12
+        },
+        {
+          "provider": "renitriyaningsih_sibi",
+          "cosine_sim": 0.9799,
+          "kept": 36,
+          "raw": 39
+        }
+      ],
+      "rejected_providers": [],
+      "final_canonical_samples": 250,
+      "final_mirror_samples": 250,
+      "final_total_samples": 500
+    },
+    "W": {
+      "kemendikdasmen_canonical_samples": 31,
+      "kaggle_raw_candidates": 130,
+      "kaggle_clean_kept": 117,
+      "accepted_providers": [
+        {
+          "provider": "alfarizy29_combined_sibi",
+          "cosine_sim": 0.9935,
+          "kept": 82,
+          "raw": 88
+        },
+        {
+          "provider": "renitriyaningsih_sibi",
+          "cosine_sim": 0.9768,
+          "kept": 35,
+          "raw": 39
+        }
+      ],
+      "rejected_providers": [],
+      "final_canonical_samples": 250,
+      "final_mirror_samples": 250,
+      "final_total_samples": 500
+    },
+    "X": {
+      "kemendikdasmen_canonical_samples": 31,
+      "kaggle_raw_candidates": 161,
+      "kaggle_clean_kept": 40,
+      "accepted_providers": [
+        {
+          "provider": "renitriyaningsih_sibi",
+          "cosine_sim": 0.9663,
+          "kept": 40,
+          "raw": 40
+        }
+      ],
+      "rejected_providers": [
+        {
+          "provider": "alfarizy29_combined_sibi",
+          "cosine_sim": 0.5741,
+          "raw_count": 114
+        },
+        {
+          "provider": "cached_achmadnoer",
+          "cosine_sim": 0.6102,
+          "raw_count": 7
+        }
+      ],
+      "final_canonical_samples": 250,
+      "final_mirror_samples": 250,
+      "final_total_samples": 500
+    },
+    "Y": {
+      "kemendikdasmen_canonical_samples": 31,
+      "kaggle_raw_candidates": 106,
+      "kaggle_clean_kept": 98,
+      "accepted_providers": [
+        {
+          "provider": "alfarizy29_combined_sibi",
+          "cosine_sim": 0.9811,
+          "kept": 60,
+          "raw": 60
+        },
+        {
+          "provider": "renitriyaningsih_sibi",
+          "cosine_sim": 0.9778,
+          "kept": 38,
+          "raw": 39
+        }
+      ],
+      "rejected_providers": [
+        {
+          "provider": "cached_achmadnoer",
+          "cosine_sim": 0.6015,
+          "raw_count": 7
+        }
+      ],
+      "final_canonical_samples": 250,
+      "final_mirror_samples": 250,
+      "final_total_samples": 500
+    },
+    "Z": {
+      "kemendikdasmen_canonical_samples": 31,
+      "kaggle_raw_candidates": 101,
+      "kaggle_clean_kept": 20,
+      "accepted_providers": [
+        {
+          "provider": "alfarizy29_combined_sibi",
+          "cosine_sim": 0.8021,
+          "kept": 20,
+          "raw": 56
+        }
+      ],
+      "rejected_providers": [
+        {
+          "provider": "cached_achmadnoer",
+          "cosine_sim": 0.5391,
+          "raw_count": 5
+        },
+        {
+          "provider": "renitriyaningsih_sibi",
+          "cosine_sim": 0.7565,
+          "raw_count": 40
+        }
+      ],
+      "final_canonical_samples": 250,
+      "final_mirror_samples": 250,
+      "final_total_samples": 500
+    },
+    "1": {
+      "kemendikdasmen_canonical_samples": 30,
+      "kaggle_raw_candidates": 39,
+      "kaggle_clean_kept": 21,
+      "accepted_providers": [
+        {
+          "provider": "renitriyaningsih_sibi",
+          "cosine_sim": 0.8434,
+          "kept": 21,
+          "raw": 39
+        }
+      ],
+      "rejected_providers": [],
+      "final_canonical_samples": 250,
+      "final_mirror_samples": 250,
+      "final_total_samples": 500
+    },
+    "2": {
+      "kemendikdasmen_canonical_samples": 30,
+      "kaggle_raw_candidates": 36,
+      "kaggle_clean_kept": 27,
+      "accepted_providers": [
+        {
+          "provider": "renitriyaningsih_sibi",
+          "cosine_sim": 0.8579,
+          "kept": 27,
+          "raw": 36
+        }
+      ],
+      "rejected_providers": [],
+      "final_canonical_samples": 250,
+      "final_mirror_samples": 250,
+      "final_total_samples": 500
+    },
+    "3": {
+      "kemendikdasmen_canonical_samples": 28,
+      "kaggle_raw_candidates": 38,
+      "kaggle_clean_kept": 37,
+      "accepted_providers": [
+        {
+          "provider": "renitriyaningsih_sibi",
+          "cosine_sim": 0.9086,
+          "kept": 37,
+          "raw": 38
+        }
+      ],
+      "rejected_providers": [],
+      "final_canonical_samples": 250,
+      "final_mirror_samples": 250,
+      "final_total_samples": 500
+    },
+    "4": {
+      "kemendikdasmen_canonical_samples": 28,
+      "kaggle_raw_candidates": 40,
+      "kaggle_clean_kept": 25,
+      "accepted_providers": [
+        {
+          "provider": "renitriyaningsih_sibi",
+          "cosine_sim": 0.8263,
+          "kept": 25,
+          "raw": 40
+        }
+      ],
+      "rejected_providers": [],
+      "final_canonical_samples": 250,
+      "final_mirror_samples": 250,
+      "final_total_samples": 500
+    },
+    "5": {
+      "kemendikdasmen_canonical_samples": 30,
+      "kaggle_raw_candidates": 40,
+      "kaggle_clean_kept": 40,
+      "accepted_providers": [
+        {
+          "provider": "renitriyaningsih_sibi",
+          "cosine_sim": 0.9645,
+          "kept": 40,
+          "raw": 40
+        }
+      ],
+      "rejected_providers": [],
+      "final_canonical_samples": 250,
+      "final_mirror_samples": 250,
+      "final_total_samples": 500
+    },
+    "6": {
+      "kemendikdasmen_canonical_samples": 30,
+      "kaggle_raw_candidates": 40,
+      "kaggle_clean_kept": 38,
+      "accepted_providers": [
+        {
+          "provider": "renitriyaningsih_sibi",
+          "cosine_sim": 0.9668,
+          "kept": 38,
+          "raw": 40
+        }
+      ],
+      "rejected_providers": [],
+      "final_canonical_samples": 250,
+      "final_mirror_samples": 250,
+      "final_total_samples": 500
+    },
+    "7": {
+      "kemendikdasmen_canonical_samples": 30,
+      "kaggle_raw_candidates": 38,
+      "kaggle_clean_kept": 38,
+      "accepted_providers": [
+        {
+          "provider": "renitriyaningsih_sibi",
+          "cosine_sim": 0.9734,
+          "kept": 38,
+          "raw": 38
+        }
+      ],
+      "rejected_providers": [],
+      "final_canonical_samples": 250,
+      "final_mirror_samples": 250,
+      "final_total_samples": 500
+    },
+    "8": {
+      "kemendikdasmen_canonical_samples": 30,
+      "kaggle_raw_candidates": 40,
+      "kaggle_clean_kept": 40,
+      "accepted_providers": [
+        {
+          "provider": "renitriyaningsih_sibi",
+          "cosine_sim": 0.9582,
+          "kept": 40,
+          "raw": 40
+        }
+      ],
+      "rejected_providers": [],
+      "final_canonical_samples": 250,
+      "final_mirror_samples": 250,
+      "final_total_samples": 500
+    },
+    "9": {
+      "kemendikdasmen_canonical_samples": 30,
+      "kaggle_raw_candidates": 40,
+      "kaggle_clean_kept": 40,
+      "accepted_providers": [
+        {
+          "provider": "renitriyaningsih_sibi",
+          "cosine_sim": 0.9704,
+          "kept": 40,
+          "raw": 40
+        }
+      ],
+      "rejected_providers": [],
+      "final_canonical_samples": 250,
+      "final_mirror_samples": 250,
+      "final_total_samples": 500
+    },
+    "10": {
+      "kemendikdasmen_canonical_samples": 27,
+      "kaggle_raw_candidates": 0,
+      "kaggle_clean_kept": 0,
+      "accepted_providers": [],
+      "rejected_providers": [],
+      "final_canonical_samples": 250,
+      "final_mirror_samples": 250,
+      "final_total_samples": 500
+    }
+  },
+  "visually_similar_pairs": {
+    "A": [
+      [
+        "M",
+        0.9641
+      ],
+      [
+        "N",
+        0.961
+      ],
+      [
+        "S",
+        0.9571
+      ]
+    ],
+    "B": [
+      [
+        "E",
+        0.9766
+      ],
+      [
+        "9",
+        0.9559
+      ],
+      [
+        "F",
+        0.9554
+      ]
+    ],
+    "C": [
+      [
+        "O",
+        0.9654
+      ],
+      [
+        "F",
+        0.9541
+      ],
+      [
+        "9",
+        0.9078
+      ]
+    ],
+    "D": [
+      [
+        "L",
+        0.9715
+      ],
+      [
+        "U",
+        0.9313
+      ],
+      [
+        "R",
+        0.9309
+      ]
+    ],
+    "E": [
+      [
+        "B",
+        0.9766
+      ],
+      [
+        "M",
+        0.9702
+      ],
+      [
+        "S",
+        0.9655
+      ]
+    ],
+    "F": [
+      [
+        "9",
+        0.9817
+      ],
+      [
+        "O",
+        0.9626
+      ],
+      [
+        "B",
+        0.9554
+      ]
+    ],
+    "G": [
+      [
+        "X",
+        0.9271
+      ],
+      [
+        "J",
+        0.8898
+      ],
+      [
+        "C",
+        0.8784
+      ]
+    ],
+    "H": [
+      [
+        "G",
+        0.8615
+      ],
+      [
+        "10",
+        0.7869
+      ],
+      [
+        "J",
+        0.7514
+      ]
+    ],
+    "I": [
+      [
+        "S",
+        0.9272
+      ],
+      [
+        "O",
+        0.9207
+      ],
+      [
+        "M",
+        0.9195
+      ]
+    ],
+    "J": [
+      [
+        "C",
+        0.906
+      ],
+      [
+        "I",
+        0.895
+      ],
+      [
+        "G",
+        0.8898
+      ]
+    ],
+    "K": [
+      [
+        "V",
+        0.8881
+      ],
+      [
+        "Z",
+        0.8812
+      ],
+      [
+        "D",
+        0.873
+      ]
+    ],
+    "L": [
+      [
+        "D",
+        0.9715
+      ],
+      [
+        "T",
+        0.9272
+      ],
+      [
+        "8",
+        0.9271
+      ]
+    ],
+    "M": [
+      [
+        "N",
+        0.9952
+      ],
+      [
+        "S",
+        0.9925
+      ],
+      [
+        "E",
+        0.9702
+      ]
+    ],
+    "N": [
+      [
+        "M",
+        0.9952
+      ],
+      [
+        "S",
+        0.9858
+      ],
+      [
+        "E",
+        0.9627
+      ]
+    ],
+    "O": [
+      [
+        "C",
+        0.9654
+      ],
+      [
+        "F",
+        0.9626
+      ],
+      [
+        "S",
+        0.9471
+      ]
+    ],
+    "P": [
+      [
+        "Q",
+        0.84
+      ],
+      [
+        "Z",
+        0.0833
+      ],
+      [
+        "K",
+        -0.0101
+      ]
+    ],
+    "Q": [
+      [
+        "P",
+        0.84
+      ],
+      [
+        "Z",
+        -0.271
+      ],
+      [
+        "K",
+        -0.4237
+      ]
+    ],
+    "R": [
+      [
+        "U",
+        0.998
+      ],
+      [
+        "V",
+        0.9843
+      ],
+      [
+        "6",
+        0.9669
+      ]
+    ],
+    "S": [
+      [
+        "M",
+        0.9925
+      ],
+      [
+        "N",
+        0.9858
+      ],
+      [
+        "E",
+        0.9655
+      ]
+    ],
+    "T": [
+      [
+        "X",
+        0.9629
+      ],
+      [
+        "N",
+        0.931
+      ],
+      [
+        "L",
+        0.9272
+      ]
+    ],
+    "U": [
+      [
+        "R",
+        0.998
+      ],
+      [
+        "V",
+        0.9912
+      ],
+      [
+        "6",
+        0.9735
+      ]
+    ],
+    "V": [
+      [
+        "U",
+        0.9912
+      ],
+      [
+        "R",
+        0.9843
+      ],
+      [
+        "6",
+        0.9783
+      ]
+    ],
+    "W": [
+      [
+        "6",
+        0.9791
+      ],
+      [
+        "V",
+        0.9558
+      ],
+      [
+        "U",
+        0.9536
+      ]
+    ],
+    "X": [
+      [
+        "T",
+        0.9629
+      ],
+      [
+        "G",
+        0.9271
+      ],
+      [
+        "10",
+        0.9039
+      ]
+    ],
+    "Y": [
+      [
+        "Z",
+        0.8896
+      ],
+      [
+        "A",
+        0.8839
+      ],
+      [
+        "N",
+        0.8688
+      ]
+    ],
+    "Z": [
+      [
+        "Y",
+        0.8896
+      ],
+      [
+        "K",
+        0.8812
+      ],
+      [
+        "D",
+        0.8504
+      ]
+    ],
+    "1": [
+      [
+        "D",
+        0.901
+      ],
+      [
+        "L",
+        0.894
+      ],
+      [
+        "3",
+        0.884
+      ]
+    ],
+    "2": [
+      [
+        "3",
+        0.9803
+      ],
+      [
+        "7",
+        0.9279
+      ],
+      [
+        "V",
+        0.918
+      ]
+    ],
+    "3": [
+      [
+        "2",
+        0.9803
+      ],
+      [
+        "7",
+        0.9186
+      ],
+      [
+        "6",
+        0.8999
+      ]
+    ],
+    "4": [
+      [
+        "6",
+        0.8621
+      ],
+      [
+        "W",
+        0.8599
+      ],
+      [
+        "B",
+        0.8569
+      ]
+    ],
+    "5": [
+      [
+        "8",
+        0.9612
+      ],
+      [
+        "9",
+        0.9519
+      ],
+      [
+        "B",
+        0.9517
+      ]
+    ],
+    "6": [
+      [
+        "W",
+        0.9791
+      ],
+      [
+        "V",
+        0.9783
+      ],
+      [
+        "U",
+        0.9735
+      ]
+    ],
+    "7": [
+      [
+        "V",
+        0.9595
+      ],
+      [
+        "U",
+        0.9539
+      ],
+      [
+        "6",
+        0.9521
+      ]
+    ],
+    "8": [
+      [
+        "5",
+        0.9612
+      ],
+      [
+        "E",
+        0.9382
+      ],
+      [
+        "B",
+        0.9336
+      ]
+    ],
+    "9": [
+      [
+        "F",
+        0.9817
+      ],
+      [
+        "B",
+        0.9559
+      ],
+      [
+        "5",
+        0.9519
+      ]
+    ],
+    "10": [
+      [
+        "T",
+        0.9041
+      ],
+      [
+        "X",
+        0.9039
+      ],
+      [
+        "G",
+        0.8517
+      ]
+    ]
+  }
+}

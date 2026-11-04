@@ -81,5 +81,24 @@ class PredictionStabilizerTest {
         assertEquals("Ya", evalYa.committedLabel)
         assertTrue(evalYa.shouldClearBuffer)
     }
+
+    @Test
+    fun testSibiQuickSuggestionResolvesConfusableLetterAndDigitPairs() {
+        val top3ForV = listOf(
+            ScoredLabel("V", 0.78f),
+            ScoredLabel("2", 0.15f),
+            ScoredLabel("U", 0.05f)
+        )
+        val suggestionsV = ModelConfig.resolveQuickSuggestions("V", top3ForV)
+        assertTrue("Expected '2' in quick suggestions for 'V'", suggestionsV.contains("2"))
+        assertFalse("Primary label 'V' must not be in its own suggestions", suggestionsV.contains("V"))
+
+        // Bahkan ketika top3 kosong (mis. setelah tangan diturunkan), pasangan SIBI tetap tersedia untuk koreksi mandiri
+        val suggestionsD = ModelConfig.resolveQuickSuggestions("D", emptyList())
+        assertTrue("Expected '1' in quick suggestions for 'D'", suggestionsD.contains("1"))
+
+        val suggestions2 = ModelConfig.resolveQuickSuggestions("2", emptyList())
+        assertTrue("Expected 'V' in quick suggestions for '2'", suggestions2.contains("V"))
+    }
 }
 

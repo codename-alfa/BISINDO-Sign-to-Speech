@@ -54,6 +54,12 @@ class PredictionStabilizer(
     }
 
     @Synchronized
+    fun overrideLastCommitted(newLabel: String, timestampMs: Long) {
+        lastCommittedLabel = newLabel
+        lastCommittedMs = timestampMs
+    }
+
+    @Synchronized
     fun onNoHand() {
         candidateLabel = null
         candidateCount = 0

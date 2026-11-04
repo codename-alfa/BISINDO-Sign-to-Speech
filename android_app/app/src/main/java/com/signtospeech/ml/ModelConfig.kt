@@ -29,6 +29,58 @@ object ModelConfig {
     const val DYNAMIC_LABELS_ASSET = "dynamic_labels.txt"
     const val DYNAMIC_META_ASSET = "dynamic_model_meta.json"
 
+    /**
+     * Peta pasangan Huruf <-> Angka SIBI (dan huruf mirip) yang memiliki bentuk jari sangat berdekatan.
+     * Digunakan oleh fitur Interactive Quick Suggestion agar user Tuli dapat mengoreksi mandiri
+     * dengan 1 ketukan jika terjadi ketertukaran antara huruf dan angka.
+     */
+    val SIBI_CONFUSABLE_ALTERNATIVES: Map<String, List<String>> = mapOf(
+        "D" to listOf("1", "Z"),
+        "1" to listOf("D", "I"),
+        "V" to listOf("2", "K", "U"),
+        "2" to listOf("V", "K", "U"),
+        "W" to listOf("6", "3"),
+        "6" to listOf("W", "3"),
+        "3" to listOf("W", "6"),
+        "B" to listOf("4", "5"),
+        "4" to listOf("B", "5"),
+        "5" to listOf("B", "4"),
+        "F" to listOf("9", "O"),
+        "9" to listOf("F", "O"),
+        "I" to listOf("J", "1", "10"),
+        "J" to listOf("I", "10"),
+        "A" to listOf("S", "10", "T"),
+        "10" to listOf("A", "I", "S"),
+        "7" to listOf("8", "W"),
+        "8" to listOf("7", "W"),
+        "M" to listOf("N", "T"),
+        "N" to listOf("M", "T"),
+        "U" to listOf("R", "V", "2"),
+        "R" to listOf("U", "V"),
+        "K" to listOf("P", "V", "2"),
+        "G" to listOf("Q", "H"),
+        "H" to listOf("G", "U")
+    )
+
+    /**
+     * Menghasilkan daftar kandidat Quick Suggestion (maksimal 3 alternatif unik di luar label utama)
+     * yang menggabungkan prediksi Top-3 model dan pasangan identik Huruf <-> Angka SIBI.
+     */
+    fun resolveQuickSuggestions(primaryLabel: String, top3: List<ScoredLabel>): List<String> {
+        val suggestions = LinkedHashSet<String>()
+        for (item in top3) {
+            if (item.label != primaryLabel && !item.label.startsWith("_") && item.confidence >= 0.05f) {
+                suggestions.add(item.label)
+            }
+        }
+        SIBI_CONFUSABLE_ALTERNATIVES[primaryLabel]?.forEach { alt ->
+            if (alt != primaryLabel) {
+                suggestions.add(alt)
+            }
+        }
+        return suggestions.take(3)
+    }
+
     data class DynamicModelMeta(
         val schemaVersion: Int = 2,
         val windowMs: Long = DYNAMIC_WINDOW_MS,

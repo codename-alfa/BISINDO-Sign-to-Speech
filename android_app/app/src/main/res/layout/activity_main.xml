@@ -280,6 +280,16 @@
                     android:textColor="@color/confidence_low"
                     android:textSize="11sp"
                     android:visibility="gone" />
+
+                <!-- Interactive Quick Suggestion Chips (Self-Correction Huruf <-> Angka) -->
+                <LinearLayout
+                    android:id="@+id/llQuickSuggestions"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:visibility="gone" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
