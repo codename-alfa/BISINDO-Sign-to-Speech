@@ -55,8 +55,11 @@ class TextCardDisplay(
     private val onClearClicked: () -> Unit,
     private val onToggleMicClicked: () -> Unit,
     private val onToggleModeClicked: () -> Unit,
-    private val onShowLogClicked: () -> Unit
+    private val onShowLogClicked: () -> Unit,
+    private val onCardsMatched: ((List<ServiceCard>) -> Unit)? = null
 ) {
+
+    private var lastMatchedCardSignatures = emptySet<String>()
 
     init {
         setupListeners()
@@ -175,6 +178,16 @@ class TextCardDisplay(
 
         // 2. Render Kartu Visual jika kata kunci ditemukan
         renderVisualCards(analysis.matchedCards)
+
+        if (analysis.matchedCards.isNotEmpty()) {
+            val currentSignatures = analysis.matchedCards.map { "${it.categoryId}:${it.triggerKeyword}" }.toSet()
+            if (currentSignatures != lastMatchedCardSignatures) {
+                lastMatchedCardSignatures = currentSignatures
+                onCardsMatched?.invoke(analysis.matchedCards)
+            }
+        } else {
+            lastMatchedCardSignatures = emptySet()
+        }
 
         // 3. Auto-scroll ke bawah agar teks terbaru selalu terbaca
         scrollArah2Content.post {
@@ -334,6 +347,7 @@ class TextCardDisplay(
         tvCardsHeader.visibility = View.GONE
         progressAudioLevel.progress = 0
         etArah2KeyboardInput.text?.clear()
+        lastMatchedCardSignatures = emptySet()
     }
 
     /**

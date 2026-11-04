@@ -20,6 +20,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.google.android.material.snackbar.Snackbar
 import com.signtospeech.camera.CameraManager
 import com.signtospeech.databinding.ActivityMainBinding
@@ -35,6 +36,7 @@ import com.signtospeech.pipeline.TranslationPipeline
 import com.signtospeech.speech.KeywordMatcher
 import com.signtospeech.speech.SpeechToTextManager
 import com.signtospeech.speech.TTSManager
+import com.signtospeech.ui.HapticFeedbackHelper
 import com.signtospeech.ui.PredictionDisplay
 import com.signtospeech.ui.TextCardDisplay
 import java.util.Locale
@@ -56,6 +58,7 @@ class MainActivity : AppCompatActivity(), HandLandmarkerHelper.LandmarkerListene
     private lateinit var predictionDisplay: PredictionDisplay
     private lateinit var ttsManager: TTSManager
     private lateinit var delegateGuard: DelegateGuard
+    private lateinit var hapticFeedbackHelper: HapticFeedbackHelper
 
     // Arah 2 Components
     private lateinit var speechToTextManager: SpeechToTextManager
@@ -94,9 +97,11 @@ class MainActivity : AppCompatActivity(), HandLandmarkerHelper.LandmarkerListene
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         super.onCreate(savedInstanceState)
         AppLogger.init(this)
         CrashHandler.install(this)
+        hapticFeedbackHelper = HapticFeedbackHelper(this)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -137,6 +142,7 @@ class MainActivity : AppCompatActivity(), HandLandmarkerHelper.LandmarkerListene
                 runOnUiThread {
                     if (currentDirection == AppDirection.SIGN_TO_SPEECH) {
                         ttsManager.speak(committedLabel)
+                        hapticFeedbackHelper.vibrate(HapticFeedbackHelper.PulseType.GESTURE_COMMITTED)
                     }
                 }
             }
@@ -199,6 +205,11 @@ class MainActivity : AppCompatActivity(), HandLandmarkerHelper.LandmarkerListene
             },
             onShowLogClicked = {
                 showDebugLogDialog()
+            },
+            onCardsMatched = { cards ->
+                HapticFeedbackHelper.resolvePulseForCards(cards)?.let { pulse ->
+                    hapticFeedbackHelper.vibrate(pulse)
+                }
             }
         )
 

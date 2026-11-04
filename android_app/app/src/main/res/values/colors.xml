@@ -27,4 +27,13 @@
     <color name="color_audio_level">#10B981</color>
     <color name="color_nav_active">#38BDF8</color>
     <color name="color_nav_inactive">#64748B</color>
+
+    <!-- Semantic Surface & Divider Tokens (Figma Ready) -->
+    <color name="splash_bg">#0B0F19</color>
+    <color name="bottom_nav_bg">#0F172A</color>
+    <color name="arah2_action_bar_bg">#161F30</color>
+    <color name="fab_switch_camera_bg">#263238</color>
+    <color name="divider_subtle">#33FFFFFF</color>
+    <color name="divider_hud">#44FFFFFF</color>
+    <color name="divider_nav">#334155</color>
 </resources>
