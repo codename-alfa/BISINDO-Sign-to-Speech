@@ -10,8 +10,9 @@
     <string name="delegate_cpu">CPU</string>
     <string name="delegate_gpu">GPU</string>
     <string name="waiting_gesture">Arahkan 1 tangan ke kamera...</string>
-    <string name="transcript_placeholder">Transkrip hasil terjemahan akan tampil di sini</string>
-    <string name="clear_transcript">Hapus</string>
+    <string name="transcript_placeholder">Riwayat transkrip tampil di sini</string>
+    <string name="delete_last_transcript">Hapus</string>
+    <string name="clear_transcript">Clear</string>
     <string name="tts_on">Suara ON</string>
     <string name="tts_muted">Suara MUTE</string>
 

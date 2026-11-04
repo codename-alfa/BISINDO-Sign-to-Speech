@@ -100,5 +100,32 @@ class PredictionStabilizerTest {
         val suggestions2 = ModelConfig.resolveQuickSuggestions("2", emptyList())
         assertTrue("Expected 'V' in quick suggestions for '2'", suggestions2.contains("V"))
     }
+
+    @Test
+    fun testDeleteLastCommittedAllowsImmediateRecommit() {
+        val stabilizer = PredictionStabilizer(
+            confidenceThreshold = 0.70f,
+            staticMinFrames = 3,
+            staticMinHoldMs = 400L,
+            sameLabelCooldownMs = 2000L
+        )
+
+        // Commit "A" lalu "B"
+        stabilizer.update(RecognitionMode.LETTER, pred("A", 0.90f), 0L)
+        stabilizer.update(RecognitionMode.LETTER, pred("A", 0.90f), 200L)
+        assertEquals("A", stabilizer.update(RecognitionMode.LETTER, pred("A", 0.92f), 450L).committedLabel)
+
+        stabilizer.update(RecognitionMode.LETTER, pred("B", 0.90f), 600L)
+        stabilizer.update(RecognitionMode.LETTER, pred("B", 0.90f), 800L)
+        assertEquals("B", stabilizer.update(RecognitionMode.LETTER, pred("B", 0.92f), 1050L).committedLabel)
+
+        // Simulasikan pengguna menekan tombol "Hapus" (menghapus 'B' sehingga sisa terakhir adalah 'A')
+        stabilizer.overrideLastCommitted("A", -100_000L)
+
+        // Pengguna dapat langsung memperagakan ulang 'B' maupun 'A' tanpa terhalang cooldown 2000 ms
+        stabilizer.update(RecognitionMode.LETTER, pred("B", 0.90f), 1100L)
+        stabilizer.update(RecognitionMode.LETTER, pred("B", 0.90f), 1300L)
+        assertEquals("B", stabilizer.update(RecognitionMode.LETTER, pred("B", 0.95f), 1550L).committedLabel)
+    }
 }
 

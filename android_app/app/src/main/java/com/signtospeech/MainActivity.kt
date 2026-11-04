@@ -134,6 +134,11 @@ class MainActivity : AppCompatActivity(), HandLandmarkerHelper.LandmarkerListene
                     ).show()
                 }
             },
+            onDeleteLastTranscript = {
+                if (::translationPipeline.isInitialized) {
+                    translationPipeline.deleteLastCommitted()
+                }
+            },
             onClearTranscript = {
                 if (::translationPipeline.isInitialized) {
                     translationPipeline.clearTranscript()
@@ -186,7 +191,8 @@ class MainActivity : AppCompatActivity(), HandLandmarkerHelper.LandmarkerListene
     private fun handleDebugDemoIntent(intent: Intent?) {
         val demoLabel = intent?.getStringExtra("debug_commit_label")
         if (!demoLabel.isNullOrBlank() && ::translationPipeline.isInitialized) {
-            translationPipeline.replaceLastCommitted(demoLabel)
+            val items = demoLabel.split(",").map { it.trim() }.filter { it.isNotEmpty() }
+            translationPipeline.appendCommittedSequence(items)
         }
     }
 

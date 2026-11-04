@@ -103,10 +103,104 @@ class TranslationPipeline(
         }
     }
 
+    /**
+     * Menghapus 1 item (abjad/angka/kata) terakhir yang ada di queue history transkrip.
+     */
+    fun deleteLastCommitted() {
+        if (inferenceExecutor.isShutdown) return
+        inferenceExecutor.execute {
+            if (transcript.isNotEmpty()) {
+                transcript.removeLast()
+            }
+            val remainingLast = transcript.lastOrNull()
+            if (remainingLast != null) {
+                stabilizer.overrideLastCommitted(remainingLast, -100_000L)
+            } else {
+                stabilizer.resetAllIncludingHistory()
+            }
+            val mode = currentMode
+            onStateUpdated(
+                UiState(
+                    mode = mode,
+                    handDetected = false,
+                    currentResult = null,
+                    committedTranscript = transcript.toList(),
+                    lastCommittedLabel = remainingLast,
+                    mediaPipeMs = 0L,
+                    classifierMs = 0f,
+                    activeDelegate = DelegateMode.CPU,
+                    bufferFrames = gestureBuffer.size(),
+                    dynamicModelReady = dynamicClassifier.isAvailable,
+                    dynamicStatusNote = dynamicClassifier.unavailableReason
+                )
+            )
+        }
+    }
+
+    /**
+     * Menghapus (clear) seluruh queue history transkrip.
+     */
     fun clearTranscript() {
+        if (inferenceExecutor.isShutdown) return
         inferenceExecutor.execute {
             transcript.clear()
             stabilizer.resetAllIncludingHistory()
+            val mode = currentMode
+            onStateUpdated(
+                UiState(
+                    mode = mode,
+                    handDetected = false,
+                    currentResult = null,
+                    committedTranscript = emptyList(),
+                    lastCommittedLabel = null,
+                    mediaPipeMs = 0L,
+                    classifierMs = 0f,
+                    activeDelegate = DelegateMode.CPU,
+                    bufferFrames = gestureBuffer.size(),
+                    dynamicModelReady = dynamicClassifier.isAvailable,
+                    dynamicStatusNote = dynamicClassifier.unavailableReason
+                )
+            )
+        }
+    }
+
+    /**
+     * Menambahkan satu atau beberapa item ke dalam queue transkrip secara berurutan (FIFO).
+     */
+    fun appendCommittedSequence(labels: List<String>) {
+        if (inferenceExecutor.isShutdown || labels.isEmpty()) return
+        inferenceExecutor.execute {
+            val nowMs = System.currentTimeMillis()
+            for (lbl in labels) {
+                if (lbl.isNotBlank()) {
+                    appendTranscript(lbl.trim())
+                }
+            }
+            val lastLbl = transcript.lastOrNull() ?: return@execute
+            stabilizer.overrideLastCommitted(lastLbl, nowMs)
+            val mode = currentMode
+            onCommitted(lastLbl, mode)
+            onStateUpdated(
+                UiState(
+                    mode = mode,
+                    handDetected = true,
+                    currentResult = PredictionResult(
+                        label = lastLbl,
+                        confidence = 1.0f,
+                        top3 = emptyList(),
+                        inferenceTimeMs = 0f,
+                        isConfident = true
+                    ),
+                    committedTranscript = transcript.toList(),
+                    lastCommittedLabel = lastLbl,
+                    mediaPipeMs = 0L,
+                    classifierMs = 0f,
+                    activeDelegate = DelegateMode.CPU,
+                    bufferFrames = gestureBuffer.size(),
+                    dynamicModelReady = dynamicClassifier.isAvailable,
+                    dynamicStatusNote = null
+                )
+            )
         }
     }
 
