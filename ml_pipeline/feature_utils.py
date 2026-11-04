@@ -455,7 +455,9 @@ def validate_dynamic_vectors(path: Path = DYNAMIC_VECTORS_PATH) -> None:
 def _self_test_labels() -> None:
     static = load_labels(STATIC_LABELS_PATH)
     dynamic = load_labels(DYNAMIC_LABELS_PATH)
-    assert static == [chr(c) for c in range(ord("A"), ord("Z") + 1)], "static labels must be A..Z"
+    expected_26 = [chr(c) for c in range(ord("A"), ord("Z") + 1)]
+    expected_36 = expected_26 + [str(i) for i in range(1, 11)]
+    assert static in (expected_26, expected_36), f"static labels must be A..Z or A..Z+1..10, got {len(static)}"
     assert len(dynamic) >= 5, "dynamic labels must contain the 5 MVP words (+ optional _idle)"
     print(f"[OK] labels: static={len(static)} dynamic={len(dynamic)} {dynamic}")
 

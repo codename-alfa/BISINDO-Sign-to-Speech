@@ -61,7 +61,7 @@ def verify_parity(keras_model: tf.keras.Model, tflite_bytes: bytes, num_samples:
     print(f"\n🧪 Menjalankan Sanity Parity Check ({num_samples} sampel)...")
 
     if CSV_PATH.exists():
-        df = pd.read_csv(CSV_PATH)
+        df = pd.read_csv(CSV_PATH, dtype={"label": str})
         feature_cols = [f"f{i}" for i in range(feature_utils.NUM_FEATURES)]
         X_all = df[feature_cols].values.astype(np.float32)
         n = min(num_samples, len(X_all))

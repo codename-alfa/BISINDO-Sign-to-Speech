@@ -122,11 +122,24 @@ class MainActivity : AppCompatActivity(), HandLandmarkerHelper.LandmarkerListene
             }
         }
 
-        predictionDisplay = PredictionDisplay(binding) {
-            if (::translationPipeline.isInitialized) {
-                translationPipeline.clearTranscript()
+        predictionDisplay = PredictionDisplay(
+            binding = binding,
+            onSuggestionSelected = { correctedLabel ->
+                if (::translationPipeline.isInitialized) {
+                    translationPipeline.replaceLastCommitted(correctedLabel)
+                    Toast.makeText(
+                        this,
+                        "Dikoreksi menjadi: $correctedLabel",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            },
+            onClearTranscript = {
+                if (::translationPipeline.isInitialized) {
+                    translationPipeline.clearTranscript()
+                }
             }
-        }
+        )
 
         translationPipeline = TranslationPipeline(
             context = this,
@@ -159,6 +172,21 @@ class MainActivity : AppCompatActivity(), HandLandmarkerHelper.LandmarkerListene
             setupCameraAndPipeline()
         } else {
             requestCameraPermission()
+        }
+
+        handleDebugDemoIntent(intent)
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        handleDebugDemoIntent(intent)
+    }
+
+    private fun handleDebugDemoIntent(intent: Intent?) {
+        val demoLabel = intent?.getStringExtra("debug_commit_label")
+        if (!demoLabel.isNullOrBlank() && ::translationPipeline.isInitialized) {
+            translationPipeline.replaceLastCommitted(demoLabel)
         }
     }
 

@@ -1,6 +1,10 @@
 package com.signtospeech.ui
 
+import android.graphics.Typeface
+import android.view.Gravity
 import android.view.View
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.signtospeech.R
 import com.signtospeech.databinding.ActivityMainBinding
@@ -11,19 +15,28 @@ import java.util.Locale
 
 /**
  * Mengelola pembaruan komponen UI bawah untuk menampilkan:
- * - Prediksi utama (Huruf A-Z atau Kata Dinamis) beserta persentase confidence & progress bar.
+ * - Prediksi utama (Huruf A-Z, Angka 1-10, atau Kata Dinamis) beserta persentase confidence & progress bar.
  * - Baris Top-3 fallback suggestions ("Mungkin: A 45% · S 30% · E 10%") saat confidence < 70%.
+ * - Baris Interactive Quick Suggestion Chips (tombol koreksi mandiri 1-ketukan untuk pasangan
+ *   Huruf <-> Angka yang bentuk jarinya mirip seperti V <-> 2, D <-> 1, W <-> 6, B <-> 4).
  * - Baris transkrip hasil commit beserta tombol hapus.
  */
 class PredictionDisplay(
     private val binding: ActivityMainBinding,
+    private val onSuggestionSelected: (String) -> Unit = {},
     onClearTranscript: () -> Unit
 ) {
+
+    private var lastRenderedSuggestionBase: String? = null
+    private var lastRenderedCandidates: List<String> = emptyList()
 
     init {
         binding.btnClearTranscript.setOnClickListener {
             onClearTranscript()
             binding.tvTranscript.text = binding.root.context.getString(R.string.transcript_placeholder)
+            lastRenderedSuggestionBase = null
+            lastRenderedCandidates = emptyList()
+            binding.llQuickSuggestions.visibility = View.GONE
         }
     }
 
@@ -45,16 +58,26 @@ class PredictionDisplay(
             binding.progressConfidence.progress = 0
             binding.tvSuggestions.visibility = View.VISIBLE
             binding.tvSuggestions.text = state.dynamicStatusNote ?: "Model kata dinamis belum tersedia"
+            binding.llQuickSuggestions.visibility = View.GONE
             return
         }
 
-        // 3. Jika tangan tidak terdeteksi
+        // 3. Jika tangan tidak terdeteksi, tetap pertahankan Quick Suggestion dari label terakhir yang di-commit
+        // agar user Tuli leluasa mengetuk tombol koreksi setelah menurunkan tangan!
         if (!state.handDetected || state.currentResult == null) {
-            binding.tvPredictionLabel.text = "—"
+            binding.tvPredictionLabel.text = state.lastCommittedLabel ?: "—"
             binding.tvPredictionLabel.setTextColor(ContextCompat.getColor(ctx, R.color.white))
             binding.tvConfidencePercent.text = state.dynamicStatusNote ?: ctx.getString(R.string.waiting_gesture)
             binding.progressConfidence.progress = 0
             binding.tvSuggestions.visibility = View.GONE
+
+            val committedBase = state.lastCommittedLabel
+            if (committedBase != null && state.mode == RecognitionMode.LETTER) {
+                val quickAlts = ModelConfig.resolveQuickSuggestions(committedBase, emptyList())
+                renderQuickSuggestionChips(committedBase, quickAlts)
+            } else {
+                binding.llQuickSuggestions.visibility = View.GONE
+            }
             return
         }
 
@@ -73,6 +96,7 @@ class PredictionDisplay(
             } else {
                 binding.tvSuggestions.visibility = View.GONE
             }
+            binding.llQuickSuggestions.visibility = View.GONE
             return
         }
 
@@ -102,6 +126,70 @@ class PredictionDisplay(
         } else {
             binding.tvSuggestions.visibility = View.GONE
         }
+
+        if (state.mode == RecognitionMode.LETTER) {
+            val baseLabel = state.lastCommittedLabel ?: res.label
+            val quickAlts = ModelConfig.resolveQuickSuggestions(baseLabel, res.top3)
+            renderQuickSuggestionChips(baseLabel, quickAlts)
+        } else {
+            binding.llQuickSuggestions.visibility = View.GONE
+        }
+    }
+
+    private fun renderQuickSuggestionChips(baseLabel: String, candidates: List<String>) {
+        if (candidates.isEmpty()) {
+            binding.llQuickSuggestions.visibility = View.GONE
+            lastRenderedSuggestionBase = null
+            lastRenderedCandidates = emptyList()
+            return
+        }
+
+        binding.llQuickSuggestions.visibility = View.VISIBLE
+        if (baseLabel == lastRenderedSuggestionBase && candidates == lastRenderedCandidates) {
+            return
+        }
+        lastRenderedSuggestionBase = baseLabel
+        lastRenderedCandidates = candidates
+
+        val ctx = binding.root.context
+        val density = ctx.resources.displayMetrics.density
+        fun dp(v: Int): Int = (v * density).toInt()
+
+        binding.llQuickSuggestions.removeAllViews()
+
+        val titleView = TextView(ctx).apply {
+            text = "Koreksi cepat:"
+            textSize = 11f
+            setTextColor(ContextCompat.getColor(ctx, R.color.text_muted))
+            setPadding(0, 0, dp(6), 0)
+        }
+        binding.llQuickSuggestions.addView(titleView)
+
+        for (altLabel in candidates) {
+            val chip = TextView(ctx).apply {
+                val kindPrefix = if (altLabel.all { it.isDigit() }) "Angka" else "Huruf"
+                text = "↻ $kindPrefix $altLabel"
+                textSize = 11f
+                typeface = Typeface.DEFAULT_BOLD
+                setTextColor(ContextCompat.getColor(ctx, R.color.white))
+                setBackgroundColor(ContextCompat.getColor(ctx, R.color.chip_inactive_bg))
+                setPadding(dp(10), dp(4), dp(10), dp(4))
+                gravity = Gravity.CENTER
+                isClickable = true
+                isFocusable = true
+                val params = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    marginEnd = dp(6)
+                }
+                layoutParams = params
+                setOnClickListener {
+                    onSuggestionSelected(altLabel)
+                }
+            }
+            binding.llQuickSuggestions.addView(chip)
+        }
     }
 
     private fun formatTop3(items: List<Pair<String, Float>>): String {
@@ -111,4 +199,3 @@ class PredictionDisplay(
         return "Mungkin: $formatted"
     }
 }
-

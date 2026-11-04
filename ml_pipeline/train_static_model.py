@@ -32,9 +32,10 @@ def load_dataset(csv_path: Path = CSV_PATH):
     if not csv_path.exists():
         raise FileNotFoundError(f"File {csv_path} tidak ditemukan. Jalankan collect_static_data.py terlebih dahulu.")
 
-    df = pd.read_csv(csv_path)
+    df = pd.read_csv(csv_path, dtype={"label": str})
     if "label" not in df.columns:
         raise ValueError("Kolom 'label' tidak ditemukan di dataset CSV.")
+    df["label"] = df["label"].astype(str).str.strip()
 
     expected_labels = feature_utils.load_labels(feature_utils.STATIC_LABELS_PATH)
     label_to_idx = {label: i for i, label in enumerate(expected_labels)}

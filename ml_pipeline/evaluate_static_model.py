@@ -38,7 +38,8 @@ def evaluate():
     expected_labels = feature_utils.load_labels(feature_utils.STATIC_LABELS_PATH)
     label_to_idx = {label: i for i, label in enumerate(expected_labels)}
 
-    df = pd.read_csv(CSV_PATH)
+    df = pd.read_csv(CSV_PATH, dtype={"label": str})
+    df["label"] = df["label"].astype(str).str.strip()
     df = df[df["label"].isin(label_to_idx)].copy()
 
     feature_cols = [f"f{i}" for i in range(feature_utils.NUM_FEATURES)]

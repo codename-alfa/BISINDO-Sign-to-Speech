@@ -14,6 +14,7 @@ env/
 # ---------- ML data (dibagikan via Google Drive, bukan Git) ----------
 # Raw images (Kaggle) & rekaman mentah
 ml_pipeline/data/raw/
+ml_pipeline/data/raw_sibi/
 # Sequence dynamic gesture (.npy & .npz raw) — besar, sinkron via Drive
 ml_pipeline/data/dynamic/**/*.npy
 ml_pipeline/data/dynamic_raw/**/*.npz

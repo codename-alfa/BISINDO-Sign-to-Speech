@@ -110,6 +110,46 @@ class TranslationPipeline(
         }
     }
 
+    /**
+     * Mengganti item terakhir di transkrip (atau menambahkan jika transkrip masih kosong)
+     * ketika pengguna mengetuk chip Quick Suggestion untuk mengoreksi mandiri hasil translasi
+     * (misal mengoreksi 'V' menjadi '2' atau 'D' menjadi '1').
+     */
+    fun replaceLastCommitted(newLabel: String) {
+        if (inferenceExecutor.isShutdown || newLabel.isBlank()) return
+        inferenceExecutor.execute {
+            val nowMs = System.currentTimeMillis()
+            if (transcript.isNotEmpty()) {
+                transcript.removeLast()
+            }
+            appendTranscript(newLabel)
+            stabilizer.overrideLastCommitted(newLabel, nowMs)
+            val mode = currentMode
+            onCommitted(newLabel, mode)
+            onStateUpdated(
+                UiState(
+                    mode = mode,
+                    handDetected = true,
+                    currentResult = PredictionResult(
+                        label = newLabel,
+                        confidence = 1.0f,
+                        top3 = emptyList(),
+                        inferenceTimeMs = 0f,
+                        isConfident = true
+                    ),
+                    committedTranscript = transcript.toList(),
+                    lastCommittedLabel = transcript.lastOrNull(),
+                    mediaPipeMs = 0L,
+                    classifierMs = 0f,
+                    activeDelegate = DelegateMode.CPU,
+                    bufferFrames = gestureBuffer.size(),
+                    dynamicModelReady = dynamicClassifier.isAvailable,
+                    dynamicStatusNote = null
+                )
+            )
+        }
+    }
+
     fun processLandmarks(
         landmarks: List<NormalizedLandmark>?,
         imageWidth: Int,
