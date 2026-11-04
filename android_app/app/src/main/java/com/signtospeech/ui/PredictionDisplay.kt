@@ -19,11 +19,12 @@ import java.util.Locale
  * - Baris Top-3 fallback suggestions ("Mungkin: A 45% · S 30% · E 10%") saat confidence < 70%.
  * - Baris Interactive Quick Suggestion Chips (tombol koreksi mandiri 1-ketukan untuk pasangan
  *   Huruf <-> Angka yang bentuk jarinya mirip seperti V <-> 2, D <-> 1, W <-> 6, B <-> 4).
- * - Baris transkrip hasil commit beserta tombol hapus.
+ * - Baris transkrip hasil commit beserta tombol Hapus (hapus 1 terakhir) dan Clear (hapus semua).
  */
 class PredictionDisplay(
     private val binding: ActivityMainBinding,
     private val onSuggestionSelected: (String) -> Unit = {},
+    private val onDeleteLastTranscript: () -> Unit = {},
     onClearTranscript: () -> Unit
 ) {
 
@@ -31,11 +32,17 @@ class PredictionDisplay(
     private var lastRenderedCandidates: List<String> = emptyList()
 
     init {
-        binding.btnClearTranscript.setOnClickListener {
-            onClearTranscript()
-            binding.tvTranscript.text = binding.root.context.getString(R.string.transcript_placeholder)
+        binding.btnDeleteLastTranscript.setOnClickListener {
             lastRenderedSuggestionBase = null
             lastRenderedCandidates = emptyList()
+            onDeleteLastTranscript()
+        }
+
+        binding.btnClearTranscript.setOnClickListener {
+            lastRenderedSuggestionBase = null
+            lastRenderedCandidates = emptyList()
+            onClearTranscript()
+            binding.tvTranscript.text = binding.root.context.getString(R.string.transcript_placeholder)
             binding.llQuickSuggestions.visibility = View.GONE
         }
     }

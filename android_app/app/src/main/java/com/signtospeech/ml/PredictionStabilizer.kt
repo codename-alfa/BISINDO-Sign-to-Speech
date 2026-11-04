@@ -54,7 +54,7 @@ class PredictionStabilizer(
     }
 
     @Synchronized
-    fun overrideLastCommitted(newLabel: String, timestampMs: Long) {
+    fun overrideLastCommitted(newLabel: String?, timestampMs: Long) {
         lastCommittedLabel = newLabel
         lastCommittedMs = timestampMs
     }
