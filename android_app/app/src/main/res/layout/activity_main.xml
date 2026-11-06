@@ -537,6 +537,7 @@
 
         <!-- Bottom Action Deck (Deck Input: Presets + Keyboard + Mic + Toggle Arah) -->
         <LinearLayout
+            android:id="@+id/arah2BottomActionDeck"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/panel_bg"
@@ -544,7 +545,7 @@
             android:orientation="vertical"
             android:paddingHorizontal="@dimen/screen_horizontal_padding"
             android:paddingTop="10dp"
-            android:paddingBottom="56dp">
+            android:paddingBottom="68dp">
 
             <!-- Row 1: Quick Preset Chips Strip (Relocated per Decision Q4) -->
             <HorizontalScrollView
@@ -613,6 +614,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
                 android:gravity="center"
                 android:orientation="horizontal">
 
