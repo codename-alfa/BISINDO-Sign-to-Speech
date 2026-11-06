@@ -13,6 +13,7 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
@@ -20,7 +21,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.snackbar.Snackbar
 import com.signtospeech.camera.CameraManager
 import com.signtospeech.databinding.ActivityMainBinding
@@ -169,6 +173,27 @@ class MainActivity : AppCompatActivity(), HandLandmarkerHelper.LandmarkerListene
         setupArah2Components()
         setupUiListeners()
 
+        ViewCompat.setOnApplyWindowInsetsListener(binding.rootContainer) { _, insets ->
+            val navBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+            val toggleParams = binding.bottomNavDirection.layoutParams as? ViewGroup.MarginLayoutParams
+            toggleParams?.bottomMargin = dpToPx(16) + navBars.bottom
+            binding.bottomNavDirection.layoutParams = toggleParams
+
+            binding.predictionPanel.setPadding(
+                binding.predictionPanel.paddingLeft,
+                binding.predictionPanel.paddingTop,
+                binding.predictionPanel.paddingRight,
+                dpToPx(56) + navBars.bottom
+            )
+            binding.arah2Container.setPadding(
+                binding.arah2Container.paddingLeft,
+                binding.arah2Container.paddingTop,
+                binding.arah2Container.paddingRight,
+                dpToPx(56) + navBars.bottom
+            )
+            insets
+        }
+
         if (AppLogger.hasPreviousCrash(this)) {
             checkPreviousCrash()
         }
@@ -189,10 +214,55 @@ class MainActivity : AppCompatActivity(), HandLandmarkerHelper.LandmarkerListene
     }
 
     private fun handleDebugDemoIntent(intent: Intent?) {
+        val holdSplash = intent?.getBooleanExtra("debug_hold_splash", false) == true
         val demoLabel = intent?.getStringExtra("debug_commit_label")
+
+        val targetDirection = intent?.getStringExtra("debug_direction")
+        val arah2Text = intent?.getStringExtra("debug_arah2_text")
+
+        if (holdSplash) {
+            binding.loadingSplashOverlay.alpha = 1f
+            binding.loadingSplashOverlay.visibility = View.VISIBLE
+        } else if (!demoLabel.isNullOrBlank() || !targetDirection.isNullOrBlank() || !arah2Text.isNullOrBlank()) {
+            binding.loadingSplashOverlay.visibility = View.GONE
+        } else if (binding.loadingSplashOverlay.visibility == View.VISIBLE) {
+            binding.loadingSplashOverlay.postDelayed({
+                binding.loadingSplashOverlay.animate()
+                    .alpha(0f)
+                    .setDuration(250L)
+                    .withEndAction {
+                        binding.loadingSplashOverlay.visibility = View.GONE
+                    }
+                    .start()
+            }, 1100L)
+        }
+
+        if (targetDirection.equals("arah2", ignoreCase = true) || targetDirection.equals("SPEECH_TO_TEXT", ignoreCase = true)) {
+            binding.rootContainer.post {
+                switchDirection(AppDirection.SPEECH_TO_TEXT)
+            }
+        } else if (targetDirection.equals("arah1", ignoreCase = true) || targetDirection.equals("SIGN_TO_SPEECH", ignoreCase = true)) {
+            binding.rootContainer.post {
+                switchDirection(AppDirection.SIGN_TO_SPEECH)
+            }
+        }
+
+        if (!arah2Text.isNullOrBlank()) {
+            binding.rootContainer.post {
+                switchDirection(AppDirection.SPEECH_TO_TEXT)
+                val analysis = KeywordMatcher.match(arah2Text)
+                textCardDisplay.updateAnalysis(analysis)
+            }
+        }
+
         if (!demoLabel.isNullOrBlank() && ::translationPipeline.isInitialized) {
             val items = demoLabel.split(",").map { it.trim() }.filter { it.isNotEmpty() }
-            translationPipeline.appendCommittedSequence(items)
+            binding.rootContainer.postDelayed({
+                if (::cameraManager.isInitialized) {
+                    cameraManager.pauseCamera()
+                }
+                translationPipeline.appendCommittedSequence(items)
+            }, 900L)
         }
     }
 
@@ -214,6 +284,10 @@ class MainActivity : AppCompatActivity(), HandLandmarkerHelper.LandmarkerListene
             scrollArah2Content = binding.scrollArah2Content,
             etArah2KeyboardInput = binding.etArah2KeyboardInput,
             btnSubmitKeyboard = binding.btnSubmitKeyboard,
+            btnArah2Edit = binding.btnArah2Edit,
+            ivMicIcon = binding.ivMicIcon,
+            hudDot = binding.hudArah2Dot,
+            hudContainer = binding.hudArah2Status,
             onPresetSelected = { presetText ->
                 if (::speechToTextManager.isInitialized && speechToTextManager.isListening) {
                     speechToTextManager.stopListening()
@@ -453,6 +527,10 @@ class MainActivity : AppCompatActivity(), HandLandmarkerHelper.LandmarkerListene
             }
         }
 
+        binding.loadingSplashOverlay.setOnClickListener {
+            binding.loadingSplashOverlay.visibility = View.GONE
+        }
+
         binding.btnModeLetter.setOnClickListener {
             selectRecognitionMode(RecognitionMode.LETTER)
         }
@@ -464,11 +542,8 @@ class MainActivity : AppCompatActivity(), HandLandmarkerHelper.LandmarkerListene
         binding.btnMuteTts.setOnClickListener {
             val muted = ttsManager.toggleMute()
             binding.btnMuteTts.text = getString(if (muted) R.string.tts_muted else R.string.tts_on)
-            binding.btnMuteTts.setBackgroundColor(
-                ContextCompat.getColor(
-                    this,
-                    if (muted) R.color.chip_inactive_bg else R.color.chip_active_bg
-                )
+            binding.btnMuteTts.setBackgroundResource(
+                if (muted) R.drawable.bg_figma_sound_mute else R.drawable.bg_figma_sound_on
             )
         }
 
@@ -530,13 +605,15 @@ class MainActivity : AppCompatActivity(), HandLandmarkerHelper.LandmarkerListene
             // Tampilkan Layer Arah 2
             binding.arah2Container.visibility = View.VISIBLE
 
-            // Perbarui visual tab navigasi
-            binding.tvTabArah1Title.setTextColor(ContextCompat.getColor(this, R.color.color_nav_inactive))
-            binding.indicatorTabArah1.setBackgroundColor(Color.TRANSPARENT)
-            binding.tvTabArah2Title.setTextColor(ContextCompat.getColor(this, R.color.color_nav_active))
-            binding.indicatorTabArah2.setBackgroundColor(ContextCompat.getColor(this, R.color.color_nav_active))
+            // Perbarui visual tab navigasi (Figma Segmented Pill Toggle #23:305)
+            binding.tabArah1.setBackgroundResource(0)
+            binding.tvTabArah1Title.setTextColor(ContextCompat.getColor(this, R.color.figma_toggle_inactive_text))
+            binding.tvTabArah1Title.typeface = ResourcesCompat.getFont(this, R.font.inter_semibold_italic)
+            binding.tabArah2.setBackgroundResource(R.drawable.bg_figma_bottom_toggle_active_right)
+            binding.tvTabArah2Title.setTextColor(ContextCompat.getColor(this, R.color.figma_toggle_active_text))
+            binding.tvTabArah2Title.typeface = ResourcesCompat.getFont(this, R.font.inter_light_italic)
 
-            Log.d(TAG, "Beralih ke Subsistem Arah 2 (Dengar -> Tuli)")
+            AppLogger.i(TAG, "Beralih ke Subsistem Arah 2 (Dengar -> Tuli)")
         } else {
             // 2. Kembali ke Arah 1: Tuli -> Dengar
             if (::speechToTextManager.isInitialized && speechToTextManager.isListening) {
@@ -558,24 +635,32 @@ class MainActivity : AppCompatActivity(), HandLandmarkerHelper.LandmarkerListene
                 cameraManager.resumeCamera()
             }
 
-            // Perbarui visual tab navigasi
-            binding.tvTabArah1Title.setTextColor(ContextCompat.getColor(this, R.color.color_nav_active))
-            binding.indicatorTabArah1.setBackgroundColor(ContextCompat.getColor(this, R.color.color_nav_active))
-            binding.tvTabArah2Title.setTextColor(ContextCompat.getColor(this, R.color.color_nav_inactive))
-            binding.indicatorTabArah2.setBackgroundColor(Color.TRANSPARENT)
+            // Perbarui visual tab navigasi (Figma Segmented Pill Toggle #23:305)
+            binding.tabArah1.setBackgroundResource(R.drawable.bg_figma_bottom_toggle_active)
+            binding.tvTabArah1Title.setTextColor(ContextCompat.getColor(this, R.color.figma_toggle_active_text))
+            binding.tvTabArah1Title.typeface = ResourcesCompat.getFont(this, R.font.inter_light_italic)
+            binding.tabArah2.setBackgroundResource(0)
+            binding.tvTabArah2Title.setTextColor(ContextCompat.getColor(this, R.color.figma_toggle_inactive_text))
+            binding.tvTabArah2Title.typeface = ResourcesCompat.getFont(this, R.font.inter_semibold_italic)
 
-            Log.d(TAG, "Beralih ke Subsistem Arah 1 (Tuli -> Dengar)")
+            AppLogger.i(TAG, "Beralih ke Subsistem Arah 1 (Tuli -> Dengar)")
         }
     }
 
     private fun selectRecognitionMode(mode: RecognitionMode) {
         translationPipeline.setMode(mode)
         val isLetter = mode == RecognitionMode.LETTER
-        binding.btnModeLetter.setBackgroundColor(
-            ContextCompat.getColor(this, if (isLetter) R.color.chip_active_bg else R.color.chip_inactive_bg)
+        binding.btnModeLetter.setBackgroundResource(
+            if (isLetter) R.drawable.bg_figma_pill_active else 0
         )
-        binding.btnModeWord.setBackgroundColor(
-            ContextCompat.getColor(this, if (!isLetter) R.color.chip_active_bg else R.color.chip_inactive_bg)
+        binding.btnModeLetter.setTextColor(
+            if (isLetter) Color.WHITE else Color.parseColor("#80FFFFFF")
+        )
+        binding.btnModeWord.setBackgroundResource(
+            if (!isLetter) R.drawable.bg_figma_pill_active else 0
+        )
+        binding.btnModeWord.setTextColor(
+            if (!isLetter) Color.WHITE else Color.parseColor("#80FFFFFF")
         )
     }
 
@@ -598,18 +683,24 @@ class MainActivity : AppCompatActivity(), HandLandmarkerHelper.LandmarkerListene
         val isCpu = activeMode == DelegateMode.CPU
         val gpuAvailable = delegateGuard.isGpuAvailable()
 
-        binding.btnDelegateCpu.setBackgroundColor(
-            ContextCompat.getColor(this, if (isCpu) R.color.chip_active_bg else R.color.chip_inactive_bg)
+        binding.btnDelegateCpu.setBackgroundResource(
+            if (isCpu) R.drawable.bg_figma_pill_active else 0
+        )
+        binding.btnDelegateCpu.setTextColor(
+            if (isCpu) Color.WHITE else Color.parseColor("#80FFFFFF")
         )
 
         val gpuBg = when {
-            !isCpu -> R.color.chip_active_bg
-            !gpuAvailable -> R.color.chip_disabled_bg
-            else -> R.color.chip_inactive_bg
+            !isCpu -> R.drawable.bg_figma_pill_active
+            else -> 0
         }
-        binding.btnDelegateGpu.setBackgroundColor(ContextCompat.getColor(this, gpuBg))
+        binding.btnDelegateGpu.setBackgroundResource(gpuBg)
         binding.btnDelegateGpu.setTextColor(
-            ContextCompat.getColor(this, if (gpuAvailable || !isCpu) R.color.white else R.color.text_muted)
+            when {
+                !isCpu -> Color.WHITE
+                gpuAvailable -> Color.parseColor("#80FFFFFF")
+                else -> Color.parseColor("#4DFFFFFF")
+            }
         )
     }
 

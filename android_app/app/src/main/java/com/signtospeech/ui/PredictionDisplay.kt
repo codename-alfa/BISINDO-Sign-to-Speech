@@ -179,7 +179,7 @@ class PredictionDisplay(
                 textSize = 11f
                 typeface = Typeface.DEFAULT_BOLD
                 setTextColor(ContextCompat.getColor(ctx, R.color.white))
-                setBackgroundColor(ContextCompat.getColor(ctx, R.color.chip_inactive_bg))
+                setBackgroundResource(R.drawable.bg_figma_action_chip)
                 setPadding(dp(10), dp(4), dp(10), dp(4))
                 gravity = Gravity.CENTER
                 isClickable = true
