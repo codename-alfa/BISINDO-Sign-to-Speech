@@ -426,8 +426,10 @@ class TextCardDisplay(
     fun updateListeningState(isListening: Boolean) {
         if (isListening) {
             btnToggleMic.setBackgroundResource(R.drawable.bg_figma_mic_active)
-            ivMicIcon?.setImageResource(R.drawable.ic_stop_24dp)
-            tvMicLabel.text = context.getString(R.string.arah2_tap_to_stop)
+            ivMicIcon?.setImageResource(R.drawable.ic_mic_off_24dp)
+            btnToggleMic.contentDescription = "Mute mikrofon"
+            tvMicLabel.text = ""
+            tvMicLabel.visibility = View.GONE
             tvSpeechStatus.text = context.getString(R.string.arah2_listening)
             val redColor = ContextCompat.getColor(context, R.color.color_mic_active)
             tvSpeechStatus.setTextColor(redColor)
@@ -435,7 +437,9 @@ class TextCardDisplay(
         } else {
             btnToggleMic.setBackgroundResource(R.drawable.bg_figma_mic_idle)
             ivMicIcon?.setImageResource(R.drawable.ic_mic_24dp)
-            tvMicLabel.text = context.getString(R.string.arah2_tap_to_start)
+            btnToggleMic.contentDescription = "Mulai rekam"
+            tvMicLabel.text = ""
+            tvMicLabel.visibility = View.GONE
             tvSpeechStatus.text = context.getString(R.string.arah2_instruction)
             val greenColor = ContextCompat.getColor(context, R.color.landmark_point)
             tvSpeechStatus.setTextColor(greenColor)
