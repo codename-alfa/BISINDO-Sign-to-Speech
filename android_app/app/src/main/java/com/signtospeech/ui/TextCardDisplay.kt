@@ -426,9 +426,9 @@ class TextCardDisplay(
     fun updateListeningState(isListening: Boolean) {
         if (isListening) {
             btnToggleMic.setBackgroundResource(R.drawable.bg_figma_mic_active)
-            ivMicIcon?.setImageResource(R.drawable.ic_rec_dot_28dp)
-            ivMicIcon?.imageTintList = null
-            btnToggleMic.contentDescription = "Mute mikrofon"
+            ivMicIcon?.setImageResource(R.drawable.ic_stop_square_24dp)
+            ivMicIcon?.imageTintList = ColorStateList.valueOf(Color.WHITE)
+            btnToggleMic.contentDescription = "Selesai bicara"
             tvMicLabel.text = ""
             tvMicLabel.visibility = View.GONE
             tvSpeechStatus.text = context.getString(R.string.arah2_listening)
