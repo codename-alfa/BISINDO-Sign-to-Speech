@@ -426,7 +426,8 @@ class TextCardDisplay(
     fun updateListeningState(isListening: Boolean) {
         if (isListening) {
             btnToggleMic.setBackgroundResource(R.drawable.bg_figma_mic_active)
-            ivMicIcon?.setImageResource(R.drawable.ic_mic_off_24dp)
+            ivMicIcon?.setImageResource(R.drawable.ic_rec_dot_28dp)
+            ivMicIcon?.imageTintList = null
             btnToggleMic.contentDescription = "Mute mikrofon"
             tvMicLabel.text = ""
             tvMicLabel.visibility = View.GONE
@@ -437,6 +438,7 @@ class TextCardDisplay(
         } else {
             btnToggleMic.setBackgroundResource(R.drawable.bg_figma_mic_idle)
             ivMicIcon?.setImageResource(R.drawable.ic_mic_24dp)
+            ivMicIcon?.imageTintList = ColorStateList.valueOf(Color.WHITE)
             btnToggleMic.contentDescription = "Mulai rekam"
             tvMicLabel.text = ""
             tvMicLabel.visibility = View.GONE

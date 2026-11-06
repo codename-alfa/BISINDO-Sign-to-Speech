@@ -183,13 +183,19 @@ class MainActivity : AppCompatActivity(), HandLandmarkerHelper.LandmarkerListene
                 binding.predictionPanel.paddingLeft,
                 binding.predictionPanel.paddingTop,
                 binding.predictionPanel.paddingRight,
-                dpToPx(56) + navBars.bottom
+                dpToPx(64) + navBars.bottom
             )
             binding.arah2Container.setPadding(
                 binding.arah2Container.paddingLeft,
                 binding.arah2Container.paddingTop,
                 binding.arah2Container.paddingRight,
-                dpToPx(56) + navBars.bottom
+                0
+            )
+            binding.arah2BottomActionDeck.setPadding(
+                binding.arah2BottomActionDeck.paddingLeft,
+                binding.arah2BottomActionDeck.paddingTop,
+                binding.arah2BottomActionDeck.paddingRight,
+                dpToPx(68) + navBars.bottom
             )
             insets
         }
