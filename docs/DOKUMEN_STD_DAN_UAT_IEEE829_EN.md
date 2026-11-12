@@ -146,6 +146,8 @@ Testing halts if an unhandled crash interrupts core camera frames or invalidates
 | Display Resolution and Density | 1344 x 2992 pixels (480 dpi - xxhdpi) |
 | Hardware and Graphic Acceleration | SwiftShader Indirect (OpenGL ES 3.0), CPU and GPU Delegate Support |
 | Build Under Test | SignToSpeech v0.5.0-sibi (SignToSpeech-v0.5.0-sibi.apk) |
+| Public Source Code Repository | https://github.com/codename-alfa/BISINDO-Sign-to-Speech |
+| Interactive Test Spreadsheet (Excel) | https://github.com/codename-alfa/BISINDO-Sign-to-Speech/blob/main/docs/DOKUMEN_PENGUJIAN_SISTEM_SIGNTOSPEECH.xlsx |
 | Core AI Engine | MediaPipe Tasks Vision 0.10.14 + TFLite SIBI Static Classifier (36 Classes) |
 | Audio Engines | Android TextToSpeech (Locale: id-ID) + Android SpeechRecognizer API |
 | Testing Methodology | IEEE 829 STD (Black-Box & Unit) + Scenario-Based UAT (Likert 1-5) |
@@ -319,6 +321,12 @@ Approved on **November 12, 2026**, in Depok, Indonesia:
 ---
 
 ## SECTION VIII: APPENDIX AND TEST EVIDENCE INDEX
+
+All verification artifacts, logs, and companion workbooks are archived in the public repository:  
+- Repository Docs Directory: https://github.com/codename-alfa/BISINDO-Sign-to-Speech/tree/main/docs  
+- Interactive Testing Spreadsheet (.xlsx): https://github.com/codename-alfa/BISINDO-Sign-to-Speech/blob/main/docs/DOKUMEN_PENGUJIAN_SISTEM_SIGNTOSPEECH.xlsx  
+- Direct File Download: https://github.com/codename-alfa/BISINDO-Sign-to-Speech/raw/main/docs/DOKUMEN_PENGUJIAN_SISTEM_SIGNTOSPEECH.xlsx  
+
 
 | No | Artifact & Media Type | Functional Description | Related Test Cases |
 | :---: | :--- | :--- | :--- |
