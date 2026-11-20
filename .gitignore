@@ -49,4 +49,4 @@ android_app/.kotlin/
 .DS_Store
 Thumbs.db
 desktop.ini
-artifacts/
+/artifacts/

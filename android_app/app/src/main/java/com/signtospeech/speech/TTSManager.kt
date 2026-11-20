@@ -68,10 +68,17 @@ class TTSManager(
     }
 
     fun speak(text: String, force: Boolean = false) {
-        if (isMuted || !isReady || text.isBlank() || text.startsWith("_")) return
-
         val now = System.currentTimeMillis()
-        if (!force && text == lastSpokenText && (now - lastSpokenTimeMs) < DEBOUNCE_MS) {
+        val elapsed = now - lastSpokenTimeMs
+        if (!shouldSpeak(
+                text = text,
+                isMuted = isMuted,
+                isReady = isReady,
+                force = force,
+                lastSpokenText = lastSpokenText,
+                elapsedSinceLastMs = elapsed
+            )
+        ) {
             return
         }
 
@@ -96,6 +103,13 @@ class TTSManager(
         return isMuted
     }
 
+    fun applyMuteState(muted: Boolean) {
+        isMuted = muted
+        if (isMuted) {
+            tts?.stop()
+        }
+    }
+
     fun createInstallVoiceDataIntent(): Intent {
         return Intent(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -117,6 +131,28 @@ class TTSManager(
     companion object {
         private const val TAG = "TTSManager"
         private const val DEBOUNCE_MS = 1200L
+
+        /**
+         * Evaluates whether a candidate utterance should be queued for TTS playback.
+         */
+        @JvmStatic
+        fun shouldSpeak(
+            text: String,
+            isMuted: Boolean,
+            isReady: Boolean,
+            force: Boolean,
+            lastSpokenText: String?,
+            elapsedSinceLastMs: Long,
+            debounceMs: Long = DEBOUNCE_MS
+        ): Boolean {
+            if (isMuted || !isReady || text.isBlank() || text.startsWith("_")) {
+                return false
+            }
+            if (!force && text == lastSpokenText && elapsedSinceLastMs < debounceMs) {
+                return false
+            }
+            return true
+        }
     }
 }
 

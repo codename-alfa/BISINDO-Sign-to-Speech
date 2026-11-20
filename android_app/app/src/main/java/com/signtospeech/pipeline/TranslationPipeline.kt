@@ -58,8 +58,49 @@ class TranslationPipeline(
     private val transcript = ArrayDeque<String>()
 
     @Volatile
+    private var transcriptSnapshot: List<String> = emptyList()
+
+    @Volatile
     var currentMode: RecognitionMode = RecognitionMode.LETTER
         private set
+
+    fun getCommittedTranscriptSnapshot(): List<String> = transcriptSnapshot
+
+    fun restoreState(mode: RecognitionMode, items: List<String>) {
+        currentMode = mode
+        if (inferenceExecutor.isShutdown) return
+        inferenceExecutor.execute {
+            gestureBuffer.clear()
+            stabilizer.resetAllIncludingHistory()
+            lastDynamicEvalMs = 0L
+            lastDynamicResult = null
+            transcript.clear()
+            transcriptSnapshot = emptyList()
+            items.filter { it.isNotBlank() }
+                .takeLast(MAX_TRANSCRIPT_ITEMS)
+                .forEach { transcript.addLast(it.trim()) }
+            val remainingLast = transcript.lastOrNull()
+            if (remainingLast != null) {
+                stabilizer.overrideLastCommitted(remainingLast, -100_000L)
+            }
+            transcriptSnapshot = transcript.toList()
+            onStateUpdated(
+                UiState(
+                    mode = currentMode,
+                    handDetected = false,
+                    currentResult = null,
+                    committedTranscript = transcriptSnapshot,
+                    lastCommittedLabel = remainingLast,
+                    mediaPipeMs = 0L,
+                    classifierMs = 0f,
+                    activeDelegate = DelegateMode.CPU,
+                    bufferFrames = gestureBuffer.size(),
+                    dynamicModelReady = dynamicClassifier.isAvailable,
+                    dynamicStatusNote = dynamicClassifier.unavailableReason
+                )
+            )
+        }
+    }
 
     @Volatile
     private var lastDynamicEvalMs: Long = 0L
@@ -112,6 +153,7 @@ class TranslationPipeline(
             if (transcript.isNotEmpty()) {
                 transcript.removeLast()
             }
+            transcriptSnapshot = transcript.toList()
             val remainingLast = transcript.lastOrNull()
             if (remainingLast != null) {
                 stabilizer.overrideLastCommitted(remainingLast, -100_000L)
@@ -144,6 +186,7 @@ class TranslationPipeline(
         if (inferenceExecutor.isShutdown) return
         inferenceExecutor.execute {
             transcript.clear()
+            transcriptSnapshot = emptyList()
             stabilizer.resetAllIncludingHistory()
             val mode = currentMode
             onStateUpdated(
@@ -216,6 +259,7 @@ class TranslationPipeline(
             if (transcript.isNotEmpty()) {
                 transcript.removeLast()
             }
+            transcriptSnapshot = transcript.toList()
             appendTranscript(newLabel)
             stabilizer.overrideLastCommitted(newLabel, nowMs)
             val mode = currentMode
@@ -410,6 +454,7 @@ class TranslationPipeline(
             transcript.removeFirst()
         }
         transcript.addLast(label)
+        transcriptSnapshot = transcript.toList()
     }
 
     override fun close() {

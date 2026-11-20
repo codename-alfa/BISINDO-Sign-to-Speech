@@ -1,0 +1,11 @@
+{
+  "scope": "all_takes",
+  "n_sequences": 874,
+  "tflite_size_kb": 298.14,
+  "max_abs_diff": 2.980232238769531e-07,
+  "mean_abs_diff": 1.4611292176169854e-09,
+  "mismatches": 0,
+  "keras_acc": 0.9565217391304348,
+  "tflite_acc": 0.9565217391304348,
+  "avg_ms": 0.14444302059532874
+}

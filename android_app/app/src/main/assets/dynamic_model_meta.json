@@ -1,5 +1,8 @@
 {
   "schema_version": 2,
+  "architecture": "Bidirectional(LSTM(32, unroll=True)) -> Dropout(0.25) -> Dense(32) -> Dense(6)",
+  "trainable_params": 27622,
+  "tflite_builtins_only": true,
   "window_ms": 1500,
   "hop_ms": 200,
   "sequence_length": 30,
@@ -14,9 +17,46 @@
     "Tidak",
     "_idle"
   ],
-  "val_accuracy": 0.8803,
-  "val_loss": 0.8442,
-  "validation_mode": "leave_one_signer_out (held_out=vanesa)",
+  "primary_held_out_signer": "vanesa",
+  "val_accuracy": 0.8732,
+  "val_loss": 0.7914,
+  "macro_precision": 0.8811,
+  "macro_f1": 0.8441,
+  "idle_recall": 0.4118,
+  "loso_3fold_mean_accuracy": 0.8832,
+  "loso_3fold_overall_oof_accuracy": 0.8822,
+  "loso_3fold_mean_macro_f1": 0.8689,
+  "loso_3fold_mean_idle_recall": 0.6187,
+  "loso_folds": [
+    {
+      "held_out_signer": "ahmad",
+      "n_sequences": 281,
+      "accuracy": 0.9253,
+      "loss": 0.4636,
+      "macro_precision": 0.9251,
+      "macro_f1": 0.9215,
+      "idle_recall": 1.0
+    },
+    {
+      "held_out_signer": "danish",
+      "n_sequences": 309,
+      "accuracy": 0.8511,
+      "loss": 0.4885,
+      "macro_precision": 0.8406,
+      "macro_f1": 0.8412,
+      "idle_recall": 0.4444
+    },
+    {
+      "held_out_signer": "vanesa",
+      "n_sequences": 284,
+      "accuracy": 0.8732,
+      "loss": 0.7914,
+      "macro_precision": 0.8811,
+      "macro_f1": 0.8441,
+      "idle_recall": 0.4118
+    }
+  ],
+  "validation_mode": "leave_one_signer_out (3-fold CV; primary held_out=vanesa)",
   "is_bootstrap_synthetic": false,
-  "tflite_parity_max_diff": 6e-08
+  "tflite_parity_max_diff": 7e-08
 }

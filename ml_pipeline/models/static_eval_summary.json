@@ -1,0 +1,43 @@
+{
+  "test_samples_bilateral": 916,
+  "test_samples_canonical": 458,
+  "test_samples_mirror": 458,
+  "bilateral_accuracy": 0.9705,
+  "canonical_accuracy": 0.9716,
+  "mirror_accuracy": 0.9694,
+  "macro_precision": 0.9689,
+  "macro_recall": 0.9688,
+  "macro_f1": 0.9679,
+  "lowest_recall_classes": [
+    {
+      "class": "2",
+      "recall": 0.6667,
+      "precision": 0.6316,
+      "support": 18
+    },
+    {
+      "class": "Z",
+      "recall": 0.8333,
+      "precision": 1.0,
+      "support": 12
+    },
+    {
+      "class": "U",
+      "recall": 0.8611,
+      "precision": 0.9118,
+      "support": 36
+    },
+    {
+      "class": "V",
+      "recall": 0.8684,
+      "precision": 0.9167,
+      "support": 38
+    },
+    {
+      "class": "D",
+      "recall": 0.9,
+      "precision": 1.0,
+      "support": 20
+    }
+  ]
+}

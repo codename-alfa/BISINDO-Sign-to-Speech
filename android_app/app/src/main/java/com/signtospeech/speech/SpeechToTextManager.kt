@@ -230,7 +230,7 @@ class SpeechToTextManager(
                 AppLogger.e(TAG, "SecurityException saat speechRecognizer.startListening: ${se.message}.", se)
                 isListening = false
                 onListeningStateChanged(false)
-                onErrorOccurred(-1, "Izin perekaman suara ditolak oleh sistem.")
+                onErrorOccurred(ERROR_SECURITY_EXCEPTION, "Izin perekaman suara ditolak oleh sistem.")
             } catch (t: Throwable) {
                 AppLogger.e(TAG, "Pengecualian saat speechRecognizer.startListening: ${t.message}", t)
                 isListening = false
@@ -294,16 +294,14 @@ class SpeechToTextManager(
     companion object {
         private const val TAG = "SpeechToTextManager"
         private const val EXTRA_PREFER_OFFLINE = "android.speech.extra.PREFER_OFFLINE"
+        const val ERROR_SECURITY_EXCEPTION = -1
 
         /**
-         * Paket-paket layanan suara yang dilarang untuk STT karena bukan layanan pihak ketiga publik,
-         * atau sering melempar SecurityException pada Android 14/15 HyperOS.
+         * Normalizes Android RecognitionListener RMS dB levels into a 0..100 progress bar percentage.
          */
-        val BLACKLISTED_STT_PACKAGES = setOf(
-            "com.google.android.as",        // Android System Intelligence, sistem internal tertutup
-            "com.miui.voiceassist",         // Asisten OEM MIUI/Xiaomi internal
-            "com.xiaomi.mibrain.speech"     // Mesin suara OEM Xiaomi internal
-        )
+        @JvmStatic
+        fun normalizeRmsDb(rmsdB: Float): Int =
+            (((rmsdB + 2f) / 12f) * 100f).coerceIn(0f, 100f).toInt()
 
         /**
          * Pemetaan kode error native Android ke pesan ramah pengguna berbahasa Indonesia.

@@ -1,29 +1,22 @@
 """
 clean_and_align_sibi.py — Pipeline Standarisasi, Cross-Source Consistency Audit,
-Outlier Rejection, dan Automatic Mirror Dataset Generation berbasis Golden Standard
-Kamus SIBI Kemendikdasmen.
+Outlier Rejection, Real-Sample-First Split (Leak-Free), dan Automatic Mirror Dataset Generation
+berbasis Golden Standard Kamus SIBI Kemendikdasmen.
 
 Alur Eksekusi:
 1. Memuat Golden Reference Centroids (A..Z + 1..10 = 36 kelas) dari Kemendikdasmen.
 2. Memuat seluruh sampel kandidat dari berbagai penyedia di Kaggle (`kaggle_sibi_raw_landmarks.csv`).
-3. Provider-Level Alignment Audit:
-   - Menghitung rata-rata Cosine Similarity antara centroid tiap penyedia data per kelas
-     terhadap Golden Centroid Kemendikdasmen.
-   - Jika suatu penyedia data menggunakan kaidah gestur yang menyimpang dari SIBI Kemendikdasmen
-     (Cosine Similarity < 0.78), seluruh sub-folder kelas pada penyedia tersebut otomatis DI-DROP.
-4. Sample-Level Outlier Rejection:
-   - Menyaring sampel individual yang memiliki Cosine Similarity < 0.82 terhadap Golden Centroid
-     atau jarak Euclidean di luar batas Q3 + 1.5 * IQR.
-5. Class Balancing & Automatic Mirror Generation (50:50 Canonical vs Mirror):
-   - Menyeimbangkan jumlah sampel per kelas (augmentasi rotasi/skala 3D ringan untuk kelas yang
-     jarang ada di Kaggle seperti J, Z, atau angka).
-   - Untuk SETIAP sampel kanonik (Right), otomatis dibuatkan pasangan MIRROR-nya (Left: f[0::3] *= -1)
-     sehingga dataset akhir dijamin 100% simetris 50:50 antara tangan kanan dan tangan kiri!
-6. Menghasilkan:
-   - `data/static/static_data.csv` & `data/static/landmarks.csv`
+3. Provider-Level Alignment Audit (Cosine Similarity >= 0.78) & Sample-Level Outlier Rejection (>= 0.82 & IQR).
+4. Deduplikasi sampel kanonik nyata per kelas lalu pemisahan LEAK-FREE (70% train / 15% val / 15% test)
+   SEBELUM augmentasi 3D dan pencerminan X (f[0::3] *= -1).
+   - Augmentasi geometris 3D HANYA diterapkan pada split `train` hingga 250 sampel kanonik/kelas.
+   - Split `val` dan `test` 100% berisi sampel nyata (tanpa augmentasi) beserta pasangan mirror X-nya
+     di dalam split masing-masing (tidak ada kembaran yang menyeberang antar-split).
+5. Menghasilkan:
+   - `data/static/static_data.csv` & `data/static/landmarks.csv` (dengan kolom `split`, `orientation`, `is_augmented`)
    - `labels/static_labels.txt` (36 kelas: A..Z + 1..10)
-   - `data/static/sibi_cleaning_report.json` (dan menyalin ke `artifacts/`)
-   - Poster Panduan Visual Abjad & Angka SIBI 1 Tangan (`artifacts/panduan_sibi_abjad_angka_1_tangan.png`)
+   - `data/static/sibi_cleaning_report.json`
+   - Poster Panduan Visual Abjad & Angka SIBI 1 Tangan (`data/static/panduan_sibi_abjad_angka_1_tangan.png`)
 """
 
 from __future__ import annotations
@@ -59,15 +52,14 @@ STATIC_DATA_CSV = STATIC_DIR / "static_data.csv"
 LANDMARKS_CSV = STATIC_DIR / "landmarks.csv"
 CLEANING_REPORT_JSON = STATIC_DIR / "sibi_cleaning_report.json"
 
-ARTIFACTS_DIR = ROOT.parent.parent / "artifacts"
-BRAIN_DIR = Path(r"C:\Users\CodenameAlfa\.gemini\antigravity\brain\5cdeef75-b9e8-4bec-bb31-17aeb9f751b9")
+DOCS_ARTIFACTS_DIR = ROOT.parent / "docs" / "artifacts"
 
 TARGET_CLASSES = list(string.ascii_uppercase) + [str(i) for i in range(1, 11)]
 FEATURE_COLS = [f"f{i}" for i in range(feature_utils.NUM_FEATURES)]
 
 PROVIDER_COS_THRESHOLD = 0.78
 SAMPLE_COS_THRESHOLD = 0.82
-TARGET_CANONICAL_PER_CLASS = 250  # 250 canonical + 250 mirror = 500 sampel per kelas (total 18.000 sampel untuk 36 kelas)
+TARGET_TRAIN_CANONICAL_PER_CLASS = 250
 
 
 def cosine_sim(a: np.ndarray, b: np.ndarray) -> float:
@@ -87,12 +79,11 @@ def cosine_sim_matrix(X: np.ndarray, v: np.ndarray) -> np.ndarray:
 
 def augment_3d_landmark_vector(vec63: np.ndarray, rng: np.random.Generator) -> np.ndarray:
     """
-    Augmentasi geometris ringan pada ruang 3D (rotasi kecil in-plane [-10°, +10°],
-    tilt kedalaman z, dan jitter jari mikro) lalu dinormalisasi ulang sesuai kontrak feature_utils.
+    Augmentasi geometris ringan pada ruang 3D (rotasi kecil in-plane [-11°, +11°],
+    tilt kedalaman z [-7°, +7°], dan jitter jari mikro) lalu dinormalisasi ulang sesuai kontrak feature_utils.
     """
     pts = vec63.reshape(21, 3).copy()
 
-    # 1. Rotasi in-plane (bidang XY) sekitar wrist (0,0,0)
     angle_deg = rng.uniform(-11.0, 11.0)
     theta = np.deg2rad(angle_deg)
     cos_t, sin_t = np.cos(theta), np.sin(theta)
@@ -102,7 +93,6 @@ def augment_3d_landmark_vector(vec63: np.ndarray, rng: np.random.Generator) -> n
         [0.0,    0.0,   1.0],
     ], dtype=np.float64)
 
-    # 2. Rotasi pitch/yaw 3D ringan [-7°, +7°]
     pitch = np.deg2rad(rng.uniform(-7.0, 7.0))
     yaw = np.deg2rad(rng.uniform(-7.0, 7.0))
     R_x = np.array([
@@ -118,7 +108,6 @@ def augment_3d_landmark_vector(vec63: np.ndarray, rng: np.random.Generator) -> n
 
     pts = pts @ (R_z @ R_x @ R_y).T
 
-    # 3. Jitter mikro proporsional pada sendi jari (kecuali wrist=0)
     noise = rng.normal(0.0, 0.018, size=(21, 3))
     noise[0] = 0.0
     pts += noise
@@ -127,13 +116,13 @@ def augment_3d_landmark_vector(vec63: np.ndarray, rng: np.random.Generator) -> n
 
 
 def generate_visual_guide_poster(golden_centroids: dict[str, np.ndarray], out_paths: list[Path]) -> None:
-    """Buat Poster Panduan Visual Abjad (A-Z) & Angka (1-10) SIBI 1 Tangan dari Kemendikdasmen."""
+    """Create Official Single-Hand SIBI Reference Poster (A-Z & 1-10) from Kemendikdasmen."""
     cols = 6
-    rows = 6  # 6x6 = 36 kelas (A-Z + 1-10)
+    rows = 6
     fig, axes = plt.subplots(rows, cols, figsize=(18, 18), facecolor="#0F172A")
     fig.suptitle(
-        "PANDUAN RESMI ISYARAT SIBI 1 TANGAN — ABJAD (A–Z) & ANGKA (1–10)\n"
-        "(Sumber Acuan: Kamus SIBI Kemendikdasmen RI · Mendukung Tangan Kanan & Kiri / Mirror)",
+        "OFFICIAL SINGLE-HAND SIBI REFERENCE GUIDE — ALPHABET (A-Z) & DIGITS (1-10)\n"
+        "(Reference: Kemendikdasmen RI SIBI Dictionary · Supports Right & Left Hand Mirror)",
         fontsize=18,
         fontweight="bold",
         color="#F8FAFC",
@@ -154,7 +143,6 @@ def generate_visual_guide_poster(golden_centroids: dict[str, np.ndarray], out_pa
         ax = axes[r, c]
         ax.set_facecolor("#1E293B")
 
-        # Cek apakah ada foto studio PNG atau frame apex untuk ditampilkan di background
         bg_shown = False
         png_path = KEMENDIKDASMEN_DIR / "abjad_img" / f"{cls}.png"
         apex_path = KEMENDIKDASMEN_DIR / "apex_frames" / f"{cls}_apex.jpg"
@@ -182,7 +170,7 @@ def generate_visual_guide_poster(golden_centroids: dict[str, np.ndarray], out_pa
             ax.set_ylim(np.min(ys) - 0.3, np.max(ys) + 0.3)
 
         badge_color = "#10B981" if cls in string.ascii_uppercase else "#F59E0B"
-        kind_lbl = "Huruf" if cls in string.ascii_uppercase else "Angka"
+        kind_lbl = "Letter" if cls in string.ascii_uppercase else "Digit"
         ax.set_title(f"{kind_lbl}: {cls}", fontsize=13, fontweight="bold", color=badge_color, pad=6)
         ax.set_xticks([])
         ax.set_yticks([])
@@ -197,9 +185,39 @@ def generate_visual_guide_poster(golden_centroids: dict[str, np.ndarray], out_pa
     plt.close()
 
 
+def _append_bilateral_rows(
+    rows: list[dict],
+    cls: str,
+    split_name: str,
+    canonical_vecs: np.ndarray,
+    is_aug_flags: list[int],
+) -> tuple[int, int]:
+    """Append canonical + 1:1 X-mirror pairs into rows within the SAME split (zero cross-split mirror leakage)."""
+    mirror_vecs = canonical_vecs.copy()
+    mirror_vecs[:, 0::3] *= -1.0
+
+    for vec, aug_flag in zip(canonical_vecs, is_aug_flags):
+        rows.append({
+            "label": cls,
+            "split": split_name,
+            "orientation": "canonical",
+            "is_augmented": int(aug_flag),
+            **{f"f{i}": round(float(vec[i]), 6) for i in range(63)},
+        })
+    for vec, aug_flag in zip(mirror_vecs, is_aug_flags):
+        rows.append({
+            "label": cls,
+            "split": split_name,
+            "orientation": "mirror",
+            "is_augmented": int(aug_flag),
+            **{f"f{i}": round(float(vec[i]), 6) for i in range(63)},
+        })
+    return len(canonical_vecs), len(mirror_vecs)
+
+
 def main():
     STATIC_DIR.mkdir(parents=True, exist_ok=True)
-    ARTIFACTS_DIR.mkdir(parents=True, exist_ok=True)
+    DOCS_ARTIFACTS_DIR.mkdir(parents=True, exist_ok=True)
 
     if not GOLDEN_CSV.exists() or not GOLDEN_CENTROIDS_JSON.exists():
         raise FileNotFoundError("Jalankan scrape_kemendikdasmen_sibi.py terlebih dahulu!")
@@ -212,7 +230,6 @@ def main():
     golden_df = pd.read_csv(GOLDEN_CSV)
     golden_canon_df = golden_df[golden_df["orientation"] == "canonical"].copy()
 
-    # Muat data Kaggle jika ada
     if KAGGLE_CSV.exists():
         kaggle_df = pd.read_csv(KAGGLE_CSV)
         kaggle_df["label"] = kaggle_df["label"].astype(str)
@@ -222,20 +239,22 @@ def main():
     print(f"   Golden Kemendikdasmen (canonical): {len(golden_canon_df)} sampel")
     print(f"   Kandidat Kaggle (canonical)      : {len(kaggle_df)} sampel")
 
-    print("\n🔍 [2/5] Menjalankan Cross-Provider Consistency Audit & Sample-Level Outlier Cleaning...")
+    print("\n🔍 [2/5] Menjalankan Consistency Audit, Deduplikasi & Real-Sample-First Split (70/15/15)...")
     report = {
         "golden_reference_source": "https://pkplk.kemendikdasmen.go.id/sibi/",
+        "split_strategy": "real_sample_first_dedup_70_15_15_train_only_aug_within_split_mirror",
         "total_classes": len(TARGET_CLASSES),
         "classes": TARGET_CLASSES,
         "provider_cosine_threshold": PROVIDER_COS_THRESHOLD,
         "sample_cosine_threshold": SAMPLE_COS_THRESHOLD,
+        "split_totals": {"train": 0, "val": 0, "test": 0, "test_canonical_only": 0},
         "provider_alignment_audit": {},
         "per_class_summary": {},
         "visually_similar_pairs": {},
     }
 
     rng = np.random.default_rng(42)
-    final_rows = []
+    final_rows: list[dict] = []
 
     for cls in TARGET_CLASSES:
         gold_vec = golden_centroids[cls]
@@ -268,7 +287,6 @@ def main():
                     }
                     continue
 
-                # Sample-level filtering
                 sims = cosine_sim_matrix(X_prov, gold_vec)
                 dists = np.linalg.norm(X_prov - gold_vec, axis=1)
                 q25, q75 = np.percentile(dists, [25, 75])
@@ -288,54 +306,76 @@ def main():
                         "samples_dropped_as_outliers": int(len(X_prov) - len(kept_X)),
                     }
 
-        # Gabungkan sampel Golden Kemendikdasmen + Kaggle yang lolos verifikasi
+        # Gabungkan sampel nyata Kemendikdasmen + Kaggle lolos audit, lalu deduplikasi tepat sebelum split
         pool_list = [cls_gold_samples]
         if accepted_kaggle_vecs:
             pool_list.extend(accepted_kaggle_vecs)
-        clean_pool = np.concatenate(pool_list, axis=0)
+        raw_real_pool = np.concatenate(pool_list, axis=0)
+        dedup_idx = ~pd.DataFrame(np.round(raw_real_pool, 5)).duplicated(keep="first").to_numpy()
+        unique_real_pool = raw_real_pool[dedup_idx]
 
-        # Seimbangkan ke TARGET_CANONICAL_PER_CLASS sampel kanonik
-        if len(clean_pool) >= TARGET_CANONICAL_PER_CLASS:
-            # Pastikan seluruh sampel asli Kemendikdasmen masuk, sisanya disampel dari Kaggle bersih
-            n_gold = min(len(cls_gold_samples), 60)
-            n_rest = TARGET_CANONICAL_PER_CLASS - n_gold
-            rest_idx = rng.choice(len(clean_pool), size=n_rest, replace=False)
-            canonical_final = np.concatenate([cls_gold_samples[:n_gold], clean_pool[rest_idx]], axis=0)
+        # Real-Sample-First Split: 70% train / 15% val / 15% test (min 4 real val & 4 real test per kelas)
+        n_real = len(unique_real_pool)
+        perm = rng.permutation(n_real)
+        n_val = max(4, int(round(n_real * 0.15)))
+        n_test = max(4, int(round(n_real * 0.15)))
+        if n_real - n_val - n_test < 10:
+            n_val = max(4, (n_real - 10) // 2)
+            n_test = max(4, n_real - 10 - n_val)
+        n_train_real = n_real - n_val - n_test
+
+        train_real_canon = unique_real_pool[perm[:n_train_real]]
+        val_real_canon = unique_real_pool[perm[n_train_real : n_train_real + n_val]]
+        test_real_canon = unique_real_pool[perm[n_train_real + n_val :]]
+
+        # Augmentasi geometris 3D HANYA pada split train untuk menyeimbangkan kelas
+        if len(train_real_canon) >= TARGET_TRAIN_CANONICAL_PER_CLASS:
+            sel_idx = rng.choice(len(train_real_canon), size=TARGET_TRAIN_CANONICAL_PER_CLASS, replace=False)
+            train_canon_final = train_real_canon[sel_idx]
+            train_aug_flags = [0] * len(train_canon_final)
+            n_train_aug = 0
         else:
-            # Augmentasi geometris 3D berbasis sampel Kemendikdasmen & Kaggle bersih
-            needed = TARGET_CANONICAL_PER_CLASS - len(clean_pool)
-            aug_vecs = []
-            for _ in range(needed):
-                base_vec = clean_pool[int(rng.integers(0, len(clean_pool)))]
-                aug_vecs.append(augment_3d_landmark_vector(base_vec, rng))
-            canonical_final = np.concatenate([clean_pool, np.stack(aug_vecs, axis=0)], axis=0)
+            needed = TARGET_TRAIN_CANONICAL_PER_CLASS - len(train_real_canon)
+            aug_vecs = [
+                augment_3d_landmark_vector(
+                    train_real_canon[int(rng.integers(0, len(train_real_canon)))],
+                    rng,
+                )
+                for _ in range(needed)
+            ]
+            train_canon_final = np.concatenate([train_real_canon, np.stack(aug_vecs, axis=0)], axis=0)
+            train_aug_flags = [0] * len(train_real_canon) + [1] * needed
+            n_train_aug = needed
 
-        # TAHAP KRUSIAL: Pembuatan Otomatis Pasangan Mirror 1:1 (Tangan Kanan <-> Tangan Kiri)
-        # Setiap vektor kanonik (f0..f62) dibuatkan versi mirror eksaknya dengan membalik komponen X (indeks 0, 3, 6, ..., 60)
-        mirror_final = canonical_final.copy()
-        mirror_final[:, 0::3] *= -1.0
+        tr_c, tr_m = _append_bilateral_rows(final_rows, cls, "train", train_canon_final, train_aug_flags)
+        va_c, va_m = _append_bilateral_rows(final_rows, cls, "val", val_real_canon, [0] * len(val_real_canon))
+        te_c, te_m = _append_bilateral_rows(final_rows, cls, "test", test_real_canon, [0] * len(test_real_canon))
 
-        for vec in canonical_final:
-            final_rows.append({"label": cls, **{f"f{i}": round(float(vec[i]), 6) for i in range(63)}})
-        for vec in mirror_final:
-            final_rows.append({"label": cls, **{f"f{i}": round(float(vec[i]), 6) for i in range(63)}})
+        report["split_totals"]["train"] += tr_c + tr_m
+        report["split_totals"]["val"] += va_c + va_m
+        report["split_totals"]["test"] += te_c + te_m
+        report["split_totals"]["test_canonical_only"] += te_c
 
         report["per_class_summary"][cls] = {
             "kemendikdasmen_canonical_samples": int(len(cls_gold_samples)),
             "kaggle_raw_candidates": int(total_kaggle_raw),
             "kaggle_clean_kept": int(total_kaggle_kept),
+            "unique_real_canonical_pool": int(n_real),
+            "real_train_canonical": int(n_train_real),
+            "augmented_train_canonical": int(n_train_aug),
+            "real_val_canonical": int(va_c),
+            "real_test_canonical": int(te_c),
+            "final_train_bilateral": int(tr_c + tr_m),
+            "final_val_bilateral": int(va_c + va_m),
+            "final_test_bilateral": int(te_c + te_m),
             "accepted_providers": accepted_providers,
             "rejected_providers": rejected_providers,
-            "final_canonical_samples": int(len(canonical_final)),
-            "final_mirror_samples": int(len(mirror_final)),
-            "final_total_samples": int(len(canonical_final) + len(mirror_final)),
         }
         print(
-            f"   [Kelas {cls:>2}] Gold={len(cls_gold_samples):>2} | Kaggle Keep={total_kaggle_kept:>3}/{total_kaggle_raw:<3} "
-            f"| DropProv={len(rejected_providers)} -> Final={len(canonical_final)} Canon + {len(mirror_final)} Mirror = {len(canonical_final)*2}"
+            f"   [Kelas {cls:>2}] UniqueReal={n_real:>3} (Gold={len(cls_gold_samples):>2}, Kag={total_kaggle_kept:>3}) "
+            f"-> Train={tr_c+tr_m:>3} (Real={n_train_real}, Aug={n_train_aug}), Val={va_c+va_m:>2}, Test={te_c+te_m:>2}"
         )
 
-    # Hitung matriks kemiripan antar-kelas (khususnya antara Huruf A-Z dan Angka 1-10) untuk fitur Quick Suggestion di Android
     print("\n🔗 [3/5] Menganalisis pasangan Huruf & Angka yang memiliki kemiripan bentuk jari tinggi...")
     for c1 in TARGET_CLASSES:
         sims_other = []
@@ -346,10 +386,7 @@ def main():
             sims_other.append((c2, round(s, 4)))
         sims_other.sort(key=lambda x: x[1], reverse=True)
         report["visually_similar_pairs"][c1] = sims_other[:3]
-        if sims_other[0][1] >= 0.88:
-            print(f"   💡 '{c1}' sangat mirip dengan: {sims_other[0][0]} (cos={sims_other[0][1]}), {sims_other[1][0]} (cos={sims_other[1][1]})")
 
-    # Simpan static_labels.txt (36 kelas: A..Z + 1..10)
     print("\n💾 [4/5] Menyimpan static_labels.txt, static_data.csv, landmarks.csv & laporan audit...")
     feature_utils.STATIC_LABELS_PATH.write_text("\n".join(TARGET_CLASSES) + "\n", encoding="utf-8")
 
@@ -358,25 +395,22 @@ def main():
     out_df.to_csv(LANDMARKS_CSV, index=False)
 
     CLEANING_REPORT_JSON.write_text(json.dumps(report, indent=2), encoding="utf-8")
-    shutil.copy2(CLEANING_REPORT_JSON, ARTIFACTS_DIR / "sibi_cleaning_report.json")
-    if BRAIN_DIR.exists():
-        shutil.copy2(CLEANING_REPORT_JSON, BRAIN_DIR / "sibi_cleaning_report.json")
 
     print("🖼️ [5/5] Membuat Poster Panduan Visual Abjad (A-Z) & Angka (1-10) SIBI 1 Tangan...")
     poster_paths = [
-        ARTIFACTS_DIR / "panduan_sibi_abjad_angka_1_tangan.png",
         STATIC_DIR / "panduan_sibi_abjad_angka_1_tangan.png",
+        DOCS_ARTIFACTS_DIR / "panduan_sibi_abjad_angka_1_tangan.png",
+        DOCS_ARTIFACTS_DIR / "fig4_ui_and_sibi_ref.png",
     ]
-    if BRAIN_DIR.exists():
-        poster_paths.append(BRAIN_DIR / "panduan_sibi_abjad_angka_1_tangan.png")
     generate_visual_guide_poster(golden_centroids, poster_paths)
 
-    print(f"\n✅ Pipeline Cleaning & Mirroring Selesai!")
-    print(f"   Total sampel siap training : {len(out_df)} baris ({len(TARGET_CLASSES)} kelas @ 50% kanan / 50% kiri)")
-    print(f"   Dataset CSV                : {STATIC_DATA_CSV}")
-    print(f"   Cleaning Audit Report      : {CLEANING_REPORT_JSON}")
+    print("\n✅ Pipeline Cleaning & Leak-Free Split Selesai!")
+    print(f"   Total Train (bilateral) : {report['split_totals']['train']}")
+    print(f"   Total Val (real bilat.) : {report['split_totals']['val']}")
+    print(f"   Total Test (real bilat.): {report['split_totals']['test']} (canonical-only: {report['split_totals']['test_canonical_only']})")
+    print(f"   Dataset CSV             : {STATIC_DATA_CSV}")
+    print(f"   Cleaning Audit Report   : {CLEANING_REPORT_JSON}")
 
 
 if __name__ == "__main__":
     main()
-

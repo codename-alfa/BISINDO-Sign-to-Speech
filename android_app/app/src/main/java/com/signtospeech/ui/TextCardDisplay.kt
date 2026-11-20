@@ -27,6 +27,7 @@ import com.signtospeech.R
 import com.signtospeech.speech.KeywordMatcher
 import com.signtospeech.speech.MatchAnalysis
 import com.signtospeech.speech.ServiceCard
+import com.signtospeech.speech.SpeechToTextManager
 
 /**
  * TextCardDisplay mengontrol antarmuka Arah 2 (Dengar -> Tuli):
@@ -454,8 +455,15 @@ class TextCardDisplay(
      * Memperbarui progress bar audio level dari desibel mikrofon (-2 s.d. +10 dB).
      */
     fun updateAudioLevel(rmsdB: Float) {
-        val normalized = (((rmsdB + 2f) / 12f) * 100f).coerceIn(0f, 100f).toInt()
-        progressAudioLevel.progress = normalized
+        progressAudioLevel.progress = SpeechToTextManager.normalizeRmsDb(rmsdB)
+    }
+
+    fun getLastRenderedRawText(): String = lastRenderedRawText
+
+    fun restoreRenderedText(rawText: String) {
+        if (rawText.isNotBlank()) {
+            updateAnalysis(KeywordMatcher.match(rawText))
+        }
     }
 
     /**

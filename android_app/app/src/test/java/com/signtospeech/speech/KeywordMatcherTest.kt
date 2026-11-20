@@ -142,7 +142,13 @@ class KeywordMatcherTest {
     }
 
     @Test
-    fun `test quick presets are all valid`() {
+    fun `test quick presets are all valid and include IGD emergency preset`() {
+        assertEquals(6, KeywordMatcher.QUICK_PRESETS.size)
+        val emergencyPreset = KeywordMatcher.QUICK_PRESETS.find { it.contains("IGD") }
+        assertNotNull("Emergency IGD preset must exist in QUICK_PRESETS", emergencyPreset)
+        val emergencyAnalysis = KeywordMatcher.match(emergencyPreset)
+        assertTrue(emergencyAnalysis.matchedCards.any { it.categoryId == "DARURAT" })
+
         for (preset in KeywordMatcher.QUICK_PRESETS) {
             val analysis = KeywordMatcher.match(preset)
             assertFalse("Preset '$preset' tidak boleh kosong hasil analisanya", analysis.matchedCards.isEmpty())

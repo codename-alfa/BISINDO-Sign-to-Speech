@@ -32,7 +32,7 @@ class CameraManager(
     private var imageAnalysis: ImageAnalysis? = null
     private var cameraExecutor: ExecutorService = Executors.newSingleThreadExecutor()
 
-    private var lensFacing: Int = CameraSelector.LENS_FACING_BACK
+    private var lensFacing: Int = CameraSelector.LENS_FACING_FRONT
     private var isCameraPaused: Boolean = false
 
     fun isFrontCamera(): Boolean = lensFacing == CameraSelector.LENS_FACING_FRONT

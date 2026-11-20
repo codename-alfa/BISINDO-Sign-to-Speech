@@ -1,0 +1,10 @@
+{
+  "n_samples": 916,
+  "tflite_size_kb": 75.98,
+  "max_abs_diff": 1.4007091522216797e-06,
+  "mean_abs_diff": 2.2567399060591242e-09,
+  "mismatches": 0,
+  "keras_acc": 0.9705240174672489,
+  "tflite_acc": 0.9705240174672489,
+  "avg_ms": 0.011083733624135035
+}

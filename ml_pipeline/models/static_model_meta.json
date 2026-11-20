@@ -1,0 +1,10 @@
+{
+  "architecture": "Feedforward MLP (128 -> BN -> Drop0.3 -> 64 -> Drop0.3 -> 36)",
+  "trainable_params": 19300,
+  "num_classes": 36,
+  "train_samples": 18000,
+  "val_samples_real_bilateral": 916,
+  "val_accuracy": 0.976,
+  "val_loss": 0.1685,
+  "epochs_trained": 79
+}

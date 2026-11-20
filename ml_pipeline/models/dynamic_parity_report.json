@@ -1,0 +1,11 @@
+{
+  "scope": "loso_held_out:vanesa",
+  "n_sequences": 284,
+  "tflite_size_kb": 298.14,
+  "max_abs_diff": 2.980232238769531e-07,
+  "mean_abs_diff": 3.2451592524296302e-09,
+  "mismatches": 0,
+  "keras_acc": 0.8732394366197183,
+  "tflite_acc": 0.8732394366197183,
+  "avg_ms": 0.20111267605616506
+}

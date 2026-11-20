@@ -1,12 +1,31 @@
+=== PRIMARY HELD-OUT FOLD (held_out=vanesa) ===
               precision    recall  f1-score   support
 
-        Halo     0.8000    0.9600    0.8727        50
-Terima kasih     0.8772    1.0000    0.9346        50
+        Halo     0.8033    0.9800    0.8829        50
+Terima kasih     0.8197    1.0000    0.9009        50
       Tolong     0.8621    1.0000    0.9259        50
-          Ya     0.9608    0.9800    0.9703        50
+          Ya     0.9804    1.0000    0.9901        50
        Tidak     0.9459    0.7000    0.8046        50
-       _idle     0.8571    0.5294    0.6545        34
+       _idle     0.8750    0.4118    0.5600        34
 
-    accuracy                         0.8803       284
-   macro avg     0.8839    0.8616    0.8604       284
-weighted avg     0.8854    0.8803    0.8720       284
+    accuracy                         0.8732       284
+   macro avg     0.8811    0.8486    0.8441       284
+weighted avg     0.8814    0.8732    0.8601       284
+
+
+=== 3-FOLD LOSO AGGREGATE (N=874) ===
+Mean Fold Accuracy: 88.32% | Overall OOF Accuracy: 88.22%
+Mean Macro F1: 0.8689 | Mean _idle Recall: 0.6187
+
+              precision    recall  f1-score   support
+
+        Halo     0.8976    0.9933    0.9430       150
+Terima kasih     0.9250    0.9867    0.9548       150
+      Tolong     0.8182    0.8710    0.8438       155
+          Ya     0.9655    0.9150    0.9396       153
+       Tidak     0.9429    0.8571    0.8980       154
+       _idle     0.6837    0.5982    0.6381       112
+
+    accuracy                         0.8822       874
+   macro avg     0.8721    0.8702    0.8695       874
+weighted avg     0.8807    0.8822    0.8798       874

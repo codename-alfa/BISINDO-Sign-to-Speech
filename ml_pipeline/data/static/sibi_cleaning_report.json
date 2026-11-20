@@ -1,5 +1,6 @@
 {
   "golden_reference_source": "https://pkplk.kemendikdasmen.go.id/sibi/",
+  "split_strategy": "real_sample_first_dedup_70_15_15_train_only_aug_within_split_mirror",
   "total_classes": 36,
   "classes": [
     "A",
@@ -41,6 +42,12 @@
   ],
   "provider_cosine_threshold": 0.78,
   "sample_cosine_threshold": 0.82,
+  "split_totals": {
+    "train": 18000,
+    "val": 916,
+    "test": 916,
+    "test_canonical_only": 458
+  },
   "provider_alignment_audit": {
     "alfarizy29_combined_sibi:A": {
       "status": "ACCEPTED",
@@ -531,6 +538,14 @@
       "kemendikdasmen_canonical_samples": 31,
       "kaggle_raw_candidates": 145,
       "kaggle_clean_kept": 123,
+      "unique_real_canonical_pool": 110,
+      "real_train_canonical": 78,
+      "augmented_train_canonical": 172,
+      "real_val_canonical": 16,
+      "real_test_canonical": 16,
+      "final_train_bilateral": 500,
+      "final_val_bilateral": 32,
+      "final_test_bilateral": 32,
       "accepted_providers": [
         {
           "provider": "alfarizy29_combined_sibi",
@@ -551,15 +566,20 @@
           "cosine_sim": 0.6791,
           "raw_count": 7
         }
-      ],
-      "final_canonical_samples": 250,
-      "final_mirror_samples": 250,
-      "final_total_samples": 500
+      ]
     },
     "B": {
       "kemendikdasmen_canonical_samples": 31,
       "kaggle_raw_candidates": 146,
       "kaggle_clean_kept": 137,
+      "unique_real_canonical_pool": 119,
+      "real_train_canonical": 83,
+      "augmented_train_canonical": 167,
+      "real_val_canonical": 18,
+      "real_test_canonical": 18,
+      "final_train_bilateral": 500,
+      "final_val_bilateral": 36,
+      "final_test_bilateral": 36,
       "accepted_providers": [
         {
           "provider": "alfarizy29_combined_sibi",
@@ -580,15 +600,20 @@
           "cosine_sim": 0.0826,
           "raw_count": 5
         }
-      ],
-      "final_canonical_samples": 250,
-      "final_mirror_samples": 250,
-      "final_total_samples": 500
+      ]
     },
     "C": {
       "kemendikdasmen_canonical_samples": 31,
       "kaggle_raw_candidates": 102,
       "kaggle_clean_kept": 84,
+      "unique_real_canonical_pool": 94,
+      "real_train_canonical": 66,
+      "augmented_train_canonical": 184,
+      "real_val_canonical": 14,
+      "real_test_canonical": 14,
+      "final_train_bilateral": 500,
+      "final_val_bilateral": 28,
+      "final_test_bilateral": 28,
       "accepted_providers": [
         {
           "provider": "alfarizy29_combined_sibi",
@@ -609,15 +634,20 @@
           "raw": 40
         }
       ],
-      "rejected_providers": [],
-      "final_canonical_samples": 250,
-      "final_mirror_samples": 250,
-      "final_total_samples": 500
+      "rejected_providers": []
     },
     "D": {
       "kemendikdasmen_canonical_samples": 31,
       "kaggle_raw_candidates": 123,
       "kaggle_clean_kept": 35,
+      "unique_real_canonical_pool": 66,
+      "real_train_canonical": 46,
+      "augmented_train_canonical": 204,
+      "real_val_canonical": 10,
+      "real_test_canonical": 10,
+      "final_train_bilateral": 500,
+      "final_val_bilateral": 20,
+      "final_test_bilateral": 20,
       "accepted_providers": [
         {
           "provider": "renitriyaningsih_sibi",
@@ -637,15 +667,20 @@
           "cosine_sim": 0.6438,
           "raw_count": 7
         }
-      ],
-      "final_canonical_samples": 250,
-      "final_mirror_samples": 250,
-      "final_total_samples": 500
+      ]
     },
     "E": {
       "kemendikdasmen_canonical_samples": 31,
       "kaggle_raw_candidates": 122,
       "kaggle_clean_kept": 105,
+      "unique_real_canonical_pool": 102,
+      "real_train_canonical": 72,
+      "augmented_train_canonical": 178,
+      "real_val_canonical": 15,
+      "real_test_canonical": 15,
+      "final_train_bilateral": 500,
+      "final_val_bilateral": 30,
+      "final_test_bilateral": 30,
       "accepted_providers": [
         {
           "provider": "alfarizy29_combined_sibi",
@@ -666,15 +701,20 @@
           "cosine_sim": 0.1363,
           "raw_count": 12
         }
-      ],
-      "final_canonical_samples": 250,
-      "final_mirror_samples": 250,
-      "final_total_samples": 500
+      ]
     },
     "F": {
       "kemendikdasmen_canonical_samples": 31,
       "kaggle_raw_candidates": 108,
       "kaggle_clean_kept": 102,
+      "unique_real_canonical_pool": 102,
+      "real_train_canonical": 72,
+      "augmented_train_canonical": 178,
+      "real_val_canonical": 15,
+      "real_test_canonical": 15,
+      "final_train_bilateral": 500,
+      "final_val_bilateral": 30,
+      "final_test_bilateral": 30,
       "accepted_providers": [
         {
           "provider": "alfarizy29_combined_sibi",
@@ -695,15 +735,20 @@
           "cosine_sim": 0.2026,
           "raw_count": 6
         }
-      ],
-      "final_canonical_samples": 250,
-      "final_mirror_samples": 250,
-      "final_total_samples": 500
+      ]
     },
     "G": {
       "kemendikdasmen_canonical_samples": 31,
       "kaggle_raw_candidates": 136,
       "kaggle_clean_kept": 124,
+      "unique_real_canonical_pool": 113,
+      "real_train_canonical": 79,
+      "augmented_train_canonical": 171,
+      "real_val_canonical": 17,
+      "real_test_canonical": 17,
+      "final_train_bilateral": 500,
+      "final_val_bilateral": 34,
+      "final_test_bilateral": 34,
       "accepted_providers": [
         {
           "provider": "alfarizy29_combined_sibi",
@@ -724,15 +769,20 @@
           "cosine_sim": 0.7306,
           "raw_count": 8
         }
-      ],
-      "final_canonical_samples": 250,
-      "final_mirror_samples": 250,
-      "final_total_samples": 500
+      ]
     },
     "H": {
       "kemendikdasmen_canonical_samples": 31,
       "kaggle_raw_candidates": 136,
       "kaggle_clean_kept": 42,
+      "unique_real_canonical_pool": 73,
+      "real_train_canonical": 51,
+      "augmented_train_canonical": 199,
+      "real_val_canonical": 11,
+      "real_test_canonical": 11,
+      "final_train_bilateral": 500,
+      "final_val_bilateral": 22,
+      "final_test_bilateral": 22,
       "accepted_providers": [
         {
           "provider": "cached_achmadnoer",
@@ -753,15 +803,20 @@
           "cosine_sim": -0.5621,
           "raw_count": 88
         }
-      ],
-      "final_canonical_samples": 250,
-      "final_mirror_samples": 250,
-      "final_total_samples": 500
+      ]
     },
     "I": {
       "kemendikdasmen_canonical_samples": 31,
       "kaggle_raw_candidates": 149,
       "kaggle_clean_kept": 137,
+      "unique_real_canonical_pool": 119,
+      "real_train_canonical": 83,
+      "augmented_train_canonical": 167,
+      "real_val_canonical": 18,
+      "real_test_canonical": 18,
+      "final_train_bilateral": 500,
+      "final_val_bilateral": 36,
+      "final_test_bilateral": 36,
       "accepted_providers": [
         {
           "provider": "alfarizy29_combined_sibi",
@@ -782,15 +837,20 @@
           "raw": 37
         }
       ],
-      "rejected_providers": [],
-      "final_canonical_samples": 250,
-      "final_mirror_samples": 250,
-      "final_total_samples": 500
+      "rejected_providers": []
     },
     "J": {
       "kemendikdasmen_canonical_samples": 31,
       "kaggle_raw_candidates": 69,
       "kaggle_clean_kept": 0,
+      "unique_real_canonical_pool": 31,
+      "real_train_canonical": 21,
+      "augmented_train_canonical": 229,
+      "real_val_canonical": 5,
+      "real_test_canonical": 5,
+      "final_train_bilateral": 500,
+      "final_val_bilateral": 10,
+      "final_test_bilateral": 10,
       "accepted_providers": [],
       "rejected_providers": [
         {
@@ -803,15 +863,20 @@
           "cosine_sim": 0.5596,
           "raw_count": 12
         }
-      ],
-      "final_canonical_samples": 250,
-      "final_mirror_samples": 250,
-      "final_total_samples": 500
+      ]
     },
     "K": {
       "kemendikdasmen_canonical_samples": 31,
       "kaggle_raw_candidates": 126,
       "kaggle_clean_kept": 60,
+      "unique_real_canonical_pool": 61,
+      "real_train_canonical": 43,
+      "augmented_train_canonical": 207,
+      "real_val_canonical": 9,
+      "real_test_canonical": 9,
+      "final_train_bilateral": 500,
+      "final_val_bilateral": 18,
+      "final_test_bilateral": 18,
       "accepted_providers": [
         {
           "provider": "alfarizy29_combined_sibi",
@@ -831,15 +896,20 @@
           "cosine_sim": 0.5946,
           "raw_count": 40
         }
-      ],
-      "final_canonical_samples": 250,
-      "final_mirror_samples": 250,
-      "final_total_samples": 500
+      ]
     },
     "L": {
       "kemendikdasmen_canonical_samples": 31,
       "kaggle_raw_candidates": 124,
       "kaggle_clean_kept": 109,
+      "unique_real_canonical_pool": 106,
+      "real_train_canonical": 74,
+      "augmented_train_canonical": 176,
+      "real_val_canonical": 16,
+      "real_test_canonical": 16,
+      "final_train_bilateral": 500,
+      "final_val_bilateral": 32,
+      "final_test_bilateral": 32,
       "accepted_providers": [
         {
           "provider": "alfarizy29_combined_sibi",
@@ -860,15 +930,20 @@
           "raw": 40
         }
       ],
-      "rejected_providers": [],
-      "final_canonical_samples": 250,
-      "final_mirror_samples": 250,
-      "final_total_samples": 500
+      "rejected_providers": []
     },
     "M": {
       "kemendikdasmen_canonical_samples": 31,
       "kaggle_raw_candidates": 150,
       "kaggle_clean_kept": 146,
+      "unique_real_canonical_pool": 124,
+      "real_train_canonical": 86,
+      "augmented_train_canonical": 164,
+      "real_val_canonical": 19,
+      "real_test_canonical": 19,
+      "final_train_bilateral": 500,
+      "final_val_bilateral": 38,
+      "final_test_bilateral": 38,
       "accepted_providers": [
         {
           "provider": "alfarizy29_combined_sibi",
@@ -889,15 +964,20 @@
           "raw": 40
         }
       ],
-      "rejected_providers": [],
-      "final_canonical_samples": 250,
-      "final_mirror_samples": 250,
-      "final_total_samples": 500
+      "rejected_providers": []
     },
     "N": {
       "kemendikdasmen_canonical_samples": 31,
       "kaggle_raw_candidates": 166,
       "kaggle_clean_kept": 160,
+      "unique_real_canonical_pool": 131,
+      "real_train_canonical": 91,
+      "augmented_train_canonical": 159,
+      "real_val_canonical": 20,
+      "real_test_canonical": 20,
+      "final_train_bilateral": 500,
+      "final_val_bilateral": 40,
+      "final_test_bilateral": 40,
       "accepted_providers": [
         {
           "provider": "alfarizy29_combined_sibi",
@@ -918,15 +998,20 @@
           "raw": 37
         }
       ],
-      "rejected_providers": [],
-      "final_canonical_samples": 250,
-      "final_mirror_samples": 250,
-      "final_total_samples": 500
+      "rejected_providers": []
     },
     "O": {
       "kemendikdasmen_canonical_samples": 31,
       "kaggle_raw_candidates": 136,
       "kaggle_clean_kept": 84,
+      "unique_real_canonical_pool": 95,
+      "real_train_canonical": 67,
+      "augmented_train_canonical": 183,
+      "real_val_canonical": 14,
+      "real_test_canonical": 14,
+      "final_train_bilateral": 500,
+      "final_val_bilateral": 28,
+      "final_test_bilateral": 28,
       "accepted_providers": [
         {
           "provider": "alfarizy29_combined_sibi",
@@ -947,15 +1032,20 @@
           "raw": 40
         }
       ],
-      "rejected_providers": [],
-      "final_canonical_samples": 250,
-      "final_mirror_samples": 250,
-      "final_total_samples": 500
+      "rejected_providers": []
     },
     "P": {
       "kemendikdasmen_canonical_samples": 31,
       "kaggle_raw_candidates": 109,
       "kaggle_clean_kept": 30,
+      "unique_real_canonical_pool": 46,
+      "real_train_canonical": 32,
+      "augmented_train_canonical": 218,
+      "real_val_canonical": 7,
+      "real_test_canonical": 7,
+      "final_train_bilateral": 500,
+      "final_val_bilateral": 14,
+      "final_test_bilateral": 14,
       "accepted_providers": [
         {
           "provider": "alfarizy29_combined_sibi",
@@ -975,15 +1065,20 @@
           "cosine_sim": -0.3465,
           "raw_count": 40
         }
-      ],
-      "final_canonical_samples": 250,
-      "final_mirror_samples": 250,
-      "final_total_samples": 500
+      ]
     },
     "Q": {
       "kemendikdasmen_canonical_samples": 31,
       "kaggle_raw_candidates": 89,
       "kaggle_clean_kept": 47,
+      "unique_real_canonical_pool": 62,
+      "real_train_canonical": 44,
+      "augmented_train_canonical": 206,
+      "real_val_canonical": 9,
+      "real_test_canonical": 9,
+      "final_train_bilateral": 500,
+      "final_val_bilateral": 18,
+      "final_test_bilateral": 18,
       "accepted_providers": [
         {
           "provider": "alfarizy29_combined_sibi",
@@ -1004,15 +1099,20 @@
           "cosine_sim": -0.6552,
           "raw_count": 5
         }
-      ],
-      "final_canonical_samples": 250,
-      "final_mirror_samples": 250,
-      "final_total_samples": 500
+      ]
     },
     "R": {
       "kemendikdasmen_canonical_samples": 31,
       "kaggle_raw_candidates": 148,
       "kaggle_clean_kept": 130,
+      "unique_real_canonical_pool": 114,
+      "real_train_canonical": 80,
+      "augmented_train_canonical": 170,
+      "real_val_canonical": 17,
+      "real_test_canonical": 17,
+      "final_train_bilateral": 500,
+      "final_val_bilateral": 34,
+      "final_test_bilateral": 34,
       "accepted_providers": [
         {
           "provider": "alfarizy29_combined_sibi",
@@ -1033,15 +1133,20 @@
           "cosine_sim": 0.6038,
           "raw_count": 12
         }
-      ],
-      "final_canonical_samples": 250,
-      "final_mirror_samples": 250,
-      "final_total_samples": 500
+      ]
     },
     "S": {
       "kemendikdasmen_canonical_samples": 31,
       "kaggle_raw_candidates": 149,
       "kaggle_clean_kept": 145,
+      "unique_real_canonical_pool": 122,
+      "real_train_canonical": 86,
+      "augmented_train_canonical": 164,
+      "real_val_canonical": 18,
+      "real_test_canonical": 18,
+      "final_train_bilateral": 500,
+      "final_val_bilateral": 36,
+      "final_test_bilateral": 36,
       "accepted_providers": [
         {
           "provider": "alfarizy29_combined_sibi",
@@ -1056,15 +1161,20 @@
           "raw": 39
         }
       ],
-      "rejected_providers": [],
-      "final_canonical_samples": 250,
-      "final_mirror_samples": 250,
-      "final_total_samples": 500
+      "rejected_providers": []
     },
     "T": {
       "kemendikdasmen_canonical_samples": 31,
       "kaggle_raw_candidates": 135,
       "kaggle_clean_kept": 123,
+      "unique_real_canonical_pool": 108,
+      "real_train_canonical": 76,
+      "augmented_train_canonical": 174,
+      "real_val_canonical": 16,
+      "real_test_canonical": 16,
+      "final_train_bilateral": 500,
+      "final_val_bilateral": 32,
+      "final_test_bilateral": 32,
       "accepted_providers": [
         {
           "provider": "alfarizy29_combined_sibi",
@@ -1085,15 +1195,20 @@
           "raw": 35
         }
       ],
-      "rejected_providers": [],
-      "final_canonical_samples": 250,
-      "final_mirror_samples": 250,
-      "final_total_samples": 500
+      "rejected_providers": []
     },
     "U": {
       "kemendikdasmen_canonical_samples": 31,
       "kaggle_raw_candidates": 146,
       "kaggle_clean_kept": 133,
+      "unique_real_canonical_pool": 117,
+      "real_train_canonical": 81,
+      "augmented_train_canonical": 169,
+      "real_val_canonical": 18,
+      "real_test_canonical": 18,
+      "final_train_bilateral": 500,
+      "final_val_bilateral": 36,
+      "final_test_bilateral": 36,
       "accepted_providers": [
         {
           "provider": "alfarizy29_combined_sibi",
@@ -1114,15 +1229,20 @@
           "raw": 36
         }
       ],
-      "rejected_providers": [],
-      "final_canonical_samples": 250,
-      "final_mirror_samples": 250,
-      "final_total_samples": 500
+      "rejected_providers": []
     },
     "V": {
       "kemendikdasmen_canonical_samples": 31,
       "kaggle_raw_candidates": 153,
       "kaggle_clean_kept": 143,
+      "unique_real_canonical_pool": 124,
+      "real_train_canonical": 86,
+      "augmented_train_canonical": 164,
+      "real_val_canonical": 19,
+      "real_test_canonical": 19,
+      "final_train_bilateral": 500,
+      "final_val_bilateral": 38,
+      "final_test_bilateral": 38,
       "accepted_providers": [
         {
           "provider": "alfarizy29_combined_sibi",
@@ -1143,15 +1263,20 @@
           "raw": 39
         }
       ],
-      "rejected_providers": [],
-      "final_canonical_samples": 250,
-      "final_mirror_samples": 250,
-      "final_total_samples": 500
+      "rejected_providers": []
     },
     "W": {
       "kemendikdasmen_canonical_samples": 31,
       "kaggle_raw_candidates": 130,
       "kaggle_clean_kept": 117,
+      "unique_real_canonical_pool": 107,
+      "real_train_canonical": 75,
+      "augmented_train_canonical": 175,
+      "real_val_canonical": 16,
+      "real_test_canonical": 16,
+      "final_train_bilateral": 500,
+      "final_val_bilateral": 32,
+      "final_test_bilateral": 32,
       "accepted_providers": [
         {
           "provider": "alfarizy29_combined_sibi",
@@ -1166,15 +1291,20 @@
           "raw": 39
         }
       ],
-      "rejected_providers": [],
-      "final_canonical_samples": 250,
-      "final_mirror_samples": 250,
-      "final_total_samples": 500
+      "rejected_providers": []
     },
     "X": {
       "kemendikdasmen_canonical_samples": 31,
       "kaggle_raw_candidates": 161,
       "kaggle_clean_kept": 40,
+      "unique_real_canonical_pool": 71,
+      "real_train_canonical": 49,
+      "augmented_train_canonical": 201,
+      "real_val_canonical": 11,
+      "real_test_canonical": 11,
+      "final_train_bilateral": 500,
+      "final_val_bilateral": 22,
+      "final_test_bilateral": 22,
       "accepted_providers": [
         {
           "provider": "renitriyaningsih_sibi",
@@ -1194,15 +1324,20 @@
           "cosine_sim": 0.6102,
           "raw_count": 7
         }
-      ],
-      "final_canonical_samples": 250,
-      "final_mirror_samples": 250,
-      "final_total_samples": 500
+      ]
     },
     "Y": {
       "kemendikdasmen_canonical_samples": 31,
       "kaggle_raw_candidates": 106,
       "kaggle_clean_kept": 98,
+      "unique_real_canonical_pool": 99,
+      "real_train_canonical": 69,
+      "augmented_train_canonical": 181,
+      "real_val_canonical": 15,
+      "real_test_canonical": 15,
+      "final_train_bilateral": 500,
+      "final_val_bilateral": 30,
+      "final_test_bilateral": 30,
       "accepted_providers": [
         {
           "provider": "alfarizy29_combined_sibi",
@@ -1223,15 +1358,20 @@
           "cosine_sim": 0.6015,
           "raw_count": 7
         }
-      ],
-      "final_canonical_samples": 250,
-      "final_mirror_samples": 250,
-      "final_total_samples": 500
+      ]
     },
     "Z": {
       "kemendikdasmen_canonical_samples": 31,
       "kaggle_raw_candidates": 101,
       "kaggle_clean_kept": 20,
+      "unique_real_canonical_pool": 38,
+      "real_train_canonical": 26,
+      "augmented_train_canonical": 224,
+      "real_val_canonical": 6,
+      "real_test_canonical": 6,
+      "final_train_bilateral": 500,
+      "final_val_bilateral": 12,
+      "final_test_bilateral": 12,
       "accepted_providers": [
         {
           "provider": "alfarizy29_combined_sibi",
@@ -1251,15 +1391,20 @@
           "cosine_sim": 0.7565,
           "raw_count": 40
         }
-      ],
-      "final_canonical_samples": 250,
-      "final_mirror_samples": 250,
-      "final_total_samples": 500
+      ]
     },
     "1": {
       "kemendikdasmen_canonical_samples": 30,
       "kaggle_raw_candidates": 39,
       "kaggle_clean_kept": 21,
+      "unique_real_canonical_pool": 51,
+      "real_train_canonical": 35,
+      "augmented_train_canonical": 215,
+      "real_val_canonical": 8,
+      "real_test_canonical": 8,
+      "final_train_bilateral": 500,
+      "final_val_bilateral": 16,
+      "final_test_bilateral": 16,
       "accepted_providers": [
         {
           "provider": "renitriyaningsih_sibi",
@@ -1268,15 +1413,20 @@
           "raw": 39
         }
       ],
-      "rejected_providers": [],
-      "final_canonical_samples": 250,
-      "final_mirror_samples": 250,
-      "final_total_samples": 500
+      "rejected_providers": []
     },
     "2": {
       "kemendikdasmen_canonical_samples": 30,
       "kaggle_raw_candidates": 36,
       "kaggle_clean_kept": 27,
+      "unique_real_canonical_pool": 57,
+      "real_train_canonical": 39,
+      "augmented_train_canonical": 211,
+      "real_val_canonical": 9,
+      "real_test_canonical": 9,
+      "final_train_bilateral": 500,
+      "final_val_bilateral": 18,
+      "final_test_bilateral": 18,
       "accepted_providers": [
         {
           "provider": "renitriyaningsih_sibi",
@@ -1285,15 +1435,20 @@
           "raw": 36
         }
       ],
-      "rejected_providers": [],
-      "final_canonical_samples": 250,
-      "final_mirror_samples": 250,
-      "final_total_samples": 500
+      "rejected_providers": []
     },
     "3": {
       "kemendikdasmen_canonical_samples": 28,
       "kaggle_raw_candidates": 38,
       "kaggle_clean_kept": 37,
+      "unique_real_canonical_pool": 65,
+      "real_train_canonical": 45,
+      "augmented_train_canonical": 205,
+      "real_val_canonical": 10,
+      "real_test_canonical": 10,
+      "final_train_bilateral": 500,
+      "final_val_bilateral": 20,
+      "final_test_bilateral": 20,
       "accepted_providers": [
         {
           "provider": "renitriyaningsih_sibi",
@@ -1302,15 +1457,20 @@
           "raw": 38
         }
       ],
-      "rejected_providers": [],
-      "final_canonical_samples": 250,
-      "final_mirror_samples": 250,
-      "final_total_samples": 500
+      "rejected_providers": []
     },
     "4": {
       "kemendikdasmen_canonical_samples": 28,
       "kaggle_raw_candidates": 40,
       "kaggle_clean_kept": 25,
+      "unique_real_canonical_pool": 53,
+      "real_train_canonical": 37,
+      "augmented_train_canonical": 213,
+      "real_val_canonical": 8,
+      "real_test_canonical": 8,
+      "final_train_bilateral": 500,
+      "final_val_bilateral": 16,
+      "final_test_bilateral": 16,
       "accepted_providers": [
         {
           "provider": "renitriyaningsih_sibi",
@@ -1319,15 +1479,20 @@
           "raw": 40
         }
       ],
-      "rejected_providers": [],
-      "final_canonical_samples": 250,
-      "final_mirror_samples": 250,
-      "final_total_samples": 500
+      "rejected_providers": []
     },
     "5": {
       "kemendikdasmen_canonical_samples": 30,
       "kaggle_raw_candidates": 40,
       "kaggle_clean_kept": 40,
+      "unique_real_canonical_pool": 70,
+      "real_train_canonical": 50,
+      "augmented_train_canonical": 200,
+      "real_val_canonical": 10,
+      "real_test_canonical": 10,
+      "final_train_bilateral": 500,
+      "final_val_bilateral": 20,
+      "final_test_bilateral": 20,
       "accepted_providers": [
         {
           "provider": "renitriyaningsih_sibi",
@@ -1336,15 +1501,20 @@
           "raw": 40
         }
       ],
-      "rejected_providers": [],
-      "final_canonical_samples": 250,
-      "final_mirror_samples": 250,
-      "final_total_samples": 500
+      "rejected_providers": []
     },
     "6": {
       "kemendikdasmen_canonical_samples": 30,
       "kaggle_raw_candidates": 40,
       "kaggle_clean_kept": 38,
+      "unique_real_canonical_pool": 68,
+      "real_train_canonical": 48,
+      "augmented_train_canonical": 202,
+      "real_val_canonical": 10,
+      "real_test_canonical": 10,
+      "final_train_bilateral": 500,
+      "final_val_bilateral": 20,
+      "final_test_bilateral": 20,
       "accepted_providers": [
         {
           "provider": "renitriyaningsih_sibi",
@@ -1353,15 +1523,20 @@
           "raw": 40
         }
       ],
-      "rejected_providers": [],
-      "final_canonical_samples": 250,
-      "final_mirror_samples": 250,
-      "final_total_samples": 500
+      "rejected_providers": []
     },
     "7": {
       "kemendikdasmen_canonical_samples": 30,
       "kaggle_raw_candidates": 38,
       "kaggle_clean_kept": 38,
+      "unique_real_canonical_pool": 68,
+      "real_train_canonical": 48,
+      "augmented_train_canonical": 202,
+      "real_val_canonical": 10,
+      "real_test_canonical": 10,
+      "final_train_bilateral": 500,
+      "final_val_bilateral": 20,
+      "final_test_bilateral": 20,
       "accepted_providers": [
         {
           "provider": "renitriyaningsih_sibi",
@@ -1370,15 +1545,20 @@
           "raw": 38
         }
       ],
-      "rejected_providers": [],
-      "final_canonical_samples": 250,
-      "final_mirror_samples": 250,
-      "final_total_samples": 500
+      "rejected_providers": []
     },
     "8": {
       "kemendikdasmen_canonical_samples": 30,
       "kaggle_raw_candidates": 40,
       "kaggle_clean_kept": 40,
+      "unique_real_canonical_pool": 70,
+      "real_train_canonical": 50,
+      "augmented_train_canonical": 200,
+      "real_val_canonical": 10,
+      "real_test_canonical": 10,
+      "final_train_bilateral": 500,
+      "final_val_bilateral": 20,
+      "final_test_bilateral": 20,
       "accepted_providers": [
         {
           "provider": "renitriyaningsih_sibi",
@@ -1387,15 +1567,20 @@
           "raw": 40
         }
       ],
-      "rejected_providers": [],
-      "final_canonical_samples": 250,
-      "final_mirror_samples": 250,
-      "final_total_samples": 500
+      "rejected_providers": []
     },
     "9": {
       "kemendikdasmen_canonical_samples": 30,
       "kaggle_raw_candidates": 40,
       "kaggle_clean_kept": 40,
+      "unique_real_canonical_pool": 70,
+      "real_train_canonical": 50,
+      "augmented_train_canonical": 200,
+      "real_val_canonical": 10,
+      "real_test_canonical": 10,
+      "final_train_bilateral": 500,
+      "final_val_bilateral": 20,
+      "final_test_bilateral": 20,
       "accepted_providers": [
         {
           "provider": "renitriyaningsih_sibi",
@@ -1404,20 +1589,22 @@
           "raw": 40
         }
       ],
-      "rejected_providers": [],
-      "final_canonical_samples": 250,
-      "final_mirror_samples": 250,
-      "final_total_samples": 500
+      "rejected_providers": []
     },
     "10": {
       "kemendikdasmen_canonical_samples": 27,
       "kaggle_raw_candidates": 0,
       "kaggle_clean_kept": 0,
+      "unique_real_canonical_pool": 27,
+      "real_train_canonical": 19,
+      "augmented_train_canonical": 231,
+      "real_val_canonical": 4,
+      "real_test_canonical": 4,
+      "final_train_bilateral": 500,
+      "final_val_bilateral": 8,
+      "final_test_bilateral": 8,
       "accepted_providers": [],
-      "rejected_providers": [],
-      "final_canonical_samples": 250,
-      "final_mirror_samples": 250,
-      "final_total_samples": 500
+      "rejected_providers": []
     }
   },
   "visually_similar_pairs": {

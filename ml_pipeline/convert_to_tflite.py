@@ -1,5 +1,5 @@
 """
-convert_to_tflite.py — Konversi model Keras MLP ke TFLite & verifikasi parity inferensi.
+convert_to_tflite.py — Konversi model Keras MLP ke TFLite (Builtins Only) & verifikasi parity inferensi.
 """
 
 from __future__ import annotations
@@ -15,9 +15,9 @@ import tensorflow as tf
 
 import feature_utils
 
-if sys.stdout.encoding != 'utf-8':
+if sys.stdout.encoding != "utf-8":
     try:
-        sys.stdout.reconfigure(encoding='utf-8')
+        sys.stdout.reconfigure(encoding="utf-8")
     except Exception:
         pass
 
@@ -48,12 +48,10 @@ def convert():
             converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS]
             tflite_model = converter.convert()
 
-    # Simpan file .tflite
     MODEL_TFLITE.write_bytes(tflite_model)
-    file_size_kb = len(tflite_model) / 1024
+    file_size_kb = len(tflite_model) / 1024.0
     print(f"✅ Model TFLite berhasil dibuat: {MODEL_TFLITE} ({file_size_kb:.1f} KB)")
 
-    # Parity Verification
     verify_parity(model, tflite_model)
 
 
@@ -62,10 +60,13 @@ def verify_parity(keras_model: tf.keras.Model, tflite_bytes: bytes, num_samples:
 
     if CSV_PATH.exists():
         df = pd.read_csv(CSV_PATH, dtype={"label": str})
+        if "split" in df.columns:
+            df = df[df["split"] == "test"]
         feature_cols = [f"f{i}" for i in range(feature_utils.NUM_FEATURES)]
         X_all = df[feature_cols].values.astype(np.float32)
         n = min(num_samples, len(X_all))
-        indices = np.random.choice(len(X_all), n, replace=False)
+        rng = np.random.default_rng(42)
+        indices = rng.choice(len(X_all), n, replace=False)
         test_samples = X_all[indices]
     else:
         test_samples = np.random.uniform(-2.0, 2.0, (num_samples, feature_utils.NUM_FEATURES)).astype(np.float32)
@@ -88,13 +89,13 @@ def verify_parity(keras_model: tf.keras.Model, tflite_bytes: bytes, num_samples:
         tflite_preds.append(out[0])
 
     tflite_preds = np.array(tflite_preds)
-    elapsed_infer_ms = (time.perf_counter() - start_infer) / len(test_samples) * 1000
+    elapsed_infer_ms = (time.perf_counter() - start_infer) / len(test_samples) * 1000.0
 
     keras_classes = np.argmax(keras_preds, axis=1)
     tflite_classes = np.argmax(tflite_preds, axis=1)
 
-    max_prob_diff = np.max(np.abs(keras_preds - tflite_preds))
-    mismatches = np.sum(keras_classes != tflite_classes)
+    max_prob_diff = float(np.max(np.abs(keras_preds - tflite_preds)))
+    mismatches = int(np.sum(keras_classes != tflite_classes))
 
     print("-" * 50)
     print(f"Maksimum Perbedaan Probabilitas : {max_prob_diff:.6f}")
@@ -102,10 +103,9 @@ def verify_parity(keras_model: tf.keras.Model, tflite_bytes: bytes, num_samples:
     print(f"Rata-rata Latensi TFLite di PC  : {elapsed_infer_ms:.2f} ms per frame (SLA < 100 ms)")
     print("-" * 50)
 
-    if mismatches == 0 and max_prob_diff < 1e-3:
-        print("🎉 PARITY CHECK PASSED: Model TFLite 100% konsisten dengan Keras asli!")
-    else:
-        print("⚠️ PERINGATAN: Terdapat perbedaan signifikan antara output Keras dan TFLite.")
+    if mismatches != 0 or max_prob_diff >= 1e-4:
+        raise AssertionError(f"Parity check failed: mismatches={mismatches}, max_diff={max_prob_diff}")
+    print("🎉 PARITY CHECK PASSED: Model TFLite 100% konsisten dengan Keras asli!")
 
 
 if __name__ == "__main__":

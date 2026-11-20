@@ -210,7 +210,65 @@ class MainActivity : AppCompatActivity(), HandLandmarkerHelper.LandmarkerListene
             requestCameraPermission()
         }
 
+        if (savedInstanceState != null) {
+            restoreUiState(savedInstanceState)
+        }
+
         handleDebugDemoIntent(intent)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString(KEY_DIRECTION, currentDirection.name)
+        if (::translationPipeline.isInitialized) {
+            outState.putString(KEY_RECOGNITION_MODE, translationPipeline.currentMode.name)
+            outState.putStringArrayList(
+                KEY_TRANSCRIPT_ITEMS,
+                ArrayList(translationPipeline.getCommittedTranscriptSnapshot())
+            )
+        }
+        if (::ttsManager.isInitialized) {
+            outState.putBoolean(KEY_TTS_MUTED, ttsManager.isMuted)
+        }
+        if (::textCardDisplay.isInitialized) {
+            outState.putString(KEY_ARAH2_RAW_TEXT, textCardDisplay.getLastRenderedRawText())
+        }
+    }
+
+    private fun restoreUiState(savedInstanceState: Bundle) {
+        val savedMuted = savedInstanceState.getBoolean(KEY_TTS_MUTED, false)
+        if (::ttsManager.isInitialized) {
+            ttsManager.applyMuteState(savedMuted)
+            binding.btnMuteTts.text = getString(if (savedMuted) R.string.tts_muted else R.string.tts_on)
+            binding.btnMuteTts.setBackgroundResource(
+                if (savedMuted) R.drawable.bg_figma_sound_mute else R.drawable.bg_figma_sound_on
+            )
+        }
+
+        val savedModeName = savedInstanceState.getString(KEY_RECOGNITION_MODE)
+        val savedMode = savedModeName?.let {
+            runCatching { RecognitionMode.valueOf(it) }.getOrNull()
+        } ?: RecognitionMode.LETTER
+        val savedTranscript = savedInstanceState.getStringArrayList(KEY_TRANSCRIPT_ITEMS).orEmpty()
+        if (::translationPipeline.isInitialized) {
+            selectRecognitionMode(savedMode)
+            translationPipeline.restoreState(savedMode, savedTranscript)
+        }
+
+        val savedArah2Raw = savedInstanceState.getString(KEY_ARAH2_RAW_TEXT).orEmpty()
+        if (savedArah2Raw.isNotBlank() && ::textCardDisplay.isInitialized) {
+            textCardDisplay.restoreRenderedText(savedArah2Raw)
+        }
+
+        val savedDirectionName = savedInstanceState.getString(KEY_DIRECTION)
+        val savedDirection = savedDirectionName?.let {
+            runCatching { AppDirection.valueOf(it) }.getOrNull()
+        } ?: AppDirection.SIGN_TO_SPEECH
+        if (savedDirection != currentDirection) {
+            binding.rootContainer.post {
+                switchDirection(savedDirection)
+            }
+        }
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -219,7 +277,26 @@ class MainActivity : AppCompatActivity(), HandLandmarkerHelper.LandmarkerListene
         handleDebugDemoIntent(intent)
     }
 
+    private fun fadeOutSplashOverlay() {
+        if (binding.loadingSplashOverlay.visibility == View.VISIBLE) {
+            binding.loadingSplashOverlay.postDelayed({
+                binding.loadingSplashOverlay.animate()
+                    .alpha(0f)
+                    .setDuration(250L)
+                    .withEndAction {
+                        binding.loadingSplashOverlay.visibility = View.GONE
+                    }
+                    .start()
+            }, 1100L)
+        }
+    }
+
     private fun handleDebugDemoIntent(intent: Intent?) {
+        if (!BuildConfig.DEBUG) {
+            fadeOutSplashOverlay()
+            return
+        }
+
         val holdSplash = intent?.getBooleanExtra("debug_hold_splash", false) == true
         val demoLabel = intent?.getStringExtra("debug_commit_label")
 
@@ -231,16 +308,8 @@ class MainActivity : AppCompatActivity(), HandLandmarkerHelper.LandmarkerListene
             binding.loadingSplashOverlay.visibility = View.VISIBLE
         } else if (!demoLabel.isNullOrBlank() || !targetDirection.isNullOrBlank() || !arah2Text.isNullOrBlank()) {
             binding.loadingSplashOverlay.visibility = View.GONE
-        } else if (binding.loadingSplashOverlay.visibility == View.VISIBLE) {
-            binding.loadingSplashOverlay.postDelayed({
-                binding.loadingSplashOverlay.animate()
-                    .alpha(0f)
-                    .setDuration(250L)
-                    .withEndAction {
-                        binding.loadingSplashOverlay.visibility = View.GONE
-                    }
-                    .start()
-            }, 1100L)
+        } else {
+            fadeOutSplashOverlay()
         }
 
         if (targetDirection.equals("arah2", ignoreCase = true) || targetDirection.equals("SPEECH_TO_TEXT", ignoreCase = true)) {
@@ -351,9 +420,12 @@ class MainActivity : AppCompatActivity(), HandLandmarkerHelper.LandmarkerListene
                     textCardDisplay.updateListeningState(isListening)
                 }
             },
-            onErrorOccurred = { _, errorMessage ->
+            onErrorOccurred = { errorCode, errorMessage ->
                 runOnUiThread {
                     Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show()
+                    if (errorCode == SpeechToTextManager.ERROR_SECURITY_EXCEPTION) {
+                        textCardDisplay.focusKeyboardInput()
+                    }
                 }
             },
             onOfflineModeChanged = { isOffline ->
@@ -903,5 +975,10 @@ class MainActivity : AppCompatActivity(), HandLandmarkerHelper.LandmarkerListene
 
     companion object {
         private const val TAG = "SignToSpeechMainActivity"
+        private const val KEY_DIRECTION = "state_direction"
+        private const val KEY_RECOGNITION_MODE = "state_recognition_mode"
+        private const val KEY_TRANSCRIPT_ITEMS = "state_transcript_items"
+        private const val KEY_TTS_MUTED = "state_tts_muted"
+        private const val KEY_ARAH2_RAW_TEXT = "state_arah2_raw_text"
     }
 }

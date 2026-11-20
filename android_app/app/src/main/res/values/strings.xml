@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">SignToSpeech</string>
-    <string name="camera_permission_required">Aplikasi membutuhkan izin kamera untuk mendeteksi bahasa isyarat BISINDO.</string>
+    <string name="camera_permission_required">Aplikasi membutuhkan izin kamera untuk mendeteksi bahasa isyarat SIBI &amp; BISINDO.</string>
     <string name="grant_permission">Beri Izin</string>
     <string name="status_searching">Mencari tangan...</string>
     <string name="status_detected">%1$d tangan terdeteksi</string>
@@ -18,7 +18,7 @@
 
     <!-- Arah 2 Strings -->
     <string name="direction_arah1">SIGN → SPEECH</string>
-    <string name="direction_arah2">SPEECH → SIGN</string>
+    <string name="direction_arah2">SPEECH → CARD</string>
     <string name="arah2_title">Suara → Teks</string>
     <string name="arah2_instruction">Siap mendengar</string>
     <string name="arah2_tap_to_start">Ketuk untuk bicara</string>

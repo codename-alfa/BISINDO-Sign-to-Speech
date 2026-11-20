@@ -152,7 +152,8 @@ object KeywordMatcher {
         "Berapa total biaya di kasir?",
         "Poli pemeriksaan dokter di lantai 2",
         "Tolong pandu ke stasiun terdekat",
-        "Silakan ambil nomor antrean dan siapkan KTP"
+        "Silakan ambil nomor antrean dan siapkan KTP",
+        "Kondisi darurat medis! Segera bawa pasien ke ruang IGD sekarang."
     )
 
     // Precompiled regex cache untuk efisiensi eksekusi realtime (tidak kompilasi ulang tiap frame)
